@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -8,8 +8,40 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu.jsx";
+import generateCallsAPI from "@/functions/GestionnaireCallsAPI.jsx";
+import { useAuth } from "@/context/useAuth.jsx";
+import { NumToMois } from "@/functions/GestionnaireDates.jsx";
 
-function DropDownMoisGraph({ nom, data, getDataFromHardData }) {
+function DropDownMoisGraph({ nom, data, getDataGraph }) {
+  const { token } = useAuth();
+  const [months, setMonths] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
+
+  async function getListOfMonths() {
+    return generateCallsAPI(token, "GET", "/api/graphs/capteurs/month/all");
+  }
+
+  useEffect(() => {
+    async function fetchMonths() {
+      const date = new Date();
+      const Months = await getListOfMonths();
+      let data = [Object.keys(Months), Months];
+      let currentMonth = date.getMonth() + 1;
+      if (currentMonth < 10) {
+        currentMonth = "0" + currentMonth;
+      }
+      data.push(currentMonth);
+      data.push(date.getFullYear());
+      console.log(data);
+      await setMonths(data);
+      await setIsLoading(false);
+      console.log(months);
+    }
+    if (isLoading) {
+      void fetchMonths();
+    }
+  });
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -19,41 +51,50 @@ function DropDownMoisGraph({ nom, data, getDataFromHardData }) {
             "h-9 px-4 py-2 has-[>svg]:px-3 inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50"
           }
         >
-          {data[3] + " - " + data[2]}
+          {isLoading
+            ? "Chargement"
+            : NumToMois(parseInt(months[2])) + " - " + months[3]}
         </button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="end">
-        {data[0].map((key) => {
-          return (
-            <div key={key + "-div"}>
-              <DropdownMenuLabel key={key + "-label"}>{key}</DropdownMenuLabel>
-              <DropdownMenuGroup key={key + "-group"}>
-                {data[1][key].map((mois) => {
-                  if (parseInt(data[2]) === parseInt(key) && data[3] === mois) {
-                    return "";
-                  } else {
-                    return (
-                      <DropdownMenuItem
-                        onClick={async () =>
-                          getDataFromHardData(nom, key, mois)
-                        }
-                        key={key + "-" + mois}
-                      >
-                        {mois}
-                      </DropdownMenuItem>
-                    );
-                  }
-                })}
-              </DropdownMenuGroup>
-              {data[0][data[0].length - 1] !== key ? (
-                <DropdownMenuSeparator />
-              ) : (
-                ""
-              )}
-            </div>
-          );
-        })}
-      </DropdownMenuContent>
+      {isLoading ? (
+        ""
+      ) : (
+        <DropdownMenuContent align="end">
+          {months[0].map((key) => {
+            return (
+              <div key={key + "-div"}>
+                <DropdownMenuLabel key={key + "-label"}>
+                  {key}
+                </DropdownMenuLabel>
+                <DropdownMenuGroup key={key + "-group"}>
+                  {months[1][key].map((mois) => {
+                    if (
+                      parseInt(months[2]) === parseInt(key) &&
+                      months[3] === mois
+                    ) {
+                      return "";
+                    } else {
+                      return (
+                        <DropdownMenuItem
+                          onClick={async () => getDataGraph(nom, key, mois)}
+                          key={key + "-" + mois}
+                        >
+                          {NumToMois(parseInt(mois))}
+                        </DropdownMenuItem>
+                      );
+                    }
+                  })}
+                </DropdownMenuGroup>
+                {data[0][data[0].length - 1] !== key ? (
+                  <DropdownMenuSeparator />
+                ) : (
+                  ""
+                )}
+              </div>
+            );
+          })}
+        </DropdownMenuContent>
+      )}
     </DropdownMenu>
   );
 }

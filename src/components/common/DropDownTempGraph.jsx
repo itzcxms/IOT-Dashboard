@@ -7,7 +7,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu.jsx";
 
-function DropDownTempGraph({ nomSelection, data, getDataFromHardData }) {
+function DropDownTempGraph({ nomSelection, data, getDataGraph }) {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -23,13 +23,13 @@ function DropDownTempGraph({ nomSelection, data, getDataFromHardData }) {
       <DropdownMenuContent className="w-fit" align="end">
         <DropdownMenuGroup>
           {Object.keys(data).map((key) => {
-            if (key !== nomSelection) {
+            if (data[key] !== nomSelection) {
               return (
                 <DropdownMenuItem
-                  onClick={async () => getDataFromHardData(key)}
-                  key={key}
+                  onClick={async () => getDataGraph(data[key])}
+                  key={data[key]}
                 >
-                  {key}
+                  {data[key]}
                 </DropdownMenuItem>
               );
             }

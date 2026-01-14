@@ -34,7 +34,7 @@ function GestionAire() {
         </div>
 
         {/* Graph */}
-        <Graphs />
+        <Graphs typeCapteur={"toilette"} />
       </div>
     </>
   );

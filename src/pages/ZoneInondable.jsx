@@ -38,16 +38,7 @@ function ZoneInondable() {
           <CardsList cards={cards} />
         </div>
 
-        <Graphs
-          chartData={[
-            { month: "January", visites: 186, wind: 70 },
-            { month: "February", visites: 305, wind: 50 },
-            { month: "March", visites: 237, wind: 20 },
-            { month: "April", visites: 73, wind: 60 },
-            { month: "May", visites: 209, wind: 20 },
-            { month: "June", visites: 214, wind: 10 },
-          ]}
-        />
+        <Graphs typeCapteur={"sonde"} />
       </div>
     </>
   );

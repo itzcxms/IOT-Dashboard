@@ -23,26 +23,14 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from "@/components/ui/chart";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuGroup,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuPortal,
-  DropdownMenuSeparator,
-  DropdownMenuShortcut,
-  DropdownMenuSub,
-  DropdownMenuSubContent,
-  DropdownMenuSubTrigger,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { Button } from "@/components/ui/button.jsx";
 import { NumToMois } from "@/functions/GestionnaireDates.jsx";
 import DropDownTempGraph from "@/components/common/DropDownTempGraph.jsx";
 import DropDown2Selector from "@/components/common/DropDown2Selector.jsx";
+import generateCallsAPI from "@/functions/GestionnaireCallsAPI.jsx";
+import { useAuth } from "@/context/useAuth.jsx";
 
-function Graphs({ line = null }) {
+function Graphs({ typeCapteur, line = null }) {
+  const { token } = useAuth();
   const [ChartData, setChartData] = useState(null);
   const [trends, setTrends] = useState(null);
   const [chartConfig, setChartConfig] = useState(null);
@@ -85,7 +73,7 @@ function Graphs({ line = null }) {
             { jour: "10", fréquentation: 76, vent: 20 },
           ],
         },
-        2025: {
+        2026: {
           Janvier: [
             { jour: "01", fréquentation: 92 },
             { jour: "02", fréquentation: 600 },
@@ -158,7 +146,7 @@ function Graphs({ line = null }) {
         { mois: "May", fréquentation: 209 },
         { mois: "June", fréquentation: 214 },
       ],
-      2025: [
+      2026: [
         { mois: "January", fréquentation: 186 },
         { mois: "February", fréquentation: 305 },
         { mois: "March", fréquentation: 237 },
@@ -178,7 +166,14 @@ function Graphs({ line = null }) {
   //   },
   // };
 
-  async function getDataFromHardData(key, annee = null, mois = null) {
+  async function getDataAPI(type, route, data = null) {
+    if (data === null) {
+      return generateCallsAPI(token, type, route);
+    }
+    return generateCallsAPI(token, type, route, data);
+  }
+
+  async function getDataGraph(key, annee = null, mois = null) {
     let tempDatas = null;
     const date = new Date();
     if (key === "Année") {
@@ -192,7 +187,7 @@ function Graphs({ line = null }) {
         annee = date.getFullYear();
       }
       if (mois === null) {
-        mois = NumToMois(date.getMonth());
+        mois = NumToMois(date.getMonth() + 1);
       }
       tempDatas = hardData[key]["année"][annee][mois];
       let moisDatas = {};
@@ -204,7 +199,9 @@ function Graphs({ line = null }) {
       }
       await setCurrentSelection([key, moisKeys, moisDatas, annee, mois]);
     } else {
-      tempDatas = hardData[key];
+      tempDatas = await getDataAPI("GET", "/api/graphs/capteurs/today", {
+        type: typeCapteur,
+      });
       await setCurrentSelection(key);
     }
     await setChartData(tempDatas);
@@ -280,7 +277,8 @@ function Graphs({ line = null }) {
   }
 
   function generateConfig() {
-    const keys = Object.keys(ChartData[0]);
+    let keys = [];
+    keys = Object.keys(ChartData[0]);
     let config = {};
     let param = {
       XAxis: keys[0],
@@ -323,7 +321,7 @@ function Graphs({ line = null }) {
   useEffect(() => {
     async function fetchData() {
       if (ChartData === null) {
-        await getDataFromHardData("Aujourd'hui");
+        await getDataGraph("Aujourd'hui");
       }
       const { config, param } = generateConfig();
       const trendsData = generateAxisTrend(param.datas);
@@ -346,6 +344,8 @@ function Graphs({ line = null }) {
     return <div>Chargement...</div>;
   }
 
+  console.log(currentSelection);
+
   return (
     <Card className="Card">
       <CardHeader>
@@ -356,8 +356,8 @@ function Graphs({ line = null }) {
                 ? currentSelection[0]
                 : currentSelection
             }
-            data={hardData}
-            getDataFromHardData={getDataFromHardData}
+            data={["Aujourd'hui", "Mois", "Année"]}
+            getDataGraph={getDataGraph}
           />
         </CardTitle>
         <CardDescription className={"flex justify-between"}>
@@ -378,7 +378,7 @@ function Graphs({ line = null }) {
               <DropDown2Selector
                 nom={currentSelection[0]}
                 data={currentSelection.slice(1)}
-                getDataFromHardData={getDataFromHardData}
+                getDataGraph={getDataGraph}
               />
             ) : (
               ""
