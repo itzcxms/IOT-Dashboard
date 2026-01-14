@@ -14,17 +14,12 @@ function ZoneInondable() {
     {
       icone: Home,
       titre: "Date et heure de la mesure",
-      texte: "20/10/2025 14:27",
+      texte: "14/01/2025 14:27",
     },
     {
       icone: Home,
-      titre: "État global",
+      titre: "Niveau de l'eau",
       texte: "Critique",
-    },
-    {
-      icone: Home,
-      titre: "Batterie du capteur",
-      texte: "72%",
     },
   ];
 

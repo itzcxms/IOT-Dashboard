@@ -10,6 +10,8 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 import { Star } from "lucide-react";
 
+
+
 // Composant simple pour les étoiles
 const NotationEtoiles = ({ valeur, surChangement }) => {
   const [valeurSurvol, setValeurSurvol] = useState(0);
@@ -117,22 +119,22 @@ export default function SatisfactionForm() {
                   onValueChange={(valeur) => changerValeur("proprete", valeur)}
                   className="space-y-3"
                 >
-                  <div className="flex items-center space-x-3 rounded-lg border border-gray-200 bg-white p-4 hover:bg-gray-50">
+                  <Label htmlFor="proprete-excellent" className="flex items-center space-x-3 rounded-lg border border-gray-200 bg-white p-4 hover:bg-gray-50 cursor-pointer">
                     <RadioGroupItem value="excellent" id="proprete-excellent" />
-                    <Label htmlFor="proprete-excellent" className="flex-1 cursor-pointer text-slate-900">Excellent</Label>
-                  </div>
-                  <div className="flex items-center space-x-3 rounded-lg border border-gray-200 bg-white p-4 hover:bg-gray-50">
+                    <span className="flex-1 text-slate-900">Excellent</span>
+                  </Label>
+                  <Label htmlFor="proprete-bon" className="flex items-center space-x-3 rounded-lg border border-gray-200 bg-white p-4 hover:bg-gray-50 cursor-pointer">
                     <RadioGroupItem value="bon" id="proprete-bon" />
-                    <Label htmlFor="proprete-bon" className="flex-1 cursor-pointer text-slate-900">Bon</Label>
-                  </div>
-                  <div className="flex items-center space-x-3 rounded-lg border border-gray-200 bg-white p-4 hover:bg-gray-50">
+                    <span className="flex-1 text-slate-900">Bon</span>
+                  </Label>
+                  <Label htmlFor="proprete-passable" className="flex items-center space-x-3 rounded-lg border border-gray-200 bg-white p-4 hover:bg-gray-50 cursor-pointer">
                     <RadioGroupItem value="passable" id="proprete-passable" />
-                    <Label htmlFor="proprete-passable" className="flex-1 cursor-pointer text-slate-900">Passable</Label>
-                  </div>
-                  <div className="flex items-center space-x-3 rounded-lg border border-gray-200 bg-white p-4 hover:bg-gray-50">
+                    <span className="flex-1 text-slate-900">Passable</span>
+                  </Label>
+                  <Label htmlFor="proprete-mediocre" className="flex items-center space-x-3 rounded-lg border border-gray-200 bg-white p-4 hover:bg-gray-50 cursor-pointer">
                     <RadioGroupItem value="mediocre" id="proprete-mediocre" />
-                    <Label htmlFor="proprete-mediocre" className="flex-1 cursor-pointer text-slate-900">Médiocre</Label>
-                  </div>
+                    <span className="flex-1 text-slate-900">Médiocre</span>
+                  </Label>
                 </RadioGroup>
               </div>
 
@@ -146,22 +148,22 @@ export default function SatisfactionForm() {
                   onValueChange={(valeur) => changerValeur("equipements", valeur)}
                   className="space-y-3"
                 >
-                  <div className="flex items-center space-x-3 rounded-lg border border-gray-200 bg-white p-4 hover:bg-gray-50">
+                  <Label htmlFor="equipements-excellent" className="flex items-center space-x-3 rounded-lg border border-gray-200 bg-white p-4 hover:bg-gray-50 cursor-pointer">
                     <RadioGroupItem value="excellent" id="equipements-excellent" />
-                    <Label htmlFor="equipements-excellent" className="flex-1 cursor-pointer text-slate-900">Excellent</Label>
-                  </div>
-                  <div className="flex items-center space-x-3 rounded-lg border border-gray-200 bg-white p-4 hover:bg-gray-50">
+                    <span className="flex-1 text-slate-900">Excellent</span>
+                  </Label>
+                  <Label htmlFor="equipements-bon" className="flex items-center space-x-3 rounded-lg border border-gray-200 bg-white p-4 hover:bg-gray-50 cursor-pointer">
                     <RadioGroupItem value="bon" id="equipements-bon" />
-                    <Label htmlFor="equipements-bon" className="flex-1 cursor-pointer text-slate-900">Bon</Label>
-                  </div>
-                  <div className="flex items-center space-x-3 rounded-lg border border-gray-200 bg-white p-4 hover:bg-gray-50">
+                    <span className="flex-1 text-slate-900">Bon</span>
+                  </Label>
+                  <Label htmlFor="equipements-passable" className="flex items-center space-x-3 rounded-lg border border-gray-200 bg-white p-4 hover:bg-gray-50 cursor-pointer">
                     <RadioGroupItem value="passable" id="equipements-passable" />
-                    <Label htmlFor="equipements-passable" className="flex-1 cursor-pointer text-slate-900">Passable</Label>
-                  </div>
-                  <div className="flex items-center space-x-3 rounded-lg border border-gray-200 bg-white p-4 hover:bg-gray-50">
+                    <span className="flex-1 text-slate-900">Passable</span>
+                  </Label>
+                  <Label htmlFor="equipements-mediocre" className="flex items-center space-x-3 rounded-lg border border-gray-200 bg-white p-4 hover:bg-gray-50 cursor-pointer">
                     <RadioGroupItem value="mediocre" id="equipements-mediocre" />
-                    <Label htmlFor="equipements-mediocre" className="flex-1 cursor-pointer text-slate-900">Médiocre</Label>
-                  </div>
+                    <span className="flex-1 text-slate-900">Médiocre</span>
+                  </Label>
                 </RadioGroup>
               </div>
 
@@ -175,14 +177,14 @@ export default function SatisfactionForm() {
                   onValueChange={(valeur) => changerValeur("recommandation", valeur)}
                   className="space-y-3"
                 >
-                  <div className="flex items-center space-x-3 rounded-lg border border-gray-200 bg-white p-4 hover:bg-gray-50">
+                  <Label htmlFor="recommandation-oui" className="flex items-center space-x-3 rounded-lg border border-gray-200 bg-white p-4 hover:bg-gray-50 cursor-pointer">
                     <RadioGroupItem value="oui" id="recommandation-oui" />
-                    <Label htmlFor="recommandation-oui" className="flex-1 cursor-pointer text-slate-900">Oui, certainement</Label>
-                  </div>
-                  <div className="flex items-center space-x-3 rounded-lg border border-gray-200 bg-white p-4 hover:bg-gray-50">
+                    <span className="flex-1 text-slate-900">Oui, certainement</span>
+                  </Label>
+                  <Label htmlFor="recommandation-non" className="flex items-center space-x-3 rounded-lg border border-gray-200 bg-white p-4 hover:bg-gray-50 cursor-pointer">
                     <RadioGroupItem value="non" id="recommandation-non" />
-                    <Label htmlFor="recommandation-non" className="flex-1 cursor-pointer text-slate-900">Non</Label>
-                  </div>
+                    <span className="flex-1 text-slate-900">Non</span>
+                  </Label>
                 </RadioGroup>
               </div>
 
@@ -193,7 +195,7 @@ export default function SatisfactionForm() {
                 </Label>
                 <Textarea
                   placeholder="Partagez vos commentaires..."
-                  className="min-h-[120px] bg-white border-gray-200 focus-visible:ring-emerald-500"
+                  className="min-h-[120px] text-slate-800 bg-white border-gray-200 focus-visible:ring-emerald-500"
                   value={donnees.commentaires}
                   onChange={(e) => changerValeur("commentaires", e.target.value)}
                 />
@@ -209,7 +211,7 @@ export default function SatisfactionForm() {
                     <Label className="text-slate-700">Nom (optionnel)</Label>
                     <Input
                       placeholder="Votre nom"
-                      className="bg-white border-gray-200 focus-visible:ring-emerald-500"
+                      className="bg-white text-slate-800 border-gray-200 focus-visible:ring-emerald-500"
                       value={donnees.nom}
                       onChange={(e) => changerValeur("nom", e.target.value)}
                     />
@@ -219,7 +221,7 @@ export default function SatisfactionForm() {
                     <Input
                       type="email"
                       placeholder="votre@email.com"
-                      className="bg-white border-gray-200 focus-visible:ring-emerald-500"
+                      className="bg-white text-slate-800 border-gray-200 focus-visible:ring-emerald-500"
                       value={donnees.email}
                       onChange={(e) => changerValeur("email", e.target.value)}
                     />

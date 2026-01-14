@@ -7,18 +7,18 @@ import PageTitle from "../components/common/PageTitle";
 const cards = [
   {
     icone: Home,
-    titre: "Dernière mesure",
-    texte: "4,18m",
+    titre: "Donnée",
+    texte: "Donnée",
   },
   {
     icone: Home,
-    titre: "Date et heure de la mesure",
-    texte: "20/10/2025 14:27",
+    titre: "Donnée",
+    texte: "Donnée",
   },
   {
     icone: Home,
-    titre: "État global",
-    texte: "Critique",
+    titre: "Donnée",
+    texte: "Donnée",
   },
 ];
 
