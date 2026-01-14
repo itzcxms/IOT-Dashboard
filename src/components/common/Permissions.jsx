@@ -241,8 +241,12 @@ function Permissions() {
     });
   }
 
-  function updateRole(idRole) {
-    const newRole = getRoleById(idRole);
+  async function updateRole(idRole) {
+    for (let i = 0; i < roles.length; i++) {
+      if (roles[i]._id === idRole) {
+        await setCurrentRole(roles[i]);
+      }
+    }
   }
 
   useEffect(() => {
@@ -275,6 +279,8 @@ function Permissions() {
   if (isLoading) {
     return <div>Chargement...</div>;
   }
+
+  console.log(droits);
 
   return (
     <div>
@@ -316,9 +322,9 @@ function Permissions() {
                 <div className="grid grid-cols-4 gap-4">
                   {droitData[1].map((droit) => (
                     <Card key={droit._id}>
-                      <CardHeader>
+                      <CardHeader data-brute={JSON.stringify(droit)}>
                         <div className={"flex justify-between"}>
-                          <CardTitle>{droit.name.split(" - ")[2]}</CardTitle>
+                          <CardTitle>{droit.name.split(" - ")[1]}</CardTitle>
                           <input
                             type={"checkbox"}
                             onChange={() =>
@@ -334,7 +340,9 @@ function Permissions() {
                       </CardHeader>
                       <CardContent>
                         <p className={"capitalize"}>
-                          {droit.description ?? "Description à implémenter"}
+                          {droit.description.length > 0
+                            ? droit.description
+                            : "Description à implémenter"}
                         </p>
                       </CardContent>
                     </Card>
