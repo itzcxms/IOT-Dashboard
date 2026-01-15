@@ -30,11 +30,17 @@ import generateCallsAPI from "@/functions/GestionnaireCallsAPI.jsx";
 import { useAuth } from "@/context/useAuth.jsx";
 
 /**
+ * @fileoverview Composant de gestion et d'affichage de graphiques dynamiques
+ * @module Graphs
+ * @since 1.0.0
+ */
+
+/**
  * Displays and manages graphs based on specified data and configurations.
  *
- * @param {Object} options The options object.
- * @param {string} options.typeCapteur The type of sensor for which the graph is generated.
- * @param {number|null} options.line Additional optional line parameter for specific graph configurations.
+ * @param {Object} options - The options object.
+ * @param {string} options.typeCapteur - The type of sensor for which the graph is generated.
+ * @param {number|null} [options.line=null] - Additional optional line parameter for specific graph configurations.
  * @returns {JSX.Element} A rendered graph component with dynamic data and configurations.
  */
 function Graphs({ typeCapteur, line = null }) {
@@ -48,12 +54,16 @@ function Graphs({ typeCapteur, line = null }) {
   const [currentSelection, setCurrentSelection] = useState("Aujourd'hui");
 
   /**
-   * Appel les routes d'API
+   * Appelle les routes d'API
    *
-   * @param type string GET|POST|PUT|DELETE
-   * @param route string
-   * @param data object|null
-   * @returns {Promise<Promise<any|null>|*>}
+   * @memberof module:Graphs
+   * @inner
+   * @async
+   * @function getDataAPI
+   * @param {string} type - Type de requête (GET|POST|PUT|DELETE)
+   * @param {string} route - Route de l'API
+   * @param {Object|null} [data=null] - Données à envoyer avec la requête
+   * @returns {Promise<any>} Réponse de l'API
    */
   async function getDataAPI(type, route, data = null) {
     if (data === null) {
@@ -65,9 +75,13 @@ function Graphs({ typeCapteur, line = null }) {
   /**
    * Récupère les informations pour les graphiques
    *
-   * @param key Aujourd'hui|Mois|Année
-   * @param annee null|number
-   * @param mois null|number
+   * @memberof module:Graphs
+   * @inner
+   * @async
+   * @function getDataGraph
+   * @param {string} key - Période de données (Aujourd'hui|Mois|Année)
+   * @param {number|null} [annee=null] - Année spécifique (optionnel)
+   * @param {number|null} [mois=null] - Mois spécifique (optionnel)
    * @returns {Promise<void>}
    */
   async function getDataGraph(key, annee = null, mois = null) {
@@ -92,7 +106,6 @@ function Graphs({ typeCapteur, line = null }) {
         dataSup = [dataSup];
         tempDatas = dataSup.concat(tempDatas);
       }
-      console.log(tempDatas);
       await setCurrentSelection([key, annee]);
     } else if (key === "Mois") {
       if (annee === null) {
@@ -113,6 +126,7 @@ function Graphs({ typeCapteur, line = null }) {
       tempDatas = await getDataAPI("POST", "/api/graphs/capteurs/today", {
         type: typeCapteur,
       });
+      tempDatas = tempDatas.donnees;
       await setCurrentSelection(key);
     }
     await setChartData(tempDatas);
@@ -120,15 +134,17 @@ function Graphs({ typeCapteur, line = null }) {
   }
 
   /**
-   * Calcul le pourcentage de la dernière augmentation ou diminution de la valeur de tocheck
+   * Calcule le pourcentage de la dernière augmentation ou diminution de la valeur de tocheck
    * et détermine le trend à afficher (up ou down)
    *
-   * @param tocheck string
-   * @returns {{trend: (string), percentage: string}}
+   * @inner
+   * @inner
+   * @function getTrendAndPercentage
+   * @param {string} tocheck - Paramètre à vérifier pour calculer la tendance
+   * @returns {{trend: string, percentage: string}} Objet contenant la tendance et le pourcentage
    */
   function getTrendAndPercentage(tocheck) {
     let len = ChartData.length - 1;
-    console.log(ChartData[len - 1].frequentation, tocheck);
     while (
       ChartData[len].tocheck === ChartData[len - 1].tocheck &&
       ChartData[len - 1].tocheck === 0
@@ -146,8 +162,11 @@ function Graphs({ typeCapteur, line = null }) {
   /**
    * Récupère la valeur la plus grande de la liste des valeurs fournies
    *
-   * @param value
-   * @returns {number}
+   *
+   * @inner
+   * @function getBiggestUnit
+   * @param {number} value - Valeur pour laquelle déterminer l'unité la plus grande
+   * @returns {number} La plus grande unité appropriée
    */
   function getBiggestUnit(value) {
     if (value === 0) return 1;
@@ -166,8 +185,11 @@ function Graphs({ typeCapteur, line = null }) {
   /**
    * Génère la configuration de l'axe Y pour le graphique pour le paramètre fourni
    *
-   * @param param string
-   * @returns {{domain: (number|number)[], ticks: *[], unit: number}}
+   *
+   * @inner
+   * @function generateYAxisConfig
+   * @param {string} param - Paramètre pour lequel générer la configuration de l'axe Y
+   * @returns {{domain: number[], ticks: number[], unit: number}} Configuration de l'axe Y
    */
   function generateYAxisConfig(param) {
     let max = ChartData[0][param];
@@ -210,7 +232,8 @@ function Graphs({ typeCapteur, line = null }) {
   /**
    * Génère la configuration du graphique
    *
-   * @returns {{config: {}, param: {XAxis: string, datas: *[], amountOf}}}
+   * @function generateConfig
+   * @returns {{config: Object, param: {XAxis: string, datas: string[], amountOf: number}}} Configuration du graphique et paramètres
    */
   function generateConfig() {
     let keys = [];
@@ -235,10 +258,13 @@ function Graphs({ typeCapteur, line = null }) {
   }
 
   /**
-   * Appel la récupération des trends et pourcentages pour tous les axes fournis
+   * Appelle la récupération des trends et pourcentages pour tous les axes fournis
    *
-   * @param paramList array[string]
-   * @returns {{}}
+   *
+   * @inner
+   * @function generateAxisTrend
+   * @param {string[]} paramList - Liste des paramètres pour lesquels générer les tendances
+   * @returns {Object} Objet contenant les tendances pour chaque paramètre
    */
   function generateAxisTrend(paramList) {
     let dataTrends = {};
@@ -253,8 +279,11 @@ function Graphs({ typeCapteur, line = null }) {
   /**
    * Génère la configuration de tous les axes verticaux pour le graphique
    *
-   * @param paramList array[string]
-   * @returns {[{domain: (number|number)[], ticks: *[], unit: number}]}
+   *
+   * @inner
+   * @function generateAllYAxisConfigs
+   * @param {string[]} paramList - Liste des paramètres pour lesquels générer les configurations d'axes Y
+   * @returns {Object} Configurations des axes Y pour tous les paramètres
    */
   function generateAllYAxisConfigs(paramList) {
     let configs = {};
@@ -268,8 +297,10 @@ function Graphs({ typeCapteur, line = null }) {
 
   useEffect(() => {
     /**
-     * Récupère et génère l'ensemble des données nécéssaires pour le graphique
+     * Récupère et génère l'ensemble des données nécessaires pour le graphique
      *
+     * @async
+     * @function fetchData
      * @returns {Promise<void>}
      */
     async function fetchData() {
@@ -277,7 +308,7 @@ function Graphs({ typeCapteur, line = null }) {
       if (ChartData === null) {
         await getDataGraph("Aujourd'hui");
       }
-      if (ChartData.length !== 0) {
+      if (ChartData !== null && ChartData.length !== 0) {
         const { config, param } = generateConfig();
         if (ChartData.length > 1) {
           trendsData = generateAxisTrend(param.datas);
@@ -294,12 +325,12 @@ function Graphs({ typeCapteur, line = null }) {
     void fetchData();
   }, [ChartData]);
 
-  if (!ChartData || !ChartData[0] || Object.keys(ChartData[0]).length < 1) {
-    return <div>No data</div>;
-  }
-
   if (isLoading) {
     return <div>Chargement...</div>;
+  }
+
+  if (!ChartData || !ChartData[0] || Object.keys(ChartData[0]).length < 1) {
+    return <div>No data</div>;
   }
 
   return (

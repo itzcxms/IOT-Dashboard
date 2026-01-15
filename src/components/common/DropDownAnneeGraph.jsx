@@ -10,6 +10,12 @@ import { useAuth } from "@/context/useAuth.jsx";
 import generateCallsAPI from "@/functions/GestionnaireCallsAPI.jsx";
 
 /**
+ * @fileoverview Composant de gestion et d'affichage du menu dropdown de la liste des années disponibles pour les graphiques.
+ * @module DropDownAnneeGraph
+ * @since 1.0.0
+ */
+
+/**
  * Renders a dropdown menu for selecting a year for graph data visualization.
  *
  * @param {Object} params - The parameters for the component.
@@ -29,7 +35,9 @@ function DropDownAnneeGraph({ nom, data, getDataGraph }) {
     /**
      * Récupère la liste des années disponibles depuis l'API.
      *
-     * @returns {Promise<void>}
+     * @memberof DropDownAnneeGraph
+     * @inner
+     * @return {Promise<void>} A promise that resolves once the years data is fetched and state variables are updated.
      */
     async function fetchYears() {
       await setYears(

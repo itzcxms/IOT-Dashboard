@@ -11,7 +11,7 @@ function AppCard({ icone, titre, texte }) {
     <Card>
       <CardHeader className={"flex items-center"}>
         {icone}
-        <CardTitle className={"text-sm"}>{titre}</CardTitle>
+        <CardTitle className={"text-sm capitalize"}>{titre}</CardTitle>
       </CardHeader>
       <CardContent>
         <span className={"text-2xl"}>{texte}</span>

@@ -13,6 +13,12 @@ import { useAuth } from "@/context/useAuth.jsx";
 import { NumToMois } from "@/functions/GestionnaireDates.jsx";
 
 /**
+ * @fileoverview Composant de gestion et d'affichage du menu dropdown de la liste des mois disponibles pour les graphiques.
+ * @module DropDownMoisGraph
+ * @since 1.0.0
+ */
+
+/**
  * Component that renders a dropdown menu allowing users to select a specific month and year.
  * The dropdown is dynamically populated based on API data and can trigger actions upon selection.
  *
@@ -33,8 +39,11 @@ function DropDownMoisGraph({ nom, data, getDataGraph }) {
      * Récupère la liste des mois disponibles depuis l'API
      * et retire l'année sélectionnée de la liste si elle ne possède qu'un mois de données
      *
-     * @param data
-     * @returns {Promise<void>}
+     * @memberof DropDownMoisGraph
+     * @inner
+     * @param {Array} data - Array containing the current year and month. The first element is the year (as a string or number),
+     *                       and the second element is the current month (as a number).
+     * @return {Promise<void>} A promise that resolves when the month data has been successfully processed and state is updated.
      */
     async function fetchMonths(data) {
       let Months = await generateCallsAPI(
@@ -47,7 +56,6 @@ function DropDownMoisGraph({ nom, data, getDataGraph }) {
       if (currentMonth < 10) {
         currentMonth = "0" + currentMonth;
       }
-      console.log(typeof monthsKeys[monthsKeys.length - 1], typeof data[0]);
       if (
         Months[monthsKeys[monthsKeys.length - 1]].length === 1 &&
         parseInt(monthsKeys[monthsKeys.length - 1]) === parseInt(data[0])
@@ -65,8 +73,6 @@ function DropDownMoisGraph({ nom, data, getDataGraph }) {
       void fetchMonths(data);
     }
   });
-
-  console.log(data, months);
 
   return (
     <DropdownMenu>
@@ -87,7 +93,6 @@ function DropDownMoisGraph({ nom, data, getDataGraph }) {
       ) : (
         <DropdownMenuContent align="end">
           {months[0].map((key) => {
-            console.log(key);
             return (
               <div key={key + "-div"}>
                 <DropdownMenuLabel key={key + "-label"}>
@@ -99,10 +104,8 @@ function DropDownMoisGraph({ nom, data, getDataGraph }) {
                       parseInt(months[3]) === parseInt(key) &&
                       months[2] === mois
                     ) {
-                      console.log(mois);
                       return "";
                     } else {
-                      console.log(mois);
                       return (
                         <DropdownMenuItem
                           onClick={async () => getDataGraph(nom, key, mois)}

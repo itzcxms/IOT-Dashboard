@@ -1,9 +1,8 @@
 /**
- * Num -> Mois
+ * Converts a numeric value representing a month into its corresponding French month name.
  *
- * @param num number|string
- * @returns {*}
- * @constructor
+ * @param {number|string} num - The numeric representation of a month (1 to 12). Can be passed as a number or a string.
+ * @return {string|undefined} The French name of the month if the input is valid, otherwise undefined.
  */
 export function NumToMois(num) {
   num = parseInt(num);
@@ -25,11 +24,11 @@ export function NumToMois(num) {
 }
 
 /**
- * Mois -> Num
+ * Converts a French month name to its corresponding numerical representation.
  *
- * @param mois string
- * @returns {*}
- * @constructor
+ * @param {string} mois The name of the month in French (e.g., "Janvier", "Février").
+ * @return {string | undefined} The two-digit numerical representation of the month (e.g., "01" for "Janvier"),
+ * or undefined if the input does not match any French month name.
  */
 export function MoisToNum(mois) {
   const num = {
