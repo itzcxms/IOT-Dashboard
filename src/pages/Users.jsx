@@ -16,8 +16,10 @@ import {
   Filter,
 } from "lucide-react";
 import generateCallsAPI from "../functions/GestionnaireCallsAPI";
+import { useAuth } from "@/context/useAuth.jsx";
 
 function Users() {
+  const { token } = useAuth();
   const [users, setUsers] = useState([]);
   const [roles, setRoles] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -43,16 +45,10 @@ function Users() {
   const [error, setError] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
 
-  // Récupérer le token depuis localStorage ou votre système d'authentification
-  const getToken = () => {
-    return localStorage.getItem("token") || "";
-  };
-
   // Charger les utilisateurs
   const loadUsers = async () => {
     try {
       setLoading(true);
-      const token = getToken();
       const response = await generateCallsAPI(token, "GET", "/api/users/all");
 
       if (response && Array.isArray(response)) {
@@ -72,7 +68,6 @@ function Users() {
   // Charger les rôles
   const loadRoles = async () => {
     try {
-      const token = getToken();
       const response = await generateCallsAPI(token, "GET", "/api/roles/all");
 
       if (response && Array.isArray(response)) {
@@ -140,6 +135,7 @@ function Users() {
   const handleSubmit = async () => {
     setError("");
     setSuccessMessage("");
+    console.log(formData, editingUser);
 
     // Validation
     if (
@@ -158,7 +154,6 @@ function Users() {
     }
 
     try {
-      const token = getToken();
       let response;
 
       if (editingUser) {
@@ -204,7 +199,6 @@ function Users() {
     if (!deletingUser) return;
 
     try {
-      const token = getToken();
       const response = await generateCallsAPI(
         token,
         "DELETE",
