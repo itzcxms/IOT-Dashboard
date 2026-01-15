@@ -9,21 +9,32 @@ import {
 import { useAuth } from "@/context/useAuth.jsx";
 import generateCallsAPI from "@/functions/GestionnaireCallsAPI.jsx";
 
+/**
+ * Renders a dropdown menu for selecting a year for graph data visualization.
+ *
+ * @param {Object} params - The parameters for the component.
+ * @param {string} params.nom - The name identifier of the graph.
+ * @param {Array} params.data - The current data set which includes the selected year.
+ * @param {Function} params.getDataGraph - A function to retrieve the data for the graph based on the selected year.
+ * @return {JSX.Element} A dropdown menu that displays available years and allows selection for graph updates.
+ */
 function DropDownAnneeGraph({ nom, data, getDataGraph }) {
   const { token } = useAuth();
   const [years, setYears] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
 
-  async function getListOfYears() {
-    return generateCallsAPI(token, "GET", "/api/graphs/capteurs/year/all");
-  }
-
   const currentSelected = data[0];
 
   useEffect(() => {
+    /**
+     * Récupère la liste des années disponibles depuis l'API.
+     *
+     * @returns {Promise<void>}
+     */
     async function fetchYears() {
-      const Years = await getListOfYears();
-      await setYears(Years);
+      await setYears(
+        await generateCallsAPI(token, "GET", "/api/graphs/capteurs/year/all"),
+      );
       await setIsLoading(false);
     }
     if (isLoading) {

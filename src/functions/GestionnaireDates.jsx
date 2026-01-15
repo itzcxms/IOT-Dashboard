@@ -1,3 +1,10 @@
+/**
+ * Num -> Mois
+ *
+ * @param num number|string
+ * @returns {*}
+ * @constructor
+ */
 export function NumToMois(num) {
   num = parseInt(num);
   const mois = {
@@ -17,6 +24,13 @@ export function NumToMois(num) {
   return mois[num];
 }
 
+/**
+ * Mois -> Num
+ *
+ * @param mois string
+ * @returns {*}
+ * @constructor
+ */
 export function MoisToNum(mois) {
   const num = {
     Janvier: "01",

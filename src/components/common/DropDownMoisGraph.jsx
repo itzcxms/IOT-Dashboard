@@ -12,18 +12,36 @@ import generateCallsAPI from "@/functions/GestionnaireCallsAPI.jsx";
 import { useAuth } from "@/context/useAuth.jsx";
 import { NumToMois } from "@/functions/GestionnaireDates.jsx";
 
+/**
+ * Component that renders a dropdown menu allowing users to select a specific month and year.
+ * The dropdown is dynamically populated based on API data and can trigger actions upon selection.
+ *
+ * @param {Object} props - The props object.
+ * @param {string} props.nom - The name identifier for the dropdown, used for differentiation.
+ * @param {Array} props.data - An array containing the current year and month as strings or integers.
+ * @param {Function} props.getDataGraph - Callback function triggered when a specific month is selected from the dropdown.
+ *                                        It receives the name, year, and month as parameters.
+ * @return {JSX.Element} A dropdown interface with options to select months and years, dynamically populated based on API data.
+ */
 function DropDownMoisGraph({ nom, data, getDataGraph }) {
   const { token } = useAuth();
   const [months, setMonths] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
 
-  async function getListOfMonths() {
-    return generateCallsAPI(token, "GET", "/api/graphs/capteurs/month/all");
-  }
-
   useEffect(() => {
+    /**
+     * Récupère la liste des mois disponibles depuis l'API
+     * et retire l'année sélectionnée de la liste si elle ne possède qu'un mois de données
+     *
+     * @param data
+     * @returns {Promise<void>}
+     */
     async function fetchMonths(data) {
-      let Months = await getListOfMonths();
+      let Months = await generateCallsAPI(
+        token,
+        "GET",
+        "/api/graphs/capteurs/month/all",
+      );
       let monthsKeys = Object.keys(Months);
       let currentMonth = data[1];
       if (currentMonth < 10) {

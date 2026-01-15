@@ -7,6 +7,15 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu.jsx";
 
+/**
+ * Renders a dropdown menu component allowing users to select an option from a list of temperature-related data.
+ *
+ * @param {Object} params - An object containing the following keys:
+ * @param {string|null} params.nomSelection - The currently selected option, or `null` if no option is selected.
+ * @param {Object} params.data - An object containing key-value pairs representing the dropdown menu items.
+ * @param {Function} params.getDataGraph - A callback function that is invoked when an item in the dropdown menu is selected, passing the corresponding data value as an argument.
+ * @return {JSX.Element} A dropdown menu component for selecting temperature-related options.
+ */
 function DropDownTempGraph({ nomSelection, data, getDataGraph }) {
   return (
     <DropdownMenu>
