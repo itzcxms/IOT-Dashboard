@@ -15,7 +15,8 @@ import {
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Eye, EyeOff } from "lucide-react";
 
-import { useAuth } from "@/context/useAuth"; // ✅ on récupère login via le hook
+import { useAuth } from "@/context/useAuth";
+import generateCallsAPI from "@/functions/GestionnaireCallsAPI.jsx"; // ✅ on récupère login via le hook
 function Login() {
   const navigate = useNavigate();
   const { login } = useAuth(); // ✅ vient du AuthProvider
@@ -31,28 +32,18 @@ function Login() {
     setError("");
 
     try {
-      const res = await fetch(
-        `${import.meta.env.VITE_API_URL}/api/auth/login`,
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ email, password }),
-        },
-      );
+      const data = await generateCallsAPI(null, "POST", "/api/auth/login", {
+        email,
+        password,
+      });
 
-      const raw = await res.text();
-      const data = raw ? JSON.parse(raw) : null;
-
-      if (!res.ok) {
-        throw new Error(data?.message || raw || "Erreur serveur");
-      }
       const token = data?.token;
 
       if (!token) {
         throw new Error("Token manquant dans la réponse du serveur.");
       }
 
-      login(token); // ✅ méthode du AuthProvider
+      login(token);
       navigate("/dashboard");
     } catch (err) {
       console.error("Login KO:", err);

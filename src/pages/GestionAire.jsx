@@ -1,4 +1,3 @@
-import React from "react";
 import CardsList from "@/components/common/CardsList.jsx";
 import { Home } from "lucide-react";
 import Graphs from "@/components/common/Graphs.jsx";
