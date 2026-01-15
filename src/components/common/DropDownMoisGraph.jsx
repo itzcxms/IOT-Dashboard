@@ -22,25 +22,33 @@ function DropDownMoisGraph({ nom, data, getDataGraph }) {
   }
 
   useEffect(() => {
-    async function fetchMonths() {
-      const date = new Date();
-      const Months = await getListOfMonths();
-      let data = [Object.keys(Months), Months];
-      let currentMonth = date.getMonth() + 1;
+    async function fetchMonths(data) {
+      let Months = await getListOfMonths();
+      let monthsKeys = Object.keys(Months);
+      let currentMonth = data[1];
       if (currentMonth < 10) {
         currentMonth = "0" + currentMonth;
       }
-      data.push(currentMonth);
-      data.push(date.getFullYear());
-      console.log(data);
-      await setMonths(data);
+      console.log(typeof monthsKeys[monthsKeys.length - 1], typeof data[0]);
+      if (
+        Months[monthsKeys[monthsKeys.length - 1]].length === 1 &&
+        parseInt(monthsKeys[monthsKeys.length - 1]) === parseInt(data[0])
+      ) {
+        delete Months[monthsKeys[monthsKeys.length - 1]];
+        monthsKeys = Object.keys(Months);
+      }
+      let dataMonths = [monthsKeys, Months];
+      dataMonths.push(currentMonth);
+      dataMonths.push(data[0]);
+      await setMonths(dataMonths);
       await setIsLoading(false);
-      console.log(months);
     }
     if (isLoading) {
-      void fetchMonths();
+      void fetchMonths(data);
     }
   });
+
+  console.log(data, months);
 
   return (
     <DropdownMenu>
@@ -61,6 +69,7 @@ function DropDownMoisGraph({ nom, data, getDataGraph }) {
       ) : (
         <DropdownMenuContent align="end">
           {months[0].map((key) => {
+            console.log(key);
             return (
               <div key={key + "-div"}>
                 <DropdownMenuLabel key={key + "-label"}>
@@ -69,11 +78,13 @@ function DropDownMoisGraph({ nom, data, getDataGraph }) {
                 <DropdownMenuGroup key={key + "-group"}>
                   {months[1][key].map((mois) => {
                     if (
-                      parseInt(months[2]) === parseInt(key) &&
-                      months[3] === mois
+                      parseInt(months[3]) === parseInt(key) &&
+                      months[2] === mois
                     ) {
+                      console.log(mois);
                       return "";
                     } else {
+                      console.log(mois);
                       return (
                         <DropdownMenuItem
                           onClick={async () => getDataGraph(nom, key, mois)}
@@ -85,7 +96,7 @@ function DropDownMoisGraph({ nom, data, getDataGraph }) {
                     }
                   })}
                 </DropdownMenuGroup>
-                {data[0][data[0].length - 1] !== key ? (
+                {months[0][months[0].length - 1] !== key ? (
                   <DropdownMenuSeparator />
                 ) : (
                   ""

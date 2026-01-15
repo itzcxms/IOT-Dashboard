@@ -180,26 +180,40 @@ function Graphs({ typeCapteur, line = null }) {
       if (annee === null) {
         annee = date.getFullYear();
       }
-      tempDatas = hardData[key][annee];
-      await setCurrentSelection([key, Object.keys(hardData[key]), annee]);
+      tempDatas = await getDataAPI("POST", "/api/graphs/capteurs/year", {
+        type: typeCapteur,
+        annee: parseInt(annee),
+      });
+      tempDatas = tempDatas.donnees;
+      if (Object.keys(tempDatas).length === 1) {
+        let dataSup = await getDataAPI("POST", "/api/graphs/capteurs/year", {
+          type: typeCapteur,
+          annee: parseInt(annee) - 1,
+        });
+        dataSup = dataSup.donnees;
+        dataSup = dataSup[dataSup.length - 1];
+        dataSup = [dataSup];
+        tempDatas = dataSup.concat(tempDatas);
+      }
+      console.log(tempDatas);
+      await setCurrentSelection([key, annee]);
     } else if (key === "Mois") {
       if (annee === null) {
         annee = date.getFullYear();
       }
       if (mois === null) {
-        mois = NumToMois(date.getMonth() + 1);
+        mois = date.getMonth() + 1;
       }
-      tempDatas = hardData[key]["année"][annee][mois];
-      let moisDatas = {};
-      const moisKeys = Object.keys(hardData[key]["année"]);
-      for (let i = 0; i < moisKeys.length; i++) {
-        moisDatas[moisKeys[i]] = Object.keys(
-          hardData[key]["année"][moisKeys[i]],
-        );
-      }
-      await setCurrentSelection([key, moisKeys, moisDatas, annee, mois]);
+      tempDatas = await getDataAPI("POST", "/api/graphs/capteurs/month", {
+        type: typeCapteur,
+        annee: annee,
+        start: NumToMois(mois),
+        end: NumToMois(mois),
+      });
+      tempDatas = tempDatas.donnees;
+      await setCurrentSelection([key, annee, mois]);
     } else {
-      tempDatas = await getDataAPI("GET", "/api/graphs/capteurs/today", {
+      tempDatas = await getDataAPI("POST", "/api/graphs/capteurs/today", {
         type: typeCapteur,
       });
       await setCurrentSelection(key);
@@ -320,11 +334,14 @@ function Graphs({ typeCapteur, line = null }) {
 
   useEffect(() => {
     async function fetchData() {
+      let trendsData = trends;
       if (ChartData === null) {
         await getDataGraph("Aujourd'hui");
       }
       const { config, param } = generateConfig();
-      const trendsData = generateAxisTrend(param.datas);
+      if (ChartData.length > 1) {
+        trendsData = generateAxisTrend(param.datas);
+      }
       const yConfigs = generateAllYAxisConfigs(param.datas);
 
       await setChartConfig(config);
@@ -343,8 +360,6 @@ function Graphs({ typeCapteur, line = null }) {
   if (isLoading) {
     return <div>Chargement...</div>;
   }
-
-  console.log(currentSelection);
 
   return (
     <Card className="Card">
@@ -402,7 +417,11 @@ function Graphs({ typeCapteur, line = null }) {
               tickLine={false}
               axisLine={false}
               tickMargin={8}
-              tickFormatter={(value) => value.slice(0, 3)}
+              tickFormatter={(value) =>
+                currentSelection[0] === "Année"
+                  ? NumToMois(value).slice(0, 3)
+                  : value.slice(0, 3)
+              }
             />
             {params.datas.map((param, index) => {
               const axisConfig = yAxisConfigs[param];
