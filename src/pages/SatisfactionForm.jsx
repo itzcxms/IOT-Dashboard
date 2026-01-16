@@ -7,10 +7,9 @@ import {
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 import { Star } from "lucide-react";
-
-
 
 // Composant simple pour les étoiles
 const NotationEtoiles = ({ valeur, surChangement }) => {
@@ -22,16 +21,13 @@ const NotationEtoiles = ({ valeur, surChangement }) => {
         <button
           key={etoile}
           type="button"
-          // On appelle la fonction pour changer la note
           onClick={() => surChangement(etoile)}
-          // Gestion du survol pour l'effet visuel
           onMouseEnter={() => setValeurSurvol(etoile)}
           onMouseLeave={() => setValeurSurvol(0)}
           className="transition-transform hover:scale-110 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2 rounded"
         >
           <Star
             className={`h-10 w-10 transition-colors ${
-              // Si l'étoile est inférieure ou égale à la note (ou au survol), elle est jaune
               etoile <= (valeurSurvol || valeur)
                 ? "fill-amber-400 text-amber-400"
                 : "text-gray-300"
@@ -43,37 +39,53 @@ const NotationEtoiles = ({ valeur, surChangement }) => {
   );
 };
 
+// Options pour la question "Comment avez-vous connu La Loire à Vélo"
+const sourcesConnaissance = [
+  { id: "presse", label: "Presse écrite" },
+  { id: "television", label: "Télévision" },
+  { id: "sites-institutionnels", label: "Sites Internet institutionnels (office de tourisme, Loire à vélo...)" },
+  { id: "guides-voyage", label: "Guides de voyage (ex: le Routard)" },
+  { id: "reseaux-sociaux", label: "Réseaux Sociaux" },
+  { id: "recommandations", label: "Recommandations (amis, famille...)" },
+  { id: "autre", label: "Autre" },
+];
+
 export default function SatisfactionForm() {
   // État pour stocker toutes les données du formulaire
   const [donnees, setDonnees] = useState({
-    noteGlobale: 0,
-    proprete: "",
-    equipements: "",
-    recommandation: "",
-    commentaires: "",
-    nom: "",
-    email: "",
+    satisfactionAire: "",
+    satisfactionSecurite: "",
+    satisfactionServices: "",
+    sourcesConnaissance: [],
+    autreSource: "",
+    remarques: "",
   });
 
-  // Fonction pour mettre à jour une valeur
+  // Fonction pour mettre à jour une valeur simple
   const changerValeur = (nom, valeur) => {
     setDonnees({
-      ...donnees, // On garde les anciennes valeurs
-      [nom]: valeur, // On met à jour celle qui a changé
+      ...donnees,
+      [nom]: valeur,
     });
+  };
+
+  // Fonction pour gérer les checkboxes (sources de connaissance)
+  const toggleSource = (sourceId) => {
+    const sources = donnees.sourcesConnaissance;
+    if (sources.includes(sourceId)) {
+      changerValeur("sourcesConnaissance", sources.filter(s => s !== sourceId));
+    } else {
+      changerValeur("sourcesConnaissance", [...sources, sourceId]);
+    }
   };
 
   // Fonction appelée quand on clique sur "Envoyer"
   const envoyerFormulaire = (e) => {
-    e.preventDefault(); // Empêche le rechargement de la page
+    e.preventDefault();
 
-    // Petite validation simple
-    if (donnees.noteGlobale === 0) {
-      alert("Veuillez mettre une note globale (étoiles)");
-      return;
-    }
-    if (!donnees.proprete || !donnees.equipements || !donnees.recommandation) {
-      alert("Veuillez répondre à toutes les questions obligatoires");
+    // Validation simple
+    if (!donnees.satisfactionAire || !donnees.satisfactionSecurite || !donnees.satisfactionServices) {
+      alert("Veuillez répondre à toutes les questions de satisfaction obligatoires");
       return;
     }
 
@@ -87,7 +99,7 @@ export default function SatisfactionForm() {
       <div className="mx-auto max-w-3xl">
         <div className="mb-8 text-center">
           <h1 className="text-4xl font-serif text-emerald-900 mb-2">
-            Aire de Chaumont-sur-Loire
+            La Loire à Vélo
           </h1>
           <p className="text-lg text-gray-600 font-light">
             Votre avis compte ! Aidez-nous à améliorer votre expérience.
@@ -98,135 +110,138 @@ export default function SatisfactionForm() {
           <form onSubmit={envoyerFormulaire}>
             <CardContent className="space-y-8 pt-6">
               
-              {/* Question 1 : Note globale */}
+              {/* Question 1 : Satisfaction aire de repos */}
               <div className="space-y-3">
                 <Label className="text-slate-800 text-base font-medium">
-                  Comment évaluez-vous votre expérience globale ?
-                </Label>
-                <NotationEtoiles
-                  valeur={donnees.noteGlobale}
-                  surChangement={(valeur) => changerValeur("noteGlobale", valeur)}
-                />
-              </div>
-
-              {/* Question 2 : Propreté */}
-              <div className="space-y-3">
-                <Label className="text-slate-800 text-base font-medium">
-                  Comment évaluez-vous la propreté des lieux ?
+                  Évaluez votre niveau de satisfaction de l'aire de repos de Chaumont-sur-Loire ?
                 </Label>
                 <RadioGroup
-                  value={donnees.proprete}
-                  onValueChange={(valeur) => changerValeur("proprete", valeur)}
+                  value={donnees.satisfactionAire}
+                  onValueChange={(valeur) => changerValeur("satisfactionAire", valeur)}
                   className="space-y-3"
                 >
-                  <Label htmlFor="proprete-excellent" className="flex items-center space-x-3 rounded-lg border border-gray-200 bg-white p-4 hover:bg-gray-50 cursor-pointer">
-                    <RadioGroupItem value="excellent" id="proprete-excellent" />
+                  <Label htmlFor="aire-excellent" className="flex items-center space-x-3 rounded-lg border border-gray-200 bg-white p-4 hover:bg-gray-50 cursor-pointer">
+                    <RadioGroupItem value="excellent" id="aire-excellent" />
                     <span className="flex-1 text-slate-900">Excellent</span>
                   </Label>
-                  <Label htmlFor="proprete-bon" className="flex items-center space-x-3 rounded-lg border border-gray-200 bg-white p-4 hover:bg-gray-50 cursor-pointer">
-                    <RadioGroupItem value="bon" id="proprete-bon" />
+                  <Label htmlFor="aire-bon" className="flex items-center space-x-3 rounded-lg border border-gray-200 bg-white p-4 hover:bg-gray-50 cursor-pointer">
+                    <RadioGroupItem value="bon" id="aire-bon" />
                     <span className="flex-1 text-slate-900">Bon</span>
                   </Label>
-                  <Label htmlFor="proprete-passable" className="flex items-center space-x-3 rounded-lg border border-gray-200 bg-white p-4 hover:bg-gray-50 cursor-pointer">
-                    <RadioGroupItem value="passable" id="proprete-passable" />
+                  <Label htmlFor="aire-passable" className="flex items-center space-x-3 rounded-lg border border-gray-200 bg-white p-4 hover:bg-gray-50 cursor-pointer">
+                    <RadioGroupItem value="passable" id="aire-passable" />
                     <span className="flex-1 text-slate-900">Passable</span>
                   </Label>
-                  <Label htmlFor="proprete-mediocre" className="flex items-center space-x-3 rounded-lg border border-gray-200 bg-white p-4 hover:bg-gray-50 cursor-pointer">
-                    <RadioGroupItem value="mediocre" id="proprete-mediocre" />
+                  <Label htmlFor="aire-mediocre" className="flex items-center space-x-3 rounded-lg border border-gray-200 bg-white p-4 hover:bg-gray-50 cursor-pointer">
+                    <RadioGroupItem value="mediocre" id="aire-mediocre" />
                     <span className="flex-1 text-slate-900">Médiocre</span>
                   </Label>
                 </RadioGroup>
               </div>
 
-              {/* Question 3 : Équipements */}
+              {/* Question 2 : Sécurité */}
               <div className="space-y-3">
                 <Label className="text-slate-800 text-base font-medium">
-                  Comment évaluez-vous les équipements et installations ?
+                  Évaluez votre niveau de satisfaction sur la sécurité de l'itinéraire "La Loire à Vélo" ?
                 </Label>
                 <RadioGroup
-                  value={donnees.equipements}
-                  onValueChange={(valeur) => changerValeur("equipements", valeur)}
+                  value={donnees.satisfactionSecurite}
+                  onValueChange={(valeur) => changerValeur("satisfactionSecurite", valeur)}
                   className="space-y-3"
                 >
-                  <Label htmlFor="equipements-excellent" className="flex items-center space-x-3 rounded-lg border border-gray-200 bg-white p-4 hover:bg-gray-50 cursor-pointer">
-                    <RadioGroupItem value="excellent" id="equipements-excellent" />
+                  <Label htmlFor="securite-excellent" className="flex items-center space-x-3 rounded-lg border border-gray-200 bg-white p-4 hover:bg-gray-50 cursor-pointer">
+                    <RadioGroupItem value="excellent" id="securite-excellent" />
                     <span className="flex-1 text-slate-900">Excellent</span>
                   </Label>
-                  <Label htmlFor="equipements-bon" className="flex items-center space-x-3 rounded-lg border border-gray-200 bg-white p-4 hover:bg-gray-50 cursor-pointer">
-                    <RadioGroupItem value="bon" id="equipements-bon" />
+                  <Label htmlFor="securite-bon" className="flex items-center space-x-3 rounded-lg border border-gray-200 bg-white p-4 hover:bg-gray-50 cursor-pointer">
+                    <RadioGroupItem value="bon" id="securite-bon" />
                     <span className="flex-1 text-slate-900">Bon</span>
                   </Label>
-                  <Label htmlFor="equipements-passable" className="flex items-center space-x-3 rounded-lg border border-gray-200 bg-white p-4 hover:bg-gray-50 cursor-pointer">
-                    <RadioGroupItem value="passable" id="equipements-passable" />
+                  <Label htmlFor="securite-passable" className="flex items-center space-x-3 rounded-lg border border-gray-200 bg-white p-4 hover:bg-gray-50 cursor-pointer">
+                    <RadioGroupItem value="passable" id="securite-passable" />
                     <span className="flex-1 text-slate-900">Passable</span>
                   </Label>
-                  <Label htmlFor="equipements-mediocre" className="flex items-center space-x-3 rounded-lg border border-gray-200 bg-white p-4 hover:bg-gray-50 cursor-pointer">
-                    <RadioGroupItem value="mediocre" id="equipements-mediocre" />
+                  <Label htmlFor="securite-mediocre" className="flex items-center space-x-3 rounded-lg border border-gray-200 bg-white p-4 hover:bg-gray-50 cursor-pointer">
+                    <RadioGroupItem value="mediocre" id="securite-mediocre" />
                     <span className="flex-1 text-slate-900">Médiocre</span>
                   </Label>
                 </RadioGroup>
               </div>
 
-              {/* Question 4 : Recommandation */}
+              {/* Question 3 : Services */}
               <div className="space-y-3">
                 <Label className="text-slate-800 text-base font-medium">
-                  Recommanderiez-vous cet endroit à vos proches ?
+                  Évaluez votre satisfaction sur les services présents le long de l'itinéraire "La Loire à Vélo" ?
                 </Label>
                 <RadioGroup
-                  value={donnees.recommandation}
-                  onValueChange={(valeur) => changerValeur("recommandation", valeur)}
+                  value={donnees.satisfactionServices}
+                  onValueChange={(valeur) => changerValeur("satisfactionServices", valeur)}
                   className="space-y-3"
                 >
-                  <Label htmlFor="recommandation-oui" className="flex items-center space-x-3 rounded-lg border border-gray-200 bg-white p-4 hover:bg-gray-50 cursor-pointer">
-                    <RadioGroupItem value="oui" id="recommandation-oui" />
-                    <span className="flex-1 text-slate-900">Oui, certainement</span>
+                  <Label htmlFor="services-excellent" className="flex items-center space-x-3 rounded-lg border border-gray-200 bg-white p-4 hover:bg-gray-50 cursor-pointer">
+                    <RadioGroupItem value="excellent" id="services-excellent" />
+                    <span className="flex-1 text-slate-900">Excellent</span>
                   </Label>
-                  <Label htmlFor="recommandation-non" className="flex items-center space-x-3 rounded-lg border border-gray-200 bg-white p-4 hover:bg-gray-50 cursor-pointer">
-                    <RadioGroupItem value="non" id="recommandation-non" />
-                    <span className="flex-1 text-slate-900">Non</span>
+                  <Label htmlFor="services-bon" className="flex items-center space-x-3 rounded-lg border border-gray-200 bg-white p-4 hover:bg-gray-50 cursor-pointer">
+                    <RadioGroupItem value="bon" id="services-bon" />
+                    <span className="flex-1 text-slate-900">Bon</span>
+                  </Label>
+                  <Label htmlFor="services-passable" className="flex items-center space-x-3 rounded-lg border border-gray-200 bg-white p-4 hover:bg-gray-50 cursor-pointer">
+                    <RadioGroupItem value="passable" id="services-passable" />
+                    <span className="flex-1 text-slate-900">Passable</span>
+                  </Label>
+                  <Label htmlFor="services-mediocre" className="flex items-center space-x-3 rounded-lg border border-gray-200 bg-white p-4 hover:bg-gray-50 cursor-pointer">
+                    <RadioGroupItem value="mediocre" id="services-mediocre" />
+                    <span className="flex-1 text-slate-900">Médiocre</span>
                   </Label>
                 </RadioGroup>
               </div>
 
-              {/* Question 5 : Commentaires */}
+              {/* Question 4 : Sources de connaissance (checkboxes) */}
               <div className="space-y-3">
                 <Label className="text-slate-800 text-base font-medium">
-                  Commentaires ou suggestions (optionnel)
+                  Comment avez-vous eu connaissance de "La Loire à Vélo", et qui vous a donné envie de la découvrir ?
+                  <span className="text-gray-500 font-normal text-sm block mt-1">(plusieurs réponses possibles)</span>
+                </Label>
+                <div className="space-y-3">
+                  {sourcesConnaissance.map((source) => (
+                    <Label 
+                      key={source.id}
+                      htmlFor={`source-${source.id}`} 
+                      className="flex items-center space-x-3 rounded-lg border border-gray-200 bg-white p-4 hover:bg-gray-50 cursor-pointer"
+                    >
+                      <Checkbox 
+                        id={`source-${source.id}`}
+                        checked={donnees.sourcesConnaissance.includes(source.id)}
+                        onCheckedChange={() => toggleSource(source.id)}
+                      />
+                      <span className="flex-1 text-slate-900">{source.label}</span>
+                    </Label>
+                  ))}
+                </div>
+                
+                {/* Champ "Autre" conditionnel */}
+                {donnees.sourcesConnaissance.includes("autre") && (
+                  <Input
+                    placeholder="Précisez..."
+                    className="mt-3 bg-white text-slate-800 border-gray-200 focus-visible:ring-emerald-500"
+                    value={donnees.autreSource}
+                    onChange={(e) => changerValeur("autreSource", e.target.value)}
+                  />
+                )}
+              </div>
+
+              {/* Question 5 : Remarques et suggestions */}
+              <div className="space-y-3">
+                <Label className="text-slate-800 text-base font-medium">
+                  Avez-vous des remarques ou suggestions sur votre expérience le long de "La Loire à Vélo" ?
                 </Label>
                 <Textarea
-                  placeholder="Partagez vos commentaires..."
+                  placeholder="Partagez vos remarques et suggestions..."
                   className="min-h-[120px] text-slate-800 bg-white border-gray-200 focus-visible:ring-emerald-500"
-                  value={donnees.commentaires}
-                  onChange={(e) => changerValeur("commentaires", e.target.value)}
+                  value={donnees.remarques}
+                  onChange={(e) => changerValeur("remarques", e.target.value)}
                 />
-              </div>
-
-              {/* Section optionnelle */}
-              <div className="border-t border-gray-200 pt-6">
-                <h3 className="text-lg font-medium text-slate-800 mb-4">
-                  Informations optionnelles
-                </h3>
-                <div className="grid gap-6 sm:grid-cols-2">
-                  <div className="space-y-2">
-                    <Label className="text-slate-700">Nom (optionnel)</Label>
-                    <Input
-                      placeholder="Votre nom"
-                      className="bg-white text-slate-800 border-gray-200 focus-visible:ring-emerald-500"
-                      value={donnees.nom}
-                      onChange={(e) => changerValeur("nom", e.target.value)}
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label className="text-slate-700">Email (optionnel)</Label>
-                    <Input
-                      type="email"
-                      placeholder="votre@email.com"
-                      className="bg-white text-slate-800 border-gray-200 focus-visible:ring-emerald-500"
-                      value={donnees.email}
-                      onChange={(e) => changerValeur("email", e.target.value)}
-                    />
-                  </div>
-                </div>
               </div>
 
             </CardContent>
@@ -249,3 +264,4 @@ export default function SatisfactionForm() {
     </main>
   );
 }
+

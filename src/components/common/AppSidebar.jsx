@@ -1,4 +1,18 @@
-import { Home, Settings, User2, ChevronUp } from "lucide-react";
+import {
+  Home,
+  Settings,
+  User2,
+  ChevronUp,
+  ChevronDown,
+  LayoutDashboard,
+  Droplets,
+  AlertTriangle,
+  ClipboardList,
+  Users,
+  UserPlus,
+  Shield,
+  BarChart3,
+} from "lucide-react";
 
 import {
   Sidebar,
@@ -6,7 +20,6 @@ import {
   SidebarFooter,
   SidebarGroup,
   SidebarGroupContent,
-  SidebarGroupLabel,
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
@@ -22,67 +35,85 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from "@/components/ui/collapsible";
+
 import { useAuth } from "@/context/useAuth.jsx";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
+import { useState } from "react";
+import { cn } from "@/lib/utils";
 
-const items_tableau_de_bord = [
+// Menu structure with collapsible groups
+const menuItems = [
   {
-    title: "Tout voir",
-    url: "/dashboard",
-    icon: Home,
+    title: "Dashboard",
+    icon: LayoutDashboard,
+    children: [
+      { title: "Tout voir", url: "/dashboard", icon: Home },
+      { title: "Gestion de l'aire", url: "/gestion-de-l-aire", icon: ClipboardList },
+      { title: "Savon", url: "/savon", icon: Droplets },
+      { title: "Zone Inondable", url: "/zone-inondable", icon: AlertTriangle },
+    ],
   },
   {
-    title: "Gestion de l'aire",
-    url: "/gestion-de-l-aire",
-    icon: Home,
+    title: "Satisfaction",
+    icon: BarChart3,
+    children: [
+      { title: "Analyse", url: "/analyse-satisfaction", icon: BarChart3 },
+    ],
   },
   {
-    title: "Zone Inondable",
-    url: "/zone-inondable",
-    icon: Home,
-  },
-];
-
-const items_utilisateurs = [
-  {
-    title: "Liste des utilisateurs",
-    url: "/admin/liste-utilisateurs",
-    icon: User2,
-  },
-  {
-    title: "Création de compte",
-    url: "/admin/creer-compte",
-    icon: User2,
-  },
-  {
-    title: "Gestion des permissions",
-    url: "/admin/permissions",
-    icon: User2,
+    title: "Utilisateurs",
+    icon: Users,
+    children: [
+      { title: "Liste des utilisateurs", url: "/admin/liste-utilisateurs", icon: Users },
+      { title: "Création de compte", url: "/admin/creer-compte", icon: UserPlus },
+      { title: "Gestion des permissions", url: "/admin/permissions", icon: Shield },
+    ],
   },
 ];
 
 const user_dropdown = [
-  {
-    title: "Compte",
-    url: "/compte/",
-    icon: Settings,
-  },
-  {
-    title: "Paramètres du compte",
-    url: "/compte/details",
-    icon: Settings,
-  },
-  {
-    title: "Déconnexion",
-    url: "DECO",
-  },
+  { title: "Compte", url: "/compte/", icon: User2 },
+  { title: "Paramètres du compte", url: "/compte/details", icon: Settings },
+  { title: "Déconnexion", url: "DECO" },
 ];
 
 export function AppSidebar() {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
+  
+  // Track which menus are open
+  const [openMenus, setOpenMenus] = useState(() => {
+    // Open the menu that contains the current path by default
+    const initial = {};
+    menuItems.forEach((item) => {
+      const isActive = item.children?.some((child) => location.pathname === child.url);
+      if (isActive) {
+        initial[item.title] = true;
+      }
+    });
+    return initial;
+  });
 
-  console.log(user);
+  function toggleMenu(title) {
+    setOpenMenus((prev) => ({
+      ...prev,
+      [title]: !prev[title],
+    }));
+  }
+
+  function isMenuActive(item) {
+    return item.children?.some((child) => location.pathname === child.url);
+  }
+
+  function isItemActive(url) {
+    return location.pathname === url;
+  }
 
   function deconnexion() {
     logout();
@@ -91,70 +122,108 @@ export function AppSidebar() {
 
   return (
     <Sidebar>
-      <SidebarContent>
+      <SidebarContent className="py-4">
         <SidebarGroup>
-          <SidebarGroupLabel>IoT - Dashboard</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
-              <SidebarMenuItem>
-                <SidebarMenuButton asChild>
-                  <div>
-                    <Home />
-                    <span>Tableau de bord</span>
-                  </div>
-                </SidebarMenuButton>
+              {menuItems.map((item) => {
+                const menuActive = isMenuActive(item);
+                const isOpen = openMenus[item.title] || false;
 
-                <SidebarMenuSub>
-                  {items_tableau_de_bord.map((item) => (
-                    <SidebarMenuSubItem key={item.title}>
-                      <SidebarMenuSubButton asChild>
-                        <a href={item.url}>
-                          <item.icon />
+                return (
+                  <Collapsible
+                    key={item.title}
+                    open={isOpen}
+                    onOpenChange={() => toggleMenu(item.title)}
+                  >
+                    <SidebarMenuItem>
+                      <CollapsibleTrigger asChild>
+                        <SidebarMenuButton
+                          className={cn(
+                            "relative flex items-center gap-3 px-4 py-6 text-base font-medium transition-colors cursor-pointer",
+                            menuActive && "text-sidebar-primary"
+                          )}
+                        >
+                          <item.icon className="h-5 w-5" />
                           <span>{item.title}</span>
-                        </a>
-                      </SidebarMenuSubButton>
-                    </SidebarMenuSubItem>
-                  ))}
-                </SidebarMenuSub>
-              </SidebarMenuItem>
+                          <ChevronDown
+                            className={cn(
+                              "ml-auto h-4 w-4 transition-transform duration-200",
+                              isOpen && "rotate-180"
+                            )}
+                          />
+                        </SidebarMenuButton>
+                      </CollapsibleTrigger>
 
-              <SidebarMenuItem>
-                <SidebarMenuButton asChild>
-                  <div>
-                    <User2 />
-                    <span>Utilisateurs</span>
-                  </div>
-                </SidebarMenuButton>
-
-                <SidebarMenuSub>
-                  {items_utilisateurs.map((item) => (
-                    <SidebarMenuSubItem key={item.title}>
-                      <SidebarMenuSubButton asChild>
-                        <a href={item.url}>
-                          <item.icon />
-                          <span>{item.title}</span>
-                        </a>
-                      </SidebarMenuSubButton>
-                    </SidebarMenuSubItem>
-                  ))}
-                </SidebarMenuSub>
-              </SidebarMenuItem>
+                      <CollapsibleContent>
+                        <SidebarMenuSub className="ml-2">
+                          {item.children?.map((child) => {
+                            const childActive = isItemActive(child.url);
+                            return (
+                              <SidebarMenuSubItem key={child.title}>
+                                <SidebarMenuSubButton
+                                  asChild
+                                  isActive={childActive}
+                                  className={cn(
+                                    "relative py-5 text-sm transition-colors px-3",
+                                    childActive && "font-medium"
+                                  )}
+                                >
+                                  <a href={child.url}>
+                                    {/* Barre a gauche */}
+                                    {childActive && (
+                                      <span className="fixed left-0 h-full w-1 rounded-r-full bg-sidebar-primary" />
+                                    )}
+                                    <span>{child.title}</span>
+                                  </a>
+                                </SidebarMenuSubButton>
+                              </SidebarMenuSubItem>
+                            );
+                          })}
+                        </SidebarMenuSub>
+                      </CollapsibleContent>
+                    </SidebarMenuItem>
+                  </Collapsible>
+                );
+              })}
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
       </SidebarContent>
-      <SidebarFooter>
-        <SidebarMenu>
+
+      <SidebarFooter className="border-t border-sidebar-border py-4">
+        <SidebarMenu className="gap-4">
+          <SidebarMenuItem>
+            <SidebarMenuButton
+              asChild
+              className={cn(
+                "flex items-center gap-3 px-4 py-6 text-sm font-medium",
+                isItemActive("/compte/details") && "text-sidebar-primary"
+              )}
+            >
+              <a href="/compte/details">
+                <Settings className="h-4 w-4" />
+                <span>Paramètres</span>
+              </a>
+            </SidebarMenuButton>
+          </SidebarMenuItem>
+
           <SidebarMenuItem>
             <DropdownMenu>
-              <SidebarMenuButton asChild>
-                <DropdownMenuTrigger>
-                  <User2 />
-                  <span className="ml-2">
-                    {" "}
-                    {user?.prenom} {user?.nom}{" "}
-                  </span>
-                  <ChevronUp className="ml-auto" />
+              <SidebarMenuButton asChild className="px-4 py-2.5">
+                <DropdownMenuTrigger className="flex items-center gap-3 w-full">
+                  <div className="flex h-8 w-8 items-center justify-center rounded-full bg-sidebar-accent">
+                    <User2 className="h-4 w-4" />
+                  </div>
+                  <div className="flex flex-col items-start text-left">
+                    <span className="text-sm font-medium">
+                      {user?.prenom} {user?.nom}
+                    </span>
+                    <span className="text-xs text-muted-foreground">
+                      {user?.email || "Utilisateur"}
+                    </span>
+                  </div>
+                  <ChevronUp className="ml-auto h-4 w-4" />
                 </DropdownMenuTrigger>
               </SidebarMenuButton>
               <DropdownMenuContent
@@ -165,13 +234,20 @@ export function AppSidebar() {
                   if (item.url === "DECO") {
                     return (
                       <DropdownMenuItem key={item.title}>
-                        <p onClick={() => deconnexion()}>{item.title}</p>
+                        <button
+                          onClick={() => deconnexion()}
+                          className="w-full text-left"
+                        >
+                          {item.title}
+                        </button>
                       </DropdownMenuItem>
                     );
                   } else {
                     return (
                       <DropdownMenuItem key={item.title}>
-                        <a href={item.url}>{item.title}</a>
+                        <a href={item.url} className="w-full">
+                          {item.title}
+                        </a>
                       </DropdownMenuItem>
                     );
                   }
