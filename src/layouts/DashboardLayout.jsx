@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { Outlet } from "react-router-dom";
 import {
   SidebarProvider,
@@ -9,8 +8,6 @@ import { AppSidebar } from "@/components/common/AppSidebar.jsx";
 import { Separator } from "@/components/ui/separator";
 
 export default function DashboardLayout() {
-  const [title, setTitle] = useState("Mon Application");
-
   return (
     <SidebarProvider>
       {/* La Sidebar se met directement dans le Provider */}
@@ -22,11 +19,11 @@ export default function DashboardLayout() {
         <header className="flex h-16 shrink-0 items-center gap-2 border-b px-4">
           <SidebarTrigger className="-ml-1" />
           <Separator orientation="vertical" className="mr-2 h-4" />
-          <h1 className="font-semibold text-lg">{title}</h1>
+          <h1 className="font-semibold text-lg">Aire de Chaumont-sur-Loire</h1>
         </header>
 
         <main className="flex-1 p-6">
-          <Outlet context={{ setTitle }} />
+          <Outlet />
         </main>
       </SidebarInset>
     </SidebarProvider>

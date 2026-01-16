@@ -25,7 +25,7 @@ function CardsList({ type }) {
       } else {
         tempTexte = data[keys[i]];
       }
-      tempCards.push({ icone: Home, titre: keys[i], texte: tempTexte });
+      tempCards.push({ titre: keys[i], texte: tempTexte, sousTitre: "" });
     }
     setCards(tempCards);
   }
@@ -39,9 +39,9 @@ function CardsList({ type }) {
       {cards.map((item, key) => (
         <AppCard
           key={key}
-          icone={<item.icone />}
           titre={item.titre}
           texte={item.texte}
+          sousTitre={item.sousTitre}
         />
       ))}
       <div
