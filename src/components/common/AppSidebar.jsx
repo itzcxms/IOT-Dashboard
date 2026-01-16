@@ -9,7 +9,6 @@ import {
   AlertTriangle,
   ClipboardList,
   Users,
-  UserPlus,
   Shield,
   BarChart3,
 } from "lucide-react";
@@ -70,7 +69,6 @@ const menuItems = [
     icon: Users,
     children: [
       { title: "Liste des utilisateurs", url: "/admin/liste-utilisateurs", icon: Users },
-      { title: "Création de compte", url: "/admin/creer-compte", icon: UserPlus },
       { title: "Gestion des permissions", url: "/admin/permissions", icon: Shield },
     ],
   },
