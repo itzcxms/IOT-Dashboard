@@ -7,7 +7,7 @@ const discoveryPoints = [
     id: 1,
     label: "Déguster",
     subtitle: "Un territoire viticole",
-    position: { top: 38, left: 57 },
+    position: { top: 45, left: 57 },
     content: `Territoire viticole : Découverte de l'AOC Touraine Mesland
 
 Le vignoble de Touraine Mesland s'étend sur les coteaux dominant la Loire, offrant des vins d'exception dans un cadre naturel préservé. Cette appellation produit des vins rouges, rosés et blancs caractéristiques du terroir ligérien.`,
@@ -19,7 +19,7 @@ Le vignoble de Touraine Mesland s'étend sur les coteaux dominant la Loire, offr
     id: 2,
     label: "Protéger",
     subtitle: "Un fleuve sauvage",
-    position: { top: 52, left: 42 },
+    position: { top: 65, left: 50 },
     content: `Un fleuve sauvage protégé - Le Val de Loire patrimoine mondial
 
 Le Val de Loire, de Sully-sur-Loire (Loiret) à Chalonnes-sur-Loire (Maine-et-Loire), est inscrit sur la Liste du patrimoine mondial de l'Unesco depuis le 30 novembre 2000.
@@ -41,7 +41,7 @@ Accompagnés de Beaver, la jeune castor passionnée de dessin naturaliste, vous 
     id: 3,
     label: "Découvrir",
     subtitle: "Un site marqué par l'histoire humaine",
-    position: { top: 62, left: 18 },
+    position: { top: 72, left: 25 },
     content: `Port de Chaumont-sur-Loire
 
 Chaumont-sur-Loire bénéficie depuis 1792 d'un port construit. La présence d'un bac reliant Chaumont-sur-Loire et Onzain est attestée depuis le Moyen-Age. Il a fonctionné jusqu'en 1858, date de la construction d'un pont suspendu sur la Loire.
@@ -61,7 +61,7 @@ La perception de l'espace, des lumières et des sons évoluent et diffèrent lor
     id: 4,
     label: "Explorer",
     subtitle: "La Loire à vélo",
-    position: { top: 38, left: 82 },
+    position: { top: 58, left: 82 },
     content: `La Loire à Vélo : un voyage mythique au cœur du dernier fleuve sauvage d'Europe
 
 La Loire à Vélo est l'itinéraire cyclable touristique le plus long de France, offrant une aventure unique sur près de 900 km le long du majestueux fleuve de la Loire.
