@@ -8,6 +8,17 @@ import {
 import { useAuth } from "@/context/useAuth.jsx";
 import generateCallsAPI from "@/functions/GestionnaireCallsAPI.jsx";
 
+/**
+ * @fileoverview Composant de gestion des permissions et rôles utilisateur
+ * @module Permissions
+ * @since 1.0.0
+ */
+
+/**
+ * Composant principal pour la gestion des permissions
+ * Affiche les rôles disponibles et permet de gérer les droits associés
+ * @returns {React.JSX.Element} Le composant de gestion des permissions
+ */
 function Permissions() {
   const { token } = useAuth();
   const [roles, setRoles] = useState(null);
@@ -21,12 +32,31 @@ function Permissions() {
     admin: "Administrateur",
     Seuils: "Seuils",
   };
-  // const [infos, setInfos] = useState([]);
+
+  /**
+   * Récupère la liste de tous les rôles disponibles depuis l'API
+   * @memberof module:Permissions
+   * @inner
+   * @async
+   * @function getRoles
+   * @returns {Promise<Object[]>} Promesse qui résout vers un tableau des rôles
+   * @throws {Error} Erreur si la requête API échoue
+   */
 
   async function getRoles() {
     return generateCallsAPI(token, "GET", "/api/roles/all");
   }
 
+  /**
+   * Récupère les droits associés à un rôle spécifique
+   * @memberof module:Permissions
+   * @inner
+   * @async
+   * @function getDroits
+   * @param {string} role - L'identifiant du rôle pour lequel récupérer les droits
+   * @returns {Promise<Object[]>} Promesse qui résout vers les droits du rôle
+   * @throws {Error} Erreur si la requête API échoue
+   */
   async function getDroits(role) {
     return generateCallsAPI(
       token,
@@ -35,6 +65,22 @@ function Permissions() {
     );
   }
 
+  /**
+   * Met à jour l'état d'un droit spécifique pour un rôle donné
+   * Effectue la mise à jour en base de données et met à jour l'état local
+   * @memberof module:Permissions
+   * @inner
+   * @async
+   * @function updateDroit
+   * @param {string} idDroit - L'identifiant du droit à modifier
+   * @param {string} idRole - L'identifiant du rôle concerné
+   * @param {boolean} active - Le nouvel état actif/inactif du droit
+   * @param {Object} paramsSup - Paramètres supplémentaires pour la mise à jour locale
+   * @param {number} paramsSup.categorie - Index de la catégorie dans le tableau des droits
+   * @param {number} paramsSup.key - Index du droit dans la catégorie
+   * @returns {Promise<void>}
+   * @throws {Error} Erreur si la requête API échoue
+   */
   async function updateDroit(idDroit, idRole, active, paramsSup) {
     // POST : Update droit pour le role en BDD
     void (await generateCallsAPI(
@@ -51,6 +97,16 @@ function Permissions() {
     await setDroits(tempDroits);
   }
 
+  /**
+   * Met à jour le rôle actuellement sélectionné
+   * Recherche le rôle par son ID dans la liste des rôles disponibles
+   * @memberof module:Permissions
+   * @inner
+   * @async
+   * @function updateRole
+   * @param {string} idRole - L'identifiant du rôle à sélectionner
+   * @returns {Promise<void>}
+   */
   async function updateRole(idRole) {
     for (let i = 0; i < roles.length; i++) {
       if (roles[i]._id === idRole) {
@@ -60,6 +116,15 @@ function Permissions() {
   }
 
   useEffect(() => {
+    /**
+     * Fonction interne pour récupérer et initialiser les données
+     * Charge les rôles, sélectionne le premier rôle par défaut et récupère ses droits
+     * @memberof module:Permissions
+     * @inner
+     * @async
+     * @function fetchData
+     * @returns {Promise<void>}
+     */
     async function fetchData() {
       let tempRoles = roles;
       let tempDroits = droits;
