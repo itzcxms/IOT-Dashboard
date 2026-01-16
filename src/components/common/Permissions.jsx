@@ -5,271 +5,86 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card.jsx";
+import { useAuth } from "@/context/useAuth.jsx";
+import generateCallsAPI from "@/functions/GestionnaireCallsAPI.jsx";
 
 function Permissions() {
-  const [roles] = useState([
-    "Defaut",
-    "Gestionnaire",
-    "Entretien",
-    "Admin Entretien",
-    "Admin Gestion",
-    "Super Admin",
-  ]);
+  const { token } = useAuth();
+  const [roles, setRoles] = useState(null);
   const [currentRole, setCurrentRole] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
-  const [toutDroits, setToutDroits] = useState({
-    Defaut: [
-      [
-        "Savon",
-        [
-          {
-            libelle: "droit1",
-            description: "Description droit1",
-            active: true,
-          },
-          {
-            libelle: "droit2",
-            description: "Description droit2",
-            active: false,
-          },
-        ],
-      ],
-      [
-        "Gestion de l'aire",
-        [
-          {
-            libelle: "droit3",
-            description: "Description droit3",
-            active: false,
-          },
-          {
-            libelle: "droit4",
-            description: "Description droit4",
-            active: true,
-          },
-        ],
-      ],
-    ],
-    Gestionnaire: [
-      [
-        "Savon",
-        [
-          {
-            libelle: "droit1",
-            description: "Description droit1",
-            active: true,
-          },
-          {
-            libelle: "droit2",
-            description: "Description droit2",
-            active: false,
-          },
-        ],
-      ],
-      [
-        "Gestion de l'aire",
-        [
-          {
-            libelle: "droit3",
-            description: "Description droit3",
-            active: false,
-          },
-          {
-            libelle: "droit4",
-            description: "Description droit4",
-            active: true,
-          },
-        ],
-      ],
-    ],
-    Entretien: [
-      [
-        "Savon",
-        [
-          {
-            libelle: "droit1",
-            description: "Description droit1",
-            active: true,
-          },
-          {
-            libelle: "droit2",
-            description: "Description droit2",
-            active: false,
-          },
-        ],
-      ],
-      [
-        "Gestion de l'aire",
-        [
-          {
-            libelle: "droit3",
-            description: "Description droit3",
-            active: false,
-          },
-          {
-            libelle: "droit4",
-            description: "Description droit4",
-            active: true,
-          },
-        ],
-      ],
-    ],
-    "Admin Entretien": [
-      [
-        "Savon",
-        [
-          {
-            libelle: "droit1",
-            description: "Description droit1",
-            active: true,
-          },
-          {
-            libelle: "droit2",
-            description: "Description droit2",
-            active: false,
-          },
-        ],
-      ],
-      [
-        "Gestion de l'aire",
-        [
-          {
-            libelle: "droit3",
-            description: "Description droit3",
-            active: false,
-          },
-          {
-            libelle: "droit4",
-            description: "Description droit4",
-            active: true,
-          },
-        ],
-      ],
-    ],
-    "Admin Gestion": [
-      [
-        "Savon",
-        [
-          {
-            libelle: "droit1",
-            description: "Description droit1",
-            active: true,
-          },
-          {
-            libelle: "droit2",
-            description: "Description droit2",
-            active: false,
-          },
-        ],
-      ],
-      [
-        "Gestion de l'aire",
-        [
-          {
-            libelle: "droit3",
-            description: "Description droit3",
-            active: false,
-          },
-          {
-            libelle: "droit4",
-            description: "Description droit4",
-            active: true,
-          },
-        ],
-      ],
-    ],
-    "Super Admin": [
-      [
-        "Savon",
-        [
-          {
-            libelle: "droit1",
-            description: "Description droit1",
-            active: true,
-          },
-          {
-            libelle: "droit2",
-            description: "Description droit2",
-            active: true,
-          },
-        ],
-      ],
-      [
-        "Gestion de l'aire",
-        [
-          {
-            libelle: "droit3",
-            description: "Description droit3",
-            active: true,
-          },
-          {
-            libelle: "droit4",
-            description: "Description droit4",
-            active: true,
-          },
-        ],
-      ],
-    ],
-  });
   const [droits, setDroits] = useState(null);
+  const nomCategorie = {
+    users: "Utilisateures",
+    roles: "Rôles",
+    permissions: "Permissions",
+    admin: "Administrateur",
+    Seuils: "Seuils",
+  };
   // const [infos, setInfos] = useState([]);
 
-  function getDroits(role) {
-    const keys = Object.keys(toutDroits);
-    if (keys.includes(role)) {
-      return [...toutDroits[role]];
-    } else {
-      return [...toutDroits["Defaut"]];
-    }
-    // A remplacer
-    // GET : Droits
+  async function getRoles() {
+    return generateCallsAPI(token, "GET", "/api/roles/all");
   }
 
-  function updateDroits(indexType, indexDroit) {
-    let tempDroits = [...droits];
-    // let tempInfos = [...infos];
-    // const Info =
-    //   "Le droit : " +
-    //   tempDroits[indexType][1][indexDroit].libelle +
-    //   " est maintenant " +
-    //   (!tempDroits[indexType][1][indexDroit].active ? "activé" : "désactivé") +
-    //   " pour le rôle : " +
-    //   currentRole;
-    // tempInfos.push(Info);
-    // setInfos(tempInfos);
-    tempDroits[indexType][1][indexDroit].active =
-      !tempDroits[indexType][1][indexDroit].active;
-    setDroits(tempDroits);
+  async function getDroits(role) {
+    return generateCallsAPI(
+      token,
+      "GET",
+      "/api/roles/" + role + "/permissions",
+    );
+  }
+
+  async function updateDroit(idDroit, idRole, active, paramsSup) {
     // POST : Update droit pour le role en BDD
+    void (await generateCallsAPI(
+      token,
+      "POST",
+      "/api/roles/" + idRole + "/permissions/" + idDroit,
+      {
+        actif: active,
+      },
+    ));
+
+    let tempDroits = [...droits];
+    tempDroits[paramsSup.categorie][1][paramsSup.key].active = active;
+    await setDroits(tempDroits);
   }
 
-  function updateRole(role) {
-    let tempDroits = { ...toutDroits };
-    tempDroits[currentRole] = [...droits];
-    // let tempInfos = [...infos];
-    // const Info = "Passage au rôle : " + role;
-    // tempInfos.push(Info);
-    // setInfos(tempInfos);
-    setToutDroits(tempDroits);
-    setCurrentRole(role);
-    setDroits(getDroits(role));
+  async function updateRole(idRole) {
+    for (let i = 0; i < roles.length; i++) {
+      if (roles[i]._id === idRole) {
+        await setCurrentRole(roles[i]);
+      }
+    }
   }
 
   useEffect(() => {
-    function fetchData() {
-      if (currentRole === null) {
-        const futurRole = roles[0];
-        setCurrentRole(futurRole);
-        setDroits(getDroits(futurRole));
-      } else {
-        setDroits(getDroits(currentRole));
+    async function fetchData() {
+      let tempRoles = roles;
+      let tempDroits = droits;
+      let tempCurrentRole = currentRole;
+      if (tempRoles === null) {
+        tempRoles = await getRoles();
       }
-      setIsLoading(false);
+      if (
+        currentRole === null &&
+        (tempRoles !== null || roles !== null) &&
+        tempDroits === null
+      ) {
+        const futurRole = tempRoles !== null ? tempRoles[0] : roles[0];
+        tempCurrentRole = futurRole;
+        tempDroits = await getDroits(futurRole._id);
+      } else if (currentRole !== null && tempDroits === null) {
+        tempDroits = await getDroits(currentRole._id);
+      }
+      await setRoles(tempRoles);
+      await setCurrentRole(tempCurrentRole);
+      await setDroits(tempDroits);
+      await setIsLoading(false);
     }
-    if (isLoading) {
-      void fetchData();
-    }
-  });
+    void fetchData();
+  }, [currentRole]);
 
   if (isLoading) {
     return <div>Chargement...</div>;
@@ -279,65 +94,75 @@ function Permissions() {
     <div>
       <h2>Roles</h2>
       <div className="flex justify-around">
-        {roles.map((role, key) => (
-          <Card
-            key={key}
-            className={currentRole === role ? "bg-cyan-900 w-fit" : "w-fit"}
-            onClick={() => {
-              if (currentRole !== role) {
-                updateRole(role);
-              }
-            }}
-          >
-            <div className={"w-fit"}>
-              <CardContent className={"capitalize w-fit"}>{role}</CardContent>
-            </div>
-          </Card>
-        ))}
+        {roles !== null
+          ? roles.map((role, key) => (
+              <Card
+                key={key}
+                className={
+                  currentRole.name === role.name ? "bg-cyan-900 w-fit" : "w-fit"
+                }
+                onClick={() => {
+                  if (currentRole._id !== role._id) {
+                    updateRole(role._id);
+                  }
+                }}
+              >
+                <div className={"w-fit"}>
+                  <CardContent className={"capitalize w-fit"}>
+                    {role.name}
+                  </CardContent>
+                </div>
+              </Card>
+            ))
+          : "Chargement..."}
       </div>
       <h2>Droits</h2>
-      <div className={"flex flex-col"}>
-        {droits.map((droitData, key) => (
-          <div key={key} className={"py-2"}>
-            <h2>{droitData[0]}</h2>
-            <div className="grid grid-cols-4 gap-4">
-              {droitData[1].map((droit, key2) => (
-                <Card key={key2}>
-                  <CardHeader>
-                    <div className={"flex justify-between"}>
-                      <CardTitle>{droit.libelle}</CardTitle>
-                      <input
-                        type={"checkbox"}
-                        onChange={() => updateDroits(key, key2)}
-                        checked={droit.active}
-                      ></input>
-                    </div>
-                  </CardHeader>
-                  <CardContent>
-                    <p className={"capitalize"}>{droit.description}</p>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
-          </div>
-        ))}
+      <div className={"flex flex-col gap-4"}>
+        {droits !== null
+          ? droits.map((droitData, key) => (
+              <div
+                key={key}
+                className={
+                  "border border-slate-800 p-2 rounded-md bg-slate-600 backdrop-blur"
+                }
+              >
+                <h2 className={"pb-4"}>{nomCategorie[droitData[0]]}</h2>
+                <div className="grid grid-cols-4 gap-4">
+                  {droitData[1].map((droit, key2) => {
+                    return (
+                      <Card key={droit._id}>
+                        <CardHeader data-brute={JSON.stringify(droit)}>
+                          <div className={"flex justify-between"}>
+                            <CardTitle>{droit.name.split(" - ")[1]}</CardTitle>
+                            <input
+                              type={"checkbox"}
+                              onChange={() =>
+                                updateDroit(
+                                  droit._id,
+                                  currentRole._id,
+                                  !droit.active,
+                                  { categorie: key, key: key2 },
+                                )
+                              }
+                              checked={droit.active}
+                            ></input>
+                          </div>
+                        </CardHeader>
+                        <CardContent>
+                          <p className={"capitalize"}>
+                            {droit.description.length > 0
+                              ? droit.description
+                              : "Description à implémenter"}
+                          </p>
+                        </CardContent>
+                      </Card>
+                    );
+                  })}
+                </div>
+              </div>
+            ))
+          : "Chargement..."}
       </div>
-      {/*{infos.length > 0 ? (*/}
-      {/*  <div>*/}
-      {/*    <h2>Informations</h2>*/}
-      {/*    <div>*/}
-      {/*      <Card>*/}
-      {/*        <CardContent>*/}
-      {/*          {infos.map((info, key) => (*/}
-      {/*            <p key={key}>{info}</p>*/}
-      {/*          ))}*/}
-      {/*        </CardContent>*/}
-      {/*      </Card>*/}
-      {/*    </div>*/}
-      {/*  </div>*/}
-      {/*) : (*/}
-      {/*  ""*/}
-      {/*)}*/}
     </div>
   );
 }

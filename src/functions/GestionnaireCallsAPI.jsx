@@ -31,9 +31,7 @@ export default async function generateCallsAPI(
   }
 
   if (res !== null) {
-    const res2 = JSON.parse(await res.text());
-    console.log(res2);
-    return res2;
+    return JSON.parse(await res.text());
   }
   return null;
 }
