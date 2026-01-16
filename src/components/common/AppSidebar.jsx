@@ -87,15 +87,11 @@ export function AppSidebar() {
   const navigate = useNavigate();
   const location = useLocation();
   
-  // Track which menus are open
+  // Track which menus are open - all open by default
   const [openMenus, setOpenMenus] = useState(() => {
-    // Open the menu that contains the current path by default
     const initial = {};
     menuItems.forEach((item) => {
-      const isActive = item.children?.some((child) => location.pathname === child.url);
-      if (isActive) {
-        initial[item.title] = true;
-      }
+      initial[item.title] = true; // Tous les menus ouverts par défaut
     });
     return initial;
   });
@@ -169,13 +165,16 @@ export function AppSidebar() {
                                     childActive && "font-medium"
                                   )}
                                 >
-                                  <a href={child.url}>
+                                  <button
+                                    onClick={() => navigate(child.url)}
+                                    className="flex items-center w-full text-left"
+                                  >
                                     {/* Barre a gauche */}
                                     {childActive && (
                                       <span className="fixed left-0 h-full w-1 rounded-r-full bg-sidebar-primary" />
                                     )}
                                     <span>{child.title}</span>
-                                  </a>
+                                  </button>
                                 </SidebarMenuSubButton>
                               </SidebarMenuSubItem>
                             );
@@ -197,14 +196,17 @@ export function AppSidebar() {
             <SidebarMenuButton
               asChild
               className={cn(
-                "flex items-center gap-3 px-4 py-6 text-sm font-medium",
+                "flex items-center gap-3 px-4 py-6 text-base font-medium",
                 isItemActive("/compte/details") && "text-sidebar-primary"
               )}
             >
-              <a href="/compte/details">
-                <Settings className="h-4 w-4" />
+              <button
+                onClick={() => navigate("/compte/details")}
+                className="flex items-center gap-3 w-full text-left"
+              >
+                <Settings className="h-5 w-5" />
                 <span>Paramètres</span>
-              </a>
+              </button>
             </SidebarMenuButton>
           </SidebarMenuItem>
 
@@ -245,9 +247,12 @@ export function AppSidebar() {
                   } else {
                     return (
                       <DropdownMenuItem key={item.title}>
-                        <a href={item.url} className="w-full">
+                        <button
+                          onClick={() => navigate(item.url)}
+                          className="w-full text-left"
+                        >
                           {item.title}
-                        </a>
+                        </button>
                       </DropdownMenuItem>
                     );
                   }
