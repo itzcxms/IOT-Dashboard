@@ -158,7 +158,7 @@ export default function LandingPage() {
         </div>
       </section>
 
-      <section className="py-24 px-4 md:px-8 bg-[#FDFBF7]">
+      {/*      <section className="py-24 px-4 md:px-8 bg-[#FDFBF7]">
         <div className="max-w-2xl mx-auto text-center">
           <h2 className="text-3xl md:text-4xl font-serif text-emerald-900 mb-4">
             Être notifié des alertes
@@ -179,7 +179,7 @@ export default function LandingPage() {
             </Button>
           </div>
         </div>
-      </section>
+      </section>*/}
 
       <footer className="bg-emerald-900 text-emerald-50 py-16 px-4 md:px-8">
         <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-12 text-sm">

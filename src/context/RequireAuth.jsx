@@ -1,15 +1,17 @@
+// src/context/RequireAuth.jsx
+import React from "react";
 import { Navigate, Outlet, useLocation } from "react-router-dom";
-import { useAuth } from "@/context/useAuth"; // ou "../context/useAuth" selon ton alias
+import { useAuth } from "./useAuth";
 
 export default function RequireAuth() {
-  const isAuthenticated = useAuth();
+  const { user, token } = useAuth(); // adapte selon ton contexte
   const location = useLocation();
 
-  if (!isAuthenticated) {
-    return (
-      <Navigate to="/connexion" replace state={{ from: location.pathname }} />
-    );
+  // Pas de token / pas d'utilisateur => on bloque
+  if (!token || !user) {
+    return <Navigate to="/connexion" replace state={{ from: location }} />;
   }
 
+  // OK => on laisse passer les routes enfants
   return <Outlet />;
 }

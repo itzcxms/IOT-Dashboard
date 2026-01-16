@@ -15,7 +15,6 @@ export default function AuthProvider({ children }) {
     return storedUser ? JSON.parse(storedUser) : null;
   });
 
-  // Sync vers localStorage quand token/user changent
   useEffect(() => {
     if (token && user) {
       localStorage.setItem("token", token.toString());
@@ -23,6 +22,22 @@ export default function AuthProvider({ children }) {
     } else {
       localStorage.removeItem("token");
       localStorage.removeItem("user");
+    }
+  }, [token, user]);
+
+  useEffect(() => {
+    if (!token) return;
+
+    try {
+      const payload = jwtDecode(token);
+      if (payload.exp && payload.exp * 1000 < Date.now()) {
+        this.logout();
+      } else if (!user) {
+        setUser(payload);
+      }
+    } catch (err) {
+      console.error(err);
+      logout();
     }
   }, [token, user]);
 
