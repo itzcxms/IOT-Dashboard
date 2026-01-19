@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -8,8 +8,72 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu.jsx";
+import generateCallsAPI from "@/functions/GestionnaireCallsAPI.jsx";
+import { useAuth } from "@/context/useAuth.jsx";
+import { NumToMois } from "@/functions/GestionnaireDates.jsx";
 
-function DropDownMoisGraph({ nom, data, getDataFromHardData }) {
+/**
+ * @fileoverview Composant de gestion et d'affichage du menu dropdown de la liste des mois disponibles pour les graphiques.
+ * @module DropDownMoisGraph
+ * @since 1.0.0
+ */
+
+/**
+ * Component that renders a dropdown menu allowing users to select a specific month and year.
+ * The dropdown is dynamically populated based on API data and can trigger actions upon selection.
+ *
+ * @param {Object} props - The props object.
+ * @param {string} props.nom - The name identifier for the dropdown, used for differentiation.
+ * @param {Array} props.data - An array containing the current year and month as strings or integers.
+ * @param {Function} props.getDataGraph - Callback function triggered when a specific month is selected from the dropdown.
+ *                                        It receives the name, year, and month as parameters.
+ * @return {JSX.Element} A dropdown interface with options to select months and years, dynamically populated based on API data.
+ */
+function DropDownMoisGraph({ nom, data, getDataGraph }) {
+  const { token } = useAuth();
+  const [months, setMonths] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    /**
+     * Récupère la liste des mois disponibles depuis l'API
+     * et retire l'année sélectionnée de la liste si elle ne possède qu'un mois de données
+     *
+     * @memberof DropDownMoisGraph
+     * @inner
+     * @param {Array} data - Array containing the current year and month. The first element is the year (as a string or number),
+     *                       and the second element is the current month (as a number).
+     * @return {Promise<void>} A promise that resolves when the month data has been successfully processed and state is updated.
+     */
+    async function fetchMonths(data) {
+      let Months = await generateCallsAPI(
+        token,
+        "GET",
+        "/api/graphs/capteurs/month/all",
+      );
+      let monthsKeys = Object.keys(Months);
+      let currentMonth = data[1];
+      if (currentMonth < 10) {
+        currentMonth = "0" + currentMonth;
+      }
+      if (
+        Months[monthsKeys[monthsKeys.length - 1]].length === 1 &&
+        parseInt(monthsKeys[monthsKeys.length - 1]) === parseInt(data[0])
+      ) {
+        delete Months[monthsKeys[monthsKeys.length - 1]];
+        monthsKeys = Object.keys(Months);
+      }
+      let dataMonths = [monthsKeys, Months];
+      dataMonths.push(currentMonth);
+      dataMonths.push(data[0]);
+      await setMonths(dataMonths);
+      await setIsLoading(false);
+    }
+    if (isLoading) {
+      void fetchMonths(data);
+    }
+  });
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -19,41 +83,50 @@ function DropDownMoisGraph({ nom, data, getDataFromHardData }) {
             "h-9 px-4 py-2 has-[>svg]:px-3 inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50"
           }
         >
-          {data[3] + " - " + data[2]}
+          {isLoading
+            ? "Chargement"
+            : NumToMois(parseInt(months[2])) + " - " + months[3]}
         </button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="end">
-        {data[0].map((key) => {
-          return (
-            <div key={key + "-div"}>
-              <DropdownMenuLabel key={key + "-label"}>{key}</DropdownMenuLabel>
-              <DropdownMenuGroup key={key + "-group"}>
-                {data[1][key].map((mois) => {
-                  if (parseInt(data[2]) === parseInt(key) && data[3] === mois) {
-                    return "";
-                  } else {
-                    return (
-                      <DropdownMenuItem
-                        onClick={async () =>
-                          getDataFromHardData(nom, key, mois)
-                        }
-                        key={key + "-" + mois}
-                      >
-                        {mois}
-                      </DropdownMenuItem>
-                    );
-                  }
-                })}
-              </DropdownMenuGroup>
-              {data[0][data[0].length - 1] !== key ? (
-                <DropdownMenuSeparator />
-              ) : (
-                ""
-              )}
-            </div>
-          );
-        })}
-      </DropdownMenuContent>
+      {isLoading ? (
+        ""
+      ) : (
+        <DropdownMenuContent align="end">
+          {months[0].map((key) => {
+            return (
+              <div key={key + "-div"}>
+                <DropdownMenuLabel key={key + "-label"}>
+                  {key}
+                </DropdownMenuLabel>
+                <DropdownMenuGroup key={key + "-group"}>
+                  {months[1][key].map((mois) => {
+                    if (
+                      parseInt(months[3]) === parseInt(key) &&
+                      months[2] === mois
+                    ) {
+                      return "";
+                    } else {
+                      return (
+                        <DropdownMenuItem
+                          onClick={async () => getDataGraph(nom, key, mois)}
+                          key={key + "-" + mois}
+                        >
+                          {NumToMois(parseInt(mois))}
+                        </DropdownMenuItem>
+                      );
+                    }
+                  })}
+                </DropdownMenuGroup>
+                {months[0][months[0].length - 1] !== key ? (
+                  <DropdownMenuSeparator />
+                ) : (
+                  ""
+                )}
+              </div>
+            );
+          })}
+        </DropdownMenuContent>
+      )}
     </DropdownMenu>
   );
 }

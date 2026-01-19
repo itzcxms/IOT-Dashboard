@@ -23,210 +23,151 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from "@/components/ui/chart";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuGroup,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuPortal,
-  DropdownMenuSeparator,
-  DropdownMenuShortcut,
-  DropdownMenuSub,
-  DropdownMenuSubContent,
-  DropdownMenuSubTrigger,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { Button } from "@/components/ui/button.jsx";
 import { NumToMois } from "@/functions/GestionnaireDates.jsx";
 import DropDownTempGraph from "@/components/common/DropDownTempGraph.jsx";
 import DropDown2Selector from "@/components/common/DropDown2Selector.jsx";
+import generateCallsAPI from "@/functions/GestionnaireCallsAPI.jsx";
+import { useAuth } from "@/context/useAuth.jsx";
 
-function Graphs({ line = null }) {
+/**
+ * @fileoverview Composant de gestion et d'affichage de graphiques dynamiques
+ * @module Graphs
+ * @since 1.0.0
+ */
+
+/**
+ * Displays and manages graphs based on specified data and configurations.
+ *
+ * @param {Object} options - The options object.
+ * @param {string} options.typeCapteur - The type of sensor for which the graph is generated.
+ * @param {number|null} [options.line=null] - Additional optional line parameter for specific graph configurations.
+ * @returns {JSX.Element} A rendered graph component with dynamic data and configurations.
+ */
+function Graphs({ typeCapteur, line = null }) {
+  const { token } = useAuth();
   const [ChartData, setChartData] = useState(null);
   const [trends, setTrends] = useState(null);
   const [chartConfig, setChartConfig] = useState(null);
   const [params, setParams] = useState(null);
   const [yAxisConfigs, setYAxisConfigs] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
-  const [hardData, setHardData] = useState({
-    "Aujourd'hui": [
-      { heure: "05", féquentation: 1.2 },
-      { heure: "06", féquentation: 3 },
-      { heure: "07", féquentation: 6 },
-      { heure: "08", féquentation: 10 },
-      { heure: "09", féquentation: 12 },
-      { heure: "10", féquentation: 14 },
-      { heure: "11", féquentation: 18 },
-      { heure: "12", féquentation: 34 },
-      { heure: "13", féquentation: 45 },
-      { heure: "14", féquentation: 36 },
-      { heure: "15", féquentation: 19 },
-      { heure: "16", féquentation: 24 },
-      { heure: "17", féquentation: 16 },
-      { heure: "18", féquentation: 11 },
-      { heure: "19", féquentation: 9 },
-      { heure: "20", féquentation: 6 },
-      { heure: "21", féquentation: 2 },
-    ],
-    Mois: {
-      année: {
-        2024: {
-          Décembre: [
-            { jour: "01", fréquentation: 92, vent: 20 },
-            { jour: "02", fréquentation: 108, vent: 20 },
-            { jour: "03", fréquentation: 86, vent: 20 },
-            { jour: "04", fréquentation: 78, vent: 20 },
-            { jour: "05", fréquentation: 80, vent: 20 },
-            { jour: "06", fréquentation: 50, vent: 20 },
-            { jour: "07", fréquentation: 42, vent: 20 },
-            { jour: "08", fréquentation: 55, vent: 20 },
-            { jour: "09", fréquentation: 56, vent: 20 },
-            { jour: "10", fréquentation: 76, vent: 20 },
-          ],
-        },
-        2025: {
-          Janvier: [
-            { jour: "01", fréquentation: 92 },
-            { jour: "02", fréquentation: 600 },
-            { jour: "03", fréquentation: 86 },
-            { jour: "04", fréquentation: 78 },
-            { jour: "05", fréquentation: 80 },
-            { jour: "06", fréquentation: 50 },
-            { jour: "07", fréquentation: 42 },
-            { jour: "08", fréquentation: 55 },
-            { jour: "09", fréquentation: 56 },
-            { jour: "10", fréquentation: 76 },
-          ],
-          Février: [
-            { jour: "01", fréquentation: 92 },
-            { jour: "02", fréquentation: 700 },
-            { jour: "03", fréquentation: 86 },
-            { jour: "04", fréquentation: 78 },
-            { jour: "05", fréquentation: 80 },
-            { jour: "06", fréquentation: 50 },
-            { jour: "07", fréquentation: 42 },
-            { jour: "08", fréquentation: 55 },
-            { jour: "09", fréquentation: 56 },
-            { jour: "10", fréquentation: 76 },
-          ],
-          Mars: [
-            { jour: "01", fréquentation: 92 },
-            { jour: "02", fréquentation: 800 },
-            { jour: "03", fréquentation: 86 },
-            { jour: "04", fréquentation: 78 },
-            { jour: "05", fréquentation: 80 },
-            { jour: "06", fréquentation: 50 },
-            { jour: "07", fréquentation: 42 },
-            { jour: "08", fréquentation: 55 },
-            { jour: "09", fréquentation: 56 },
-            { jour: "10", fréquentation: 76 },
-          ],
-          Avril: [
-            { jour: "01", fréquentation: 92 },
-            { jour: "02", fréquentation: 900 },
-            { jour: "03", fréquentation: 86 },
-            { jour: "04", fréquentation: 78 },
-            { jour: "05", fréquentation: 80 },
-            { jour: "06", fréquentation: 50 },
-            { jour: "07", fréquentation: 42 },
-            { jour: "08", fréquentation: 55 },
-            { jour: "09", fréquentation: 56 },
-            { jour: "10", fréquentation: 76 },
-          ],
-          Octobre: [
-            { jour: "01", fréquentation: 92 },
-            { jour: "02", fréquentation: 108 },
-            { jour: "03", fréquentation: 86 },
-            { jour: "04", fréquentation: 78 },
-            { jour: "05", fréquentation: 80 },
-            { jour: "06", fréquentation: 50 },
-            { jour: "07", fréquentation: 42 },
-            { jour: "08", fréquentation: 55 },
-            { jour: "09", fréquentation: 56 },
-            { jour: "10", fréquentation: 76 },
-          ],
-        },
-      },
-    },
-    Année: {
-      2024: [
-        { mois: "January", fréquentation: 186 },
-        { mois: "February", fréquentation: 305 },
-        { mois: "March", fréquentation: 237 },
-        { mois: "April", fréquentation: 73 },
-        { mois: "May", fréquentation: 209 },
-        { mois: "June", fréquentation: 214 },
-      ],
-      2025: [
-        { mois: "January", fréquentation: 186 },
-        { mois: "February", fréquentation: 305 },
-        { mois: "March", fréquentation: 237 },
-        { mois: "April", fréquentation: 73 },
-        { mois: "May", fréquentation: 209 },
-        { mois: "June", fréquentation: 214 },
-      ],
-    },
-  });
   const [currentSelection, setCurrentSelection] = useState("Aujourd'hui");
 
-  // const dataAppel = {
-  //   date: { periode: "Année", mois: "01", annee: "2024" },
-  //   demandes: {
-  //     sondes: ["haut", "device_id"],
-  //     toilettes: ["frequence"],
-  //   },
-  // };
+  /**
+   * Appelle les routes d'API
+   *
+   * @memberof module:Graphs
+   * @inner
+   * @async
+   * @function getDataAPI
+   * @param {string} type - Type de requête (GET|POST|PUT|DELETE)
+   * @param {string} route - Route de l'API
+   * @param {Object|null} [data=null] - Données à envoyer avec la requête
+   * @returns {Promise<any>} Réponse de l'API
+   */
+  async function getDataAPI(type, route, data = null) {
+    if (data === null) {
+      return generateCallsAPI(token, type, route);
+    }
+    return generateCallsAPI(token, type, route, data);
+  }
 
-  async function getDataFromHardData(key, annee = null, mois = null) {
+  /**
+   * Récupère les informations pour les graphiques
+   *
+   * @memberof module:Graphs
+   * @inner
+   * @async
+   * @function getDataGraph
+   * @param {string} key - Période de données (Aujourd'hui|Mois|Année)
+   * @param {number|null} [annee=null] - Année spécifique (optionnel)
+   * @param {number|null} [mois=null] - Mois spécifique (optionnel)
+   * @returns {Promise<void>}
+   */
+  async function getDataGraph(key, annee = null, mois = null) {
     let tempDatas = null;
     const date = new Date();
     if (key === "Année") {
       if (annee === null) {
         annee = date.getFullYear();
       }
-      tempDatas = hardData[key][annee];
-      await setCurrentSelection([key, Object.keys(hardData[key]), annee]);
+      tempDatas = await getDataAPI("POST", "/api/graphs/capteurs/year", {
+        type: typeCapteur,
+        annee: parseInt(annee),
+      });
+      tempDatas = tempDatas.donnees;
+      if (Object.keys(tempDatas).length === 1) {
+        let dataSup = await getDataAPI("POST", "/api/graphs/capteurs/year", {
+          type: typeCapteur,
+          annee: parseInt(annee) - 1,
+        });
+        dataSup = dataSup.donnees;
+        dataSup = dataSup[dataSup.length - 1];
+        dataSup = [dataSup];
+        tempDatas = dataSup.concat(tempDatas);
+      }
+      await setCurrentSelection([key, annee]);
     } else if (key === "Mois") {
       if (annee === null) {
         annee = date.getFullYear();
       }
       if (mois === null) {
-        mois = NumToMois(date.getMonth());
+        mois = date.getMonth() + 1;
       }
-      tempDatas = hardData[key]["année"][annee][mois];
-      let moisDatas = {};
-      const moisKeys = Object.keys(hardData[key]["année"]);
-      for (let i = 0; i < moisKeys.length; i++) {
-        moisDatas[moisKeys[i]] = Object.keys(
-          hardData[key]["année"][moisKeys[i]],
-        );
-      }
-      await setCurrentSelection([key, moisKeys, moisDatas, annee, mois]);
+      tempDatas = await getDataAPI("POST", "/api/graphs/capteurs/month", {
+        type: typeCapteur,
+        annee: annee,
+        start: NumToMois(mois),
+        end: NumToMois(mois),
+      });
+      tempDatas = tempDatas.donnees;
+      await setCurrentSelection([key, annee, mois]);
     } else {
-      tempDatas = hardData[key];
+      tempDatas = await getDataAPI("POST", "/api/graphs/capteurs/today", {
+        type: typeCapteur,
+      });
+      tempDatas = tempDatas.donnees;
       await setCurrentSelection(key);
     }
     await setChartData(tempDatas);
     await setIsLoading(true);
   }
 
+  /**
+   * Calcule le pourcentage de la dernière augmentation ou diminution de la valeur de tocheck
+   * et détermine le trend à afficher (up ou down)
+   *
+   * @inner
+   * @inner
+   * @function getTrendAndPercentage
+   * @param {string} tocheck - Paramètre à vérifier pour calculer la tendance
+   * @returns {{trend: string, percentage: string}} Objet contenant la tendance et le pourcentage
+   */
   function getTrendAndPercentage(tocheck) {
     let len = ChartData.length - 1;
     while (
-      ChartData[len][tocheck] === ChartData[len - 1][tocheck] &&
-      ChartData[len - 1][tocheck] === 0
+      ChartData[len].tocheck === ChartData[len - 1].tocheck &&
+      ChartData[len - 1].tocheck === 0
     ) {
       len -= 1;
     }
     const percentage = (
-      (ChartData[len][tocheck] / ChartData[len - 1][tocheck]) * 100 -
+      (ChartData[len].tocheck / ChartData[len - 1].tocheck) * 100 -
       100
     ).toFixed(2);
     const trend = percentage > 0 ? "up" : "down";
     return { trend: trend, percentage: percentage };
   }
 
+  /**
+   * Récupère la valeur la plus grande de la liste des valeurs fournies
+   *
+   *
+   * @inner
+   * @function getBiggestUnit
+   * @param {number} value - Valeur pour laquelle déterminer l'unité la plus grande
+   * @returns {number} La plus grande unité appropriée
+   */
   function getBiggestUnit(value) {
     if (value === 0) return 1;
 
@@ -241,6 +182,15 @@ function Graphs({ line = null }) {
     return unit;
   }
 
+  /**
+   * Génère la configuration de l'axe Y pour le graphique pour le paramètre fourni
+   *
+   *
+   * @inner
+   * @function generateYAxisConfig
+   * @param {string} param - Paramètre pour lequel générer la configuration de l'axe Y
+   * @returns {{domain: number[], ticks: number[], unit: number}} Configuration de l'axe Y
+   */
   function generateYAxisConfig(param) {
     let max = ChartData[0][param];
     let min = ChartData[0][param];
@@ -279,8 +229,15 @@ function Graphs({ line = null }) {
     };
   }
 
+  /**
+   * Génère la configuration du graphique
+   *
+   * @function generateConfig
+   * @returns {{config: Object, param: {XAxis: string, datas: string[], amountOf: number}}} Configuration du graphique et paramètres
+   */
   function generateConfig() {
-    const keys = Object.keys(ChartData[0]);
+    let keys = [];
+    keys = Object.keys(ChartData[0]);
     let config = {};
     let param = {
       XAxis: keys[0],
@@ -300,6 +257,15 @@ function Graphs({ line = null }) {
     return { config, param };
   }
 
+  /**
+   * Appelle la récupération des trends et pourcentages pour tous les axes fournis
+   *
+   *
+   * @inner
+   * @function generateAxisTrend
+   * @param {string[]} paramList - Liste des paramètres pour lesquels générer les tendances
+   * @returns {Object} Objet contenant les tendances pour chaque paramètre
+   */
   function generateAxisTrend(paramList) {
     let dataTrends = {};
 
@@ -310,6 +276,15 @@ function Graphs({ line = null }) {
     return dataTrends;
   }
 
+  /**
+   * Génère la configuration de tous les axes verticaux pour le graphique
+   *
+   *
+   * @inner
+   * @function generateAllYAxisConfigs
+   * @param {string[]} paramList - Liste des paramètres pour lesquels générer les configurations d'axes Y
+   * @returns {Object} Configurations des axes Y pour tous les paramètres
+   */
   function generateAllYAxisConfigs(paramList) {
     let configs = {};
 
@@ -321,29 +296,41 @@ function Graphs({ line = null }) {
   }
 
   useEffect(() => {
+    /**
+     * Récupère et génère l'ensemble des données nécessaires pour le graphique
+     *
+     * @async
+     * @function fetchData
+     * @returns {Promise<void>}
+     */
     async function fetchData() {
+      let trendsData = trends;
       if (ChartData === null) {
-        await getDataFromHardData("Aujourd'hui");
+        await getDataGraph("Aujourd'hui");
       }
-      const { config, param } = generateConfig();
-      const trendsData = generateAxisTrend(param.datas);
-      const yConfigs = generateAllYAxisConfigs(param.datas);
+      if (ChartData !== null && ChartData.length !== 0) {
+        const { config, param } = generateConfig();
+        if (ChartData.length > 1) {
+          trendsData = generateAxisTrend(param.datas);
+        }
+        const yConfigs = generateAllYAxisConfigs(param.datas);
 
-      await setChartConfig(config);
-      await setParams(param);
-      await setTrends(trendsData);
-      await setYAxisConfigs(yConfigs);
-      await setIsLoading(false);
+        await setChartConfig(config);
+        await setParams(param);
+        await setTrends(trendsData);
+        await setYAxisConfigs(yConfigs);
+        await setIsLoading(false);
+      }
     }
     void fetchData();
   }, [ChartData]);
 
-  if (!ChartData || !ChartData[0] || Object.keys(ChartData[0]).length < 1) {
-    return <div>No data</div>;
-  }
-
   if (isLoading) {
     return <div>Chargement...</div>;
+  }
+
+  if (!ChartData || !ChartData[0] || Object.keys(ChartData[0]).length < 1) {
+    return <div>No data</div>;
   }
 
   return (
@@ -356,8 +343,8 @@ function Graphs({ line = null }) {
                 ? currentSelection[0]
                 : currentSelection
             }
-            data={hardData}
-            getDataFromHardData={getDataFromHardData}
+            data={["Aujourd'hui", "Mois", "Année"]}
+            getDataGraph={getDataGraph}
           />
         </CardTitle>
         <CardDescription className={"flex justify-between"}>
@@ -378,7 +365,7 @@ function Graphs({ line = null }) {
               <DropDown2Selector
                 nom={currentSelection[0]}
                 data={currentSelection.slice(1)}
-                getDataFromHardData={getDataFromHardData}
+                getDataGraph={getDataGraph}
               />
             ) : (
               ""
@@ -402,7 +389,11 @@ function Graphs({ line = null }) {
               tickLine={false}
               axisLine={false}
               tickMargin={8}
-              tickFormatter={(value) => value.slice(0, 3)}
+              tickFormatter={(value) =>
+                currentSelection[0] === "Année"
+                  ? NumToMois(value).slice(0, 3)
+                  : value.slice(0, 3)
+              }
             />
             {params.datas.map((param, index) => {
               const axisConfig = yAxisConfigs[param];

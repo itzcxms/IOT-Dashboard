@@ -6,15 +6,15 @@ import {
   CardTitle,
 } from "@/components/ui/card.jsx";
 
-function AppCard({ icone, titre, texte }) {
+function AppCard({ titre, sousTitre, texte }) {
   return (
     <Card>
-      <CardHeader className={"flex items-center"}>
-        {icone}
-        <CardTitle className={"text-sm"}>{titre}</CardTitle>
+      <CardHeader className={"flex flex-col"}>
+        <CardTitle className={"text-base font-semibold capitalize"}>{titre}</CardTitle>
+        <span className="text-sm font-normal text-muted-foreground">{sousTitre}</span>
       </CardHeader>
       <CardContent>
-        <span className={"text-2xl"}>{texte}</span>
+        <span className={"text-2xl font-medium"}>{texte}</span>
       </CardContent>
     </Card>
   );

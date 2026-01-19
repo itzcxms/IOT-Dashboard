@@ -25,6 +25,8 @@ import Users from "@/pages/Users.jsx";
 import DetailsAccount from "@/pages/DetailsAccount.jsx";
 import GestionPermissions from "@/pages/GestionPermissions.jsx";
 import LandingPage from "./pages/LandingPage";
+import SatisfactionForm from "./pages/SatisfactionForm";
+import AnalyseSatisfaction from "./pages/AnalyseSatisfaction";
 
 ReactDOM.createRoot(document.getElementById("root")).render(
   <AuthProvider>
@@ -36,6 +38,7 @@ ReactDOM.createRoot(document.getElementById("root")).render(
           <Route path="/" element={<Decouverte />} />
           <Route path="/mot-de-passe-oublie" element={<ForgotPassword />} />
           <Route path="/chaumont" element={<LandingPage />} />
+          <Route path="/satisfaction" element={<SatisfactionForm />} />
         </Route>
 
         {/* Privé */}
@@ -50,6 +53,7 @@ ReactDOM.createRoot(document.getElementById("root")).render(
             <Route path="/admin/liste-utilisateurs" element={<Users />} />
             <Route path="/admin/creer-compte" element={<CreationsCompte />} />
             <Route path="/admin/permissions" element={<GestionPermissions />} />
+            <Route path="/analyse-satisfaction" element={<AnalyseSatisfaction />} />
           </Route>
         </Route>
 

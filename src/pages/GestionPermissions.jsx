@@ -2,11 +2,7 @@ import React from "react";
 import Permissions from "@/components/common/Permissions.jsx";
 
 function GestionPermissions() {
-  return (
-    <div>
-      <Permissions />
-    </div>
-  );
+  return <Permissions />;
 }
 
 export default GestionPermissions;
