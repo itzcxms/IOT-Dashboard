@@ -2,7 +2,7 @@ import React from "react";
 import { Home } from "lucide-react";
 import CardsList from "@/components/common/CardsList.jsx";
 import Graphs from "@/components/common/Graphs.jsx";
-import PageTitle from "../components/common/PageTitle";
+
 import GraphCardPie from "@/components/common/GraphCardPie.jsx";
 import GraphCardBar from "@/components/common/GraphCardBar.jsx";
 import {
@@ -77,8 +77,6 @@ function AnalyseSatisfaction() {
 
   return (
     <>
-      {/* Nom de la page */}
-      <PageTitle>Analyse Satisfaction</PageTitle>
 
       <div className="gap-5 flex flex-col">
         {/* Questions 1-4 : Grille 2x2 (desktop) / 1x4 (mobile) */}
