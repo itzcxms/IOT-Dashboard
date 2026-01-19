@@ -110,7 +110,9 @@ function Permissions() {
   async function updateRole(idRole) {
     for (let i = 0; i < roles.length; i++) {
       if (roles[i]._id === idRole) {
+        let tempDroits = await getDroits(roles[i]._id);
         await setCurrentRole(roles[i]);
+        await setDroits(tempDroits);
       }
     }
   }
@@ -154,6 +156,8 @@ function Permissions() {
   if (isLoading) {
     return <div>Chargement...</div>;
   }
+
+  console.log(droits);
 
   return (
     <div>
