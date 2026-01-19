@@ -19,7 +19,6 @@ import GestionAire from "./pages/GestionAire";
 import Savon from "./pages/Savon";
 import ToutVoir from "./pages/ToutVoir.jsx";
 import ZoneInondable from "./pages/ZoneInondable";
-import CreationsCompte from "@/pages/CreationsCompte.jsx";
 import Account from "@/pages/Account.jsx";
 import Users from "@/pages/Users.jsx";
 import DetailsAccount from "@/pages/DetailsAccount.jsx";
@@ -51,9 +50,11 @@ ReactDOM.createRoot(document.getElementById("root")).render(
             <Route path="/compte" element={<Account />} />
             <Route path="/compte/details" element={<DetailsAccount />} />
             <Route path="/admin/liste-utilisateurs" element={<Users />} />
-            <Route path="/admin/creer-compte" element={<CreationsCompte />} />
             <Route path="/admin/permissions" element={<GestionPermissions />} />
-            <Route path="/analyse-satisfaction" element={<AnalyseSatisfaction />} />
+            <Route
+              path="/analyse-satisfaction"
+              element={<AnalyseSatisfaction />}
+            />
           </Route>
         </Route>
 

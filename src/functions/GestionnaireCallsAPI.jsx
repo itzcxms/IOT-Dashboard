@@ -33,7 +33,7 @@ export default async function generateCallsAPI(
   if (res !== null) {
     return JSON.parse(await res.text());
   }
-  return null;
+  return JSON.parse("Erreur generateCallsApi()");
 }
 
 /**
@@ -54,8 +54,8 @@ async function routeGet(token, type, route) {
       },
     });
   } catch (error) {
-    console.log(error);
-    return null;
+    console.error(error);
+    return JSON.parse("Erreur routeGet()");
   }
 }
 
@@ -70,17 +70,23 @@ async function routeGet(token, type, route) {
  */
 async function routePost(token, type, route, data) {
   try {
+    const headerToken = {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    };
+
+    const header = {
+      "Content-Type": "application/json",
+    };
+
     return await fetch(route, {
       method: type,
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-      body: data !== null ? JSON.stringify(data) : null,
+      headers: token ? headerToken : header,
+      body: data !== null ? JSON.stringify(data) : data,
     });
   } catch (error) {
-    console.log(error);
-    return null;
+    console.error(error);
+    return JSON.parse("Erreur routePost()");
   }
 }
 
@@ -101,11 +107,11 @@ async function routePut(token, type, route, data) {
         "Content-Type": "application/json",
         Authorization: `Bearer ${token}`,
       },
-      body: data !== null ? JSON.stringify(data) : null,
+      body: data !== null ? JSON.stringify(data) : data,
     });
   } catch (error) {
-    console.log(error);
-    return null;
+    console.error(error);
+    return JSON.parse("Erreur routePut()");
   }
 }
 
@@ -126,10 +132,10 @@ async function routeDelete(token, type, route, data) {
         "Content-Type": "application/json",
         Authorization: `Bearer ${token}`,
       },
-      body: data !== null ? JSON.stringify(data) : null,
+      body: data !== null ? JSON.stringify(data) : data,
     });
   } catch (error) {
-    console.log(error);
-    return null;
+    console.error(error);
+    return JSON.parse("Erreur routeDetete()");
   }
 }
