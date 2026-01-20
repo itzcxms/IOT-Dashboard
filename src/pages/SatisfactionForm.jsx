@@ -249,7 +249,7 @@ export default function SatisfactionForm() {
             <CardFooter className="flex justify-center mt-6 pb-8">
               <button
                 type="submit"
-                className="rounded-lg bg-emerald-800 px-12 py-3 text-base font-medium text-white hover:bg-emerald-900 transition-colors w-full sm:w-auto cursor-pointer"
+                className="rounded-lg bg-emerald-800 px-12 py-3 text-base font-medium text-white hover:bg-emerald-900 transition-colors w-full sm:w-auto"
               >
                 Envoyer le questionnaire
               </button>
