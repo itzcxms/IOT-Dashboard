@@ -13,7 +13,7 @@ export default async function generateCallsAPI(
   route,
   data = null,
 ) {
-  const Route = import.meta.env.VITE_API_URL + route;
+  const Route = import.meta.env.VITE_API_URL_LOC + route;
   let res = null;
   switch (type) {
     case "GET":
@@ -30,8 +30,10 @@ export default async function generateCallsAPI(
       break;
   }
 
-  if (res !== null) {
+  if (res !== null && res.ok) {
     return JSON.parse(await res.text());
+  } else if (res !== null) {
+    return { status: JSON.parse(res.status) };
   }
   return JSON.parse("Erreur generateCallsApi()");
 }
