@@ -2,30 +2,16 @@
 
 import React, { useEffect, useState } from "react";
 import {
-  Area,
-  AreaChart,
-  CartesianGrid,
-  ReferenceLine,
-  XAxis,
-  YAxis,
-} from "recharts";
-import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import {
-  ChartContainer,
-  ChartTooltip,
-  ChartTooltipContent,
-} from "@/components/ui/chart";
-import { NumToMois } from "@/functions/GestionnaireDates.jsx";
 import DropDownTempGraph from "@/components/common/DropDownTempGraph.jsx";
 import DropDown2Selector from "@/components/common/DropDown2Selector.jsx";
-import generateCallsAPI from "@/functions/GestionnaireCallsAPI.jsx";
-import { useAuth } from "@/context/useAuth.jsx";
+import GraphContainer from "@/components/common/GraphContainer.jsx";
+import ReloadGraph from "@/components/common/ReloadGraph.jsx";
 
 /**
  * @fileoverview Composant de gestion et d'affichage de graphiques dynamiques
@@ -41,9 +27,13 @@ import { useAuth } from "@/context/useAuth.jsx";
  * @param {number|null} [options.line=null] - Additional optional line parameter for specific graph configurations.
  * @returns {JSX.Element} A rendered graph component with dynamic data and configurations.
  */
-function Graphs({ typeCapteur, line = null }) {
-  const { token } = useAuth();
-  const [ChartData, setChartData] = useState(null);
+function Graphs({
+  isLoadingData,
+  ChartData,
+  currentSelection,
+  getDataGraph,
+  line = null,
+}) {
   const [trends, setTrends] = useState(null);
   const [chartConfig, setChartConfig] = useState(null);
   const [params, setParams] = useState(null);
@@ -301,10 +291,8 @@ function Graphs({ typeCapteur, line = null }) {
      * @returns {Promise<void>}
      */
     async function fetchData() {
+      await setIsLoading(true);
       let trendsData = trends;
-      if (ChartData === null) {
-        await getDataGraph("Aujourd'hui");
-      }
       if (ChartData !== null && ChartData.length !== 0) {
         const { config, param } = generateConfig();
         if (ChartData.length > 1) {
@@ -373,133 +361,17 @@ function Graphs({ typeCapteur, line = null }) {
         </CardDescription>
       </CardHeader>
       <CardContent>
-        <ChartContainer config={chartConfig} className="GraphContainer">
-          <AreaChart
-            accessibilityLayer
-            data={ChartData}
-            margin={{
-              left: 12,
-              right: 12,
-            }}
-          >
-            <CartesianGrid vertical={false} />
-            <XAxis
-              dataKey={params.XAxis}
-              tickLine={false}
-              axisLine={false}
-              tickMargin={8}
-              tickFormatter={(value) =>
-                currentSelection[0] === "Année"
-                  ? NumToMois(value).slice(0, 3)
-                  : value.slice(0, 3)
-              }
-            />
-            {params.datas.map((param, index) => {
-              const axisConfig = yAxisConfigs[param];
-              return (
-                <YAxis
-                  key={param}
-                  yAxisId={param}
-                  domain={axisConfig.domain}
-                  allowDecimals={true}
-                  ticks={axisConfig.ticks}
-                  tickLine={true}
-                  axisLine={true}
-                  tickMargin={10}
-                  orientation={index % 2 === 1 ? "right" : "left"}
-                  label={{
-                    value: chartConfig[param].label,
-                    angle: -90,
-                    position: "insideLeft",
-                    offset: 20,
-                    style: { textAnchor: "middle" },
-                  }}
-                />
-              );
-            })}
-            <ChartTooltip
-              cursor={false}
-              content={<ChartTooltipContent indicator="dot" hideLabel />}
-            />
-            {params.datas.map((param) => {
-              if (
-                yAxisConfigs[param].domain[0] >= 0 &&
-                params.datas.length === 1
-              ) {
-                return (
-                  <Area
-                    key={param}
-                    dataKey={param}
-                    yAxisId={param}
-                    type="linear"
-                    fill={`var(--color-${param})`}
-                    fillOpacity={0.4}
-                    stroke={`var(--color-${param})`}
-                  />
-                );
-              } else {
-                return (
-                  <Area
-                    key={param}
-                    dataKey={param}
-                    yAxisId={param}
-                    type="linear"
-                    fillOpacity={0}
-                    stroke={`var(--color-${param})`}
-                  />
-                );
-              }
-            })}
-            {line !== null ? (
-              <ReferenceLine
-                yAxisId={params.datas[0]}
-                y={line}
-                stroke="red"
-                strokeDasharray="5 0"
-              />
-            ) : (
-              ""
-            )}
-          </AreaChart>
-        </ChartContainer>
+        <GraphContainer
+          ChartData={ChartData}
+          chartConfig={chartConfig}
+          params={params}
+          currentSelection={currentSelection}
+          yAxisConfigs={yAxisConfigs}
+          line={line}
+          isLoadingData={isLoadingData}
+          isLoadingParams={isLoading}
+        />
       </CardContent>
-      {/*<CardFooter>
-        <div className="flex w-full items-start gap-2 text-sm">
-          <div className="grid gap-2">
-            {params.datas.map((param, key) => {
-              if (
-                trends[param].trend === "up" &&
-                chartConfig[param] !== undefined
-              ) {
-                return (
-                  <div
-                    key={key}
-                    className="flex items-center gap-2 leading-none font-medium"
-                  >
-                    {chartConfig[param].label} : Trending up by{" "}
-                    {trends[param].percentage}%{" "}
-                    <TrendingUp className="h-4 w-4" />
-                  </div>
-                );
-              } else if (chartConfig[param] !== undefined) {
-                return (
-                  <div
-                    key={key}
-                    className="flex items-center gap-2 leading-none font-medium"
-                  >
-                    {chartConfig[param].label} : Trending down by{" "}
-                    {trends[param].percentage * -1}%{" "}
-                    <TrendingUp
-                      className="h-4 w-4"
-                      style={{ transform: "scaleY(-1)" }}
-                    />
-                  </div>
-                );
-              }
-            })}
-          </div>
-        </div>
-      </CardFooter>*/}
     </Card>
   );
 }

@@ -30,8 +30,10 @@ export default async function generateCallsAPI(
       break;
   }
 
-  if (res !== null) {
+  if (res !== null && res.ok) {
     return JSON.parse(await res.text());
+  } else if (res !== null) {
+    return { status: JSON.parse(res.status) };
   }
   return JSON.parse("Erreur generateCallsApi()");
 }
