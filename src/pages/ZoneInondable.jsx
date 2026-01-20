@@ -1,7 +1,6 @@
 import React from "react";
-import { Home } from "lucide-react";
 import CardsList from "@/components/common/CardsList.jsx";
-import Graphs from "@/components/common/Graphs.jsx";
+import GraphsZoneInondable from "@/components/common/GraphsZoneInondable.jsx";
 
 function ZoneInondable() {
   return (
@@ -11,7 +10,7 @@ function ZoneInondable() {
           <CardsList type={"sonde"} />
         </div>
 
-        <Graphs typeCapteur={"sonde"} />
+        <GraphsZoneInondable />
       </div>
     </>
   );

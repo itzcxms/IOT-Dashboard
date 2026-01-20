@@ -3,14 +3,6 @@
 import React, { useEffect, useState } from "react";
 import { TrendingUp } from "lucide-react";
 import {
-  Area,
-  AreaChart,
-  CartesianGrid,
-  ReferenceLine,
-  XAxis,
-  YAxis,
-} from "recharts";
-import {
   Card,
   CardContent,
   CardDescription,
@@ -18,16 +10,10 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import {
-  ChartContainer,
-  ChartTooltip,
-  ChartTooltipContent,
-} from "@/components/ui/chart";
-import { NumToMois } from "@/functions/GestionnaireDates.jsx";
 import DropDownTempGraph from "@/components/common/DropDownTempGraph.jsx";
 import DropDown2Selector from "@/components/common/DropDown2Selector.jsx";
-import generateCallsAPI from "@/functions/GestionnaireCallsAPI.jsx";
-import { useAuth } from "@/context/useAuth.jsx";
+import GraphContainer from "@/components/common/GraphContainer.jsx";
+import ReloadGraph from "@/components/common/ReloadGraph.jsx";
 
 /**
  * @fileoverview Composant de gestion et d'affichage de graphiques dynamiques
@@ -43,95 +29,18 @@ import { useAuth } from "@/context/useAuth.jsx";
  * @param {number|null} [options.line=null] - Additional optional line parameter for specific graph configurations.
  * @returns {JSX.Element} A rendered graph component with dynamic data and configurations.
  */
-function Graphs({ typeCapteur, line = null }) {
-  const { token } = useAuth();
-  const [ChartData, setChartData] = useState(null);
+function Graphs({
+  isLoadingData,
+  ChartData,
+  currentSelection,
+  getDataGraph,
+  line = null,
+}) {
   const [trends, setTrends] = useState(null);
   const [chartConfig, setChartConfig] = useState(null);
   const [params, setParams] = useState(null);
   const [yAxisConfigs, setYAxisConfigs] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
-  const [currentSelection, setCurrentSelection] = useState("Aujourd'hui");
-
-  /**
-   * Appelle les routes d'API
-   *
-   * @memberof module:Graphs
-   * @inner
-   * @async
-   * @function getDataAPI
-   * @param {string} type - Type de requête (GET|POST|PUT|DELETE)
-   * @param {string} route - Route de l'API
-   * @param {Object|null} [data=null] - Données à envoyer avec la requête
-   * @returns {Promise<any>} Réponse de l'API
-   */
-  async function getDataAPI(type, route, data = null) {
-    if (data === null) {
-      return generateCallsAPI(token, type, route);
-    }
-    return generateCallsAPI(token, type, route, data);
-  }
-
-  /**
-   * Récupère les informations pour les graphiques
-   *
-   * @memberof module:Graphs
-   * @inner
-   * @async
-   * @function getDataGraph
-   * @param {string} key - Période de données (Aujourd'hui|Mois|Année)
-   * @param {number|null} [annee=null] - Année spécifique (optionnel)
-   * @param {number|null} [mois=null] - Mois spécifique (optionnel)
-   * @returns {Promise<void>}
-   */
-  async function getDataGraph(key, annee = null, mois = null) {
-    let tempDatas = null;
-    const date = new Date();
-    if (key === "Année") {
-      if (annee === null) {
-        annee = date.getFullYear();
-      }
-      tempDatas = await getDataAPI("POST", "/api/graphs/capteurs/year", {
-        type: typeCapteur,
-        annee: parseInt(annee),
-      });
-      tempDatas = tempDatas.donnees;
-      if (Object.keys(tempDatas).length === 1) {
-        let dataSup = await getDataAPI("POST", "/api/graphs/capteurs/year", {
-          type: typeCapteur,
-          annee: parseInt(annee) - 1,
-        });
-        dataSup = dataSup.donnees;
-        dataSup = dataSup[dataSup.length - 1];
-        dataSup = [dataSup];
-        tempDatas = dataSup.concat(tempDatas);
-      }
-      await setCurrentSelection([key, annee]);
-    } else if (key === "Mois") {
-      if (annee === null) {
-        annee = date.getFullYear();
-      }
-      if (mois === null) {
-        mois = date.getMonth() + 1;
-      }
-      tempDatas = await getDataAPI("POST", "/api/graphs/capteurs/month", {
-        type: typeCapteur,
-        annee: annee,
-        start: NumToMois(mois),
-        end: NumToMois(mois),
-      });
-      tempDatas = tempDatas.donnees;
-      await setCurrentSelection([key, annee, mois]);
-    } else {
-      tempDatas = await getDataAPI("POST", "/api/graphs/capteurs/today", {
-        type: typeCapteur,
-      });
-      tempDatas = tempDatas.donnees;
-      await setCurrentSelection(key);
-    }
-    await setChartData(tempDatas);
-    await setIsLoading(true);
-  }
 
   /**
    * Calcule le pourcentage de la dernière augmentation ou diminution de la valeur de tocheck
@@ -304,10 +213,8 @@ function Graphs({ typeCapteur, line = null }) {
      * @returns {Promise<void>}
      */
     async function fetchData() {
+      await setIsLoading(true);
       let trendsData = trends;
-      if (ChartData === null) {
-        await getDataGraph("Aujourd'hui");
-      }
       if (ChartData !== null && ChartData.length !== 0) {
         const { config, param } = generateConfig();
         if (ChartData.length > 1) {
@@ -336,7 +243,7 @@ function Graphs({ typeCapteur, line = null }) {
   return (
     <Card className="Card">
       <CardHeader>
-        <CardTitle className={"flex flex-row-reverse"}>
+        <CardTitle className={"flex flex-row-reverse gap-2"}>
           <DropDownTempGraph
             nomSelection={
               typeof currentSelection === "object"
@@ -346,20 +253,23 @@ function Graphs({ typeCapteur, line = null }) {
             data={["Aujourd'hui", "Mois", "Année"]}
             getDataGraph={getDataGraph}
           />
-        </CardTitle>
-        <CardDescription className={"flex justify-between"}>
           <div>
-            Montre : {params.datas[0]}{" "}
-            {params.datas.length > 1 ? "et " + params.datas[1] : ""}{" "}
-            {" au cours des " +
-              params.amountOf +
-              " derniers " +
-              params.XAxis +
-              (params.amountOf > 1 &&
-              params.XAxis.substring(params.XAxis.length - 1) !== "s"
-                ? "s"
-                : "")}
+            {typeof currentSelection === "object" ? (
+              <ReloadGraph
+                nom={currentSelection[0]}
+                data={currentSelection.slice(1)}
+                getDataGraph={getDataGraph}
+              />
+            ) : (
+              <ReloadGraph
+                nom={currentSelection}
+                data={currentSelection.slice(1)}
+                getDataGraph={getDataGraph}
+              />
+            )}
           </div>
+        </CardTitle>
+        <CardDescription className={"flex flex-row-reverse"}>
           <div>
             {typeof currentSelection === "object" ? (
               <DropDown2Selector
@@ -374,133 +284,17 @@ function Graphs({ typeCapteur, line = null }) {
         </CardDescription>
       </CardHeader>
       <CardContent>
-        <ChartContainer config={chartConfig} className="GraphContainer">
-          <AreaChart
-            accessibilityLayer
-            data={ChartData}
-            margin={{
-              left: 12,
-              right: 12,
-            }}
-          >
-            <CartesianGrid vertical={false} />
-            <XAxis
-              dataKey={params.XAxis}
-              tickLine={false}
-              axisLine={false}
-              tickMargin={8}
-              tickFormatter={(value) =>
-                currentSelection[0] === "Année"
-                  ? NumToMois(value).slice(0, 3)
-                  : value.slice(0, 3)
-              }
-            />
-            {params.datas.map((param, index) => {
-              const axisConfig = yAxisConfigs[param];
-              return (
-                <YAxis
-                  key={param}
-                  yAxisId={param}
-                  domain={axisConfig.domain}
-                  allowDecimals={true}
-                  ticks={axisConfig.ticks}
-                  tickLine={true}
-                  axisLine={true}
-                  tickMargin={10}
-                  orientation={index % 2 === 1 ? "right" : "left"}
-                  label={{
-                    value: chartConfig[param].label,
-                    angle: -90,
-                    position: "insideLeft",
-                    offset: 20,
-                    style: { textAnchor: "middle" },
-                  }}
-                />
-              );
-            })}
-            <ChartTooltip
-              cursor={false}
-              content={<ChartTooltipContent indicator="dot" hideLabel />}
-            />
-            {params.datas.map((param) => {
-              if (
-                yAxisConfigs[param].domain[0] >= 0 &&
-                params.datas.length === 1
-              ) {
-                return (
-                  <Area
-                    key={param}
-                    dataKey={param}
-                    yAxisId={param}
-                    type="linear"
-                    fill={`var(--color-${param})`}
-                    fillOpacity={0.4}
-                    stroke={`var(--color-${param})`}
-                  />
-                );
-              } else {
-                return (
-                  <Area
-                    key={param}
-                    dataKey={param}
-                    yAxisId={param}
-                    type="linear"
-                    fillOpacity={0}
-                    stroke={`var(--color-${param})`}
-                  />
-                );
-              }
-            })}
-            {line !== null ? (
-              <ReferenceLine
-                yAxisId={params.datas[0]}
-                y={line}
-                stroke="red"
-                strokeDasharray="5 0"
-              />
-            ) : (
-              ""
-            )}
-          </AreaChart>
-        </ChartContainer>
+        <GraphContainer
+          ChartData={ChartData}
+          chartConfig={chartConfig}
+          params={params}
+          currentSelection={currentSelection}
+          yAxisConfigs={yAxisConfigs}
+          line={line}
+          isLoadingData={isLoadingData}
+          isLoadingParams={isLoading}
+        />
       </CardContent>
-      <CardFooter>
-        <div className="flex w-full items-start gap-2 text-sm">
-          <div className="grid gap-2">
-            {params.datas.map((param, key) => {
-              if (
-                trends[param].trend === "up" &&
-                chartConfig[param] !== undefined
-              ) {
-                return (
-                  <div
-                    key={key}
-                    className="flex items-center gap-2 leading-none font-medium"
-                  >
-                    {chartConfig[param].label} : Trending up by{" "}
-                    {trends[param].percentage}%{" "}
-                    <TrendingUp className="h-4 w-4" />
-                  </div>
-                );
-              } else if (chartConfig[param] !== undefined) {
-                return (
-                  <div
-                    key={key}
-                    className="flex items-center gap-2 leading-none font-medium"
-                  >
-                    {chartConfig[param].label} : Trending down by{" "}
-                    {trends[param].percentage * -1}%{" "}
-                    <TrendingUp
-                      className="h-4 w-4"
-                      style={{ transform: "scaleY(-1)" }}
-                    />
-                  </div>
-                );
-              }
-            })}
-          </div>
-        </div>
-      </CardFooter>
     </Card>
   );
 }

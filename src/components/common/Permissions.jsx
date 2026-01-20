@@ -157,8 +157,6 @@ function Permissions() {
     return <div>Chargement...</div>;
   }
 
-  console.log(droits);
-
   return (
     <div>
       <h2>Roles</h2>
