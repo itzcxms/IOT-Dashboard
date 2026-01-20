@@ -1,5 +1,4 @@
 import CardsList from "@/components/common/CardsList.jsx";
-import Graphs from "@/components/common/Graphs.jsx";
 import GraphsGestion from "@/components/common/GraphsGestion.jsx";
 
 function GestionAire() {

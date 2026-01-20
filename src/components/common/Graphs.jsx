@@ -26,8 +26,6 @@ import {
 import { NumToMois } from "@/functions/GestionnaireDates.jsx";
 import DropDownTempGraph from "@/components/common/DropDownTempGraph.jsx";
 import DropDown2Selector from "@/components/common/DropDown2Selector.jsx";
-import generateCallsAPI from "@/functions/GestionnaireCallsAPI.jsx";
-import { useAuth } from "@/context/useAuth.jsx";
 
 /**
  * @fileoverview Composant de gestion et d'affichage de graphiques dynamiques
@@ -43,95 +41,12 @@ import { useAuth } from "@/context/useAuth.jsx";
  * @param {number|null} [options.line=null] - Additional optional line parameter for specific graph configurations.
  * @returns {JSX.Element} A rendered graph component with dynamic data and configurations.
  */
-function Graphs({ typeCapteur, line = null }) {
-  const { token } = useAuth();
-  const [ChartData, setChartData] = useState(null);
+function Graphs({ ChartData, currentSelection, getDataGraph, line = null }) {
   const [trends, setTrends] = useState(null);
   const [chartConfig, setChartConfig] = useState(null);
   const [params, setParams] = useState(null);
   const [yAxisConfigs, setYAxisConfigs] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
-  const [currentSelection, setCurrentSelection] = useState("Aujourd'hui");
-
-  /**
-   * Appelle les routes d'API
-   *
-   * @memberof module:Graphs
-   * @inner
-   * @async
-   * @function getDataAPI
-   * @param {string} type - Type de requête (GET|POST|PUT|DELETE)
-   * @param {string} route - Route de l'API
-   * @param {Object|null} [data=null] - Données à envoyer avec la requête
-   * @returns {Promise<any>} Réponse de l'API
-   */
-  async function getDataAPI(type, route, data = null) {
-    if (data === null) {
-      return generateCallsAPI(token, type, route);
-    }
-    return generateCallsAPI(token, type, route, data);
-  }
-
-  /**
-   * Récupère les informations pour les graphiques
-   *
-   * @memberof module:Graphs
-   * @inner
-   * @async
-   * @function getDataGraph
-   * @param {string} key - Période de données (Aujourd'hui|Mois|Année)
-   * @param {number|null} [annee=null] - Année spécifique (optionnel)
-   * @param {number|null} [mois=null] - Mois spécifique (optionnel)
-   * @returns {Promise<void>}
-   */
-  async function getDataGraph(key, annee = null, mois = null) {
-    let tempDatas = null;
-    const date = new Date();
-    if (key === "Année") {
-      if (annee === null) {
-        annee = date.getFullYear();
-      }
-      tempDatas = await getDataAPI("POST", "/api/graphs/capteurs/year", {
-        type: typeCapteur,
-        annee: parseInt(annee),
-      });
-      tempDatas = tempDatas.donnees;
-      if (Object.keys(tempDatas).length === 1) {
-        let dataSup = await getDataAPI("POST", "/api/graphs/capteurs/year", {
-          type: typeCapteur,
-          annee: parseInt(annee) - 1,
-        });
-        dataSup = dataSup.donnees;
-        dataSup = dataSup[dataSup.length - 1];
-        dataSup = [dataSup];
-        tempDatas = dataSup.concat(tempDatas);
-      }
-      await setCurrentSelection([key, annee]);
-    } else if (key === "Mois") {
-      if (annee === null) {
-        annee = date.getFullYear();
-      }
-      if (mois === null) {
-        mois = date.getMonth() + 1;
-      }
-      tempDatas = await getDataAPI("POST", "/api/graphs/capteurs/month", {
-        type: typeCapteur,
-        annee: annee,
-        start: NumToMois(mois),
-        end: NumToMois(mois),
-      });
-      tempDatas = tempDatas.donnees;
-      await setCurrentSelection([key, annee, mois]);
-    } else {
-      tempDatas = await getDataAPI("POST", "/api/graphs/capteurs/today", {
-        type: typeCapteur,
-      });
-      tempDatas = tempDatas.donnees;
-      await setCurrentSelection(key);
-    }
-    await setChartData(tempDatas);
-    await setIsLoading(true);
-  }
 
   /**
    * Calcule le pourcentage de la dernière augmentation ou diminution de la valeur de tocheck
@@ -305,9 +220,6 @@ function Graphs({ typeCapteur, line = null }) {
      */
     async function fetchData() {
       let trendsData = trends;
-      if (ChartData === null) {
-        await getDataGraph("Aujourd'hui");
-      }
       if (ChartData !== null && ChartData.length !== 0) {
         const { config, param } = generateConfig();
         if (ChartData.length > 1) {

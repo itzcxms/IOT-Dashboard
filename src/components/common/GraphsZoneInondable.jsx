@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from "react";
-import generateCallsAPI from "@/functions/GestionnaireCallsAPI.jsx";
 import { useAuth } from "@/context/useAuth.jsx";
+import generateCallsAPI from "@/functions/GestionnaireCallsAPI.jsx";
 import { NumToMois } from "@/functions/GestionnaireDates.jsx";
 import Graphs from "@/components/common/Graphs.jsx";
 
-function GraphsGestion() {
+function GraphsZoneInondable() {
   const { token } = useAuth();
   const [ChartData, setChartData] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -50,13 +50,13 @@ function GraphsGestion() {
         annee = date.getFullYear();
       }
       tempDatas = await getDataAPI("POST", "/api/graphs/capteurs/year", {
-        type: "toilette",
+        type: "sonde",
         annee: parseInt(annee),
       });
       tempDatas = tempDatas.donnees;
       if (Object.keys(tempDatas).length === 1) {
         let dataSup = await getDataAPI("POST", "/api/graphs/capteurs/year", {
-          type: "toilette",
+          type: "sonde",
           annee: parseInt(annee) - 1,
         });
         dataSup = dataSup.donnees;
@@ -73,7 +73,7 @@ function GraphsGestion() {
         mois = date.getMonth() + 1;
       }
       tempDatas = await getDataAPI("POST", "/api/graphs/capteurs/month", {
-        type: "toilette",
+        type: "sonde",
         annee: annee,
         start: NumToMois(mois),
         end: NumToMois(mois),
@@ -82,7 +82,7 @@ function GraphsGestion() {
       await setCurrentSelection([key, annee, mois]);
     } else {
       tempDatas = await getDataAPI("POST", "/api/graphs/capteurs/today", {
-        type: "toilette",
+        type: "sonde",
       });
       tempDatas = tempDatas.donnees;
       await setCurrentSelection(key);
@@ -115,4 +115,4 @@ function GraphsGestion() {
   );
 }
 
-export default GraphsGestion;
+export default GraphsZoneInondable;
