@@ -7,6 +7,9 @@ import {
 } from "@/components/ui/card.jsx";
 import { useAuth } from "@/context/useAuth.jsx";
 import generateCallsAPI from "@/functions/GestionnaireCallsAPI.jsx";
+import { Alert, AlertDescription } from "@/components/ui/alert.jsx";
+import { Button } from "@/components/ui/button.jsx";
+import { X } from "lucide-react";
 
 /**
  * @fileoverview Composant de gestion des permissions et rôles utilisateur
@@ -24,6 +27,7 @@ function Permissions() {
   const [roles, setRoles] = useState(null);
   const [currentRole, setCurrentRole] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [inError, setInError] = useState(false);
   const [droits, setDroits] = useState(null);
   const nomCategorie = {
     users: "Utilisateures",
@@ -145,6 +149,16 @@ function Permissions() {
       } else if (currentRole !== null && tempDroits === null) {
         tempDroits = await getDroits(currentRole._id);
       }
+      if (
+        tempRoles === null ||
+        tempDroits === null ||
+        Object.keys(tempRoles).find((e) => e === "message") ||
+        Object.keys(tempDroits).find((e) => e === "message")
+      ) {
+        setInError(true);
+      } else {
+        setInError(false);
+      }
       await setRoles(tempRoles);
       await setCurrentRole(tempCurrentRole);
       await setDroits(tempDroits);
@@ -155,6 +169,34 @@ function Permissions() {
 
   if (isLoading) {
     return <div>Chargement...</div>;
+  }
+
+  if (inError) {
+    let message = {};
+    if (Object.keys(roles).find((e) => e === "message")) {
+      message = roles.message;
+    } else {
+      message = droits.message;
+    }
+
+    return (
+      <div>
+        <Alert variant="destructive">
+          <AlertDescription className="flex items-start justify-between flex-col w-full">
+            <div className="flex items-center gap-2">
+              <div className="w-5 h-5 bg-destructive text-destructive-foreground rounded-full flex items-center justify-center text-xs font-bold">
+                !
+              </div>
+              <div>
+                <div>{message}</div>
+                <div>Notre équipe technique à été informée de cette erreur</div>
+                <div>Essayez de recharger dans page dans quelques instants</div>
+              </div>
+            </div>
+          </AlertDescription>
+        </Alert>
+      </div>
+    );
   }
 
   return (
