@@ -199,9 +199,9 @@ export default function SatisfactionForm() {
 
               {/* Question 4 : Sources de connaissance (checkboxes) */}
               <div className="space-y-3">
-                <Label className="text-slate-800 text-base font-medium">
+                <Label className="text-slate-800 text-base font-medium flex flex-col items-start">
                   Comment avez-vous eu connaissance de "La Loire à Vélo", et qui vous a donné envie de la découvrir ?
-                  <span className="text-gray-500 font-normal text-sm block mt-1">(plusieurs réponses possibles)</span>
+                  <span className="text-gray-500 font-normal text-xs block mt-1">(plusieurs réponses possibles)</span>
                 </Label>
                 <div className="space-y-3">
                   {sourcesConnaissance.map((source) => (
