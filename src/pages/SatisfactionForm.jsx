@@ -224,7 +224,7 @@ export default function SatisfactionForm() {
                 {donnees.sourcesConnaissance.includes("autre") && (
                   <Input
                     placeholder="Précisez..."
-                    className="mt-3 bg-white text-slate-800 border-gray-200 focus-visible:ring-emerald-500"
+                    className="mt-3 !bg-white text-slate-800 border-gray-200 focus-visible:ring-emerald-500"
                     value={donnees.autreSource}
                     onChange={(e) => changerValeur("autreSource", e.target.value)}
                   />
@@ -238,7 +238,7 @@ export default function SatisfactionForm() {
                 </Label>
                 <Textarea
                   placeholder="Partagez vos remarques et suggestions..."
-                  className="min-h-[120px] text-slate-800 bg-white border-gray-200 focus-visible:ring-emerald-500"
+                  className="min-h-[120px] text-slate-800 !bg-white border-gray-200 focus-visible:ring-emerald-500"
                   value={donnees.remarques}
                   onChange={(e) => changerValeur("remarques", e.target.value)}
                 />
@@ -249,7 +249,7 @@ export default function SatisfactionForm() {
             <CardFooter className="flex justify-center mt-6 pb-8">
               <button
                 type="submit"
-                className="rounded-lg bg-emerald-800 px-12 py-3 text-base font-medium text-white hover:bg-emerald-900 transition-colors w-full sm:w-auto"
+                className="rounded-lg bg-emerald-800 px-12 py-3 text-base font-medium text-white hover:bg-emerald-900 transition-colors w-full sm:w-auto cursor-pointer"
               >
                 Envoyer le questionnaire
               </button>

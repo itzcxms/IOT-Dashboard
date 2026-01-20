@@ -51,7 +51,10 @@ function CardsList({ type }) {
         data-slot-refresh="true"
       >
 
-        <Button onClick={() => fetchCardData()}>
+        <Button 
+        onClick={() => fetchCardData()}
+        className={"border-1 border-button-border bg-card"}
+>
           <RefreshCw size={16} />
         </Button>
       </div>

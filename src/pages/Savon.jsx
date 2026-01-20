@@ -3,6 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Button } from "@/components/ui/button";
 import AppCard from "@/components/common/AppCard";
 
 function Savon() {
@@ -56,6 +57,11 @@ function Savon() {
         <Label htmlFor="contenance">Contenance du distributeur</Label>
         <Input type="number" id="contenance" placeholder="Contenance (en mL)" />
       </div>
+
+      <div>
+        <Button>Enregistrer</Button>
+      </div>
+
     </div>
     
     </div>
