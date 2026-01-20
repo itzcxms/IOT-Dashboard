@@ -100,13 +100,10 @@ function GraphsGestion() {
     void fetchData();
   });
 
-  if (isLoading) {
-    return <div>Chargement...</div>;
-  }
-
   return (
     <div>
       <Graphs
+        isLoadingData={isLoading}
         ChartData={ChartData}
         currentSelection={currentSelection}
         getDataGraph={getDataGraph}
