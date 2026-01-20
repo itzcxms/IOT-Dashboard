@@ -8,6 +8,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { UserTableRow, EmptyState } from "./UserComponents";
+import { CanAccess } from "@/components/security/CanAccess.jsx";
 
 export const UsersTable = ({ users, onEdit, onDelete, getRoleColor }) => {
   return (
@@ -18,7 +19,9 @@ export const UsersTable = ({ users, onEdit, onDelete, getRoleColor }) => {
             <TableHead>Utilisateur</TableHead>
             <TableHead>Rôle & Statut</TableHead>
             <TableHead className="hidden md:table-cell">Création</TableHead>
-            <TableHead className="text-right">Actions</TableHead>
+            <CanAccess permission={["users.delete", "users.delete"]}>
+              <TableHead className="text-right">Actions</TableHead>
+            </CanAccess>
           </TableRow>
         </TableHeader>
         <TableBody>

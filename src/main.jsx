@@ -6,6 +6,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import "./styles/index.css";
 import AuthProvider from "@/context/AuthProvider.jsx";
 import RequireAuth from "@/context/RequireAuth.jsx";
+import ProtectedRoute from "@/components/security/ProtectedRoute.jsx";
 
 import PublicLayout from "./layouts/PublicLayout";
 import DashboardLayout from "./layouts/DashboardLayout";
@@ -26,6 +27,8 @@ import GestionPermissions from "@/pages/GestionPermissions.jsx";
 import LandingPage from "./pages/LandingPage";
 import SatisfactionForm from "./pages/SatisfactionForm";
 import AnalyseSatisfaction from "./pages/AnalyseSatisfaction";
+import AccessDenied from "./pages/AccessDenied";
+import AccountInactive from "./pages/AccountInactive";
 
 ReactDOM.createRoot(document.getElementById("root")).render(
   <AuthProvider>
@@ -38,23 +41,72 @@ ReactDOM.createRoot(document.getElementById("root")).render(
           <Route path="/mot-de-passe-oublie" element={<ForgotPassword />} />
           <Route path="/chaumont" element={<LandingPage />} />
           <Route path="/satisfaction" element={<SatisfactionForm />} />
+          <Route path="/compte-inactif" element={<AccountInactive />} />
         </Route>
 
-        {/* Privé */}
+        {/* Privé avec permissions */}
         <Route element={<RequireAuth />}>
           <Route element={<DashboardLayout />}>
-            <Route path="/dashboard" element={<ToutVoir />} />
-            <Route path="/gestion-de-l-aire" element={<GestionAire />} />
-            <Route path="/savon" element={<Savon />} />
-            <Route path="/zone-inondable" element={<ZoneInondable />} />
+            <Route
+              path="/dashboard"
+              element={
+                <ProtectedRoute route="/dashboard">
+                  <ToutVoir />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/gestion-de-l-aire"
+              element={
+                <ProtectedRoute route="/gestion-de-l-aire">
+                  <GestionAire />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/savon"
+              element={
+                <ProtectedRoute route="/savon">
+                  <Savon />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/zone-inondable"
+              element={
+                <ProtectedRoute route="/zone-inondable">
+                  <ZoneInondable />
+                </ProtectedRoute>
+              }
+            />
             <Route path="/compte" element={<Account />} />
             <Route path="/compte/details" element={<DetailsAccount />} />
-            <Route path="/admin/liste-utilisateurs" element={<Users />} />
-            <Route path="/admin/permissions" element={<GestionPermissions />} />
+            <Route
+              path="/admin/liste-utilisateurs"
+              element={
+                <ProtectedRoute route="/admin/liste-utilisateurs">
+                  <Users />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/admin/permissions"
+              element={
+                <ProtectedRoute route="/admin/permissions">
+                  <GestionPermissions />
+                </ProtectedRoute>
+              }
+            />
             <Route
               path="/analyse-satisfaction"
-              element={<AnalyseSatisfaction />}
+              element={
+                <ProtectedRoute route="/analyse-satisfaction">
+                  <AnalyseSatisfaction />
+                </ProtectedRoute>
+              }
             />
+            {/* Page d'accès refusé */}
+            <Route path="/acces-refuse" element={<AccessDenied />} />
           </Route>
         </Route>
 
