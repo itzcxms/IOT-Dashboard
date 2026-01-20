@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { TrendingUp } from "lucide-react";
 import {
   Area,
   AreaChart,
@@ -14,7 +13,6 @@ import {
   Card,
   CardContent,
   CardDescription,
-  CardFooter,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
@@ -85,7 +83,6 @@ function Graphs({ typeCapteur, line = null }) {
    * @returns {Promise<void>}
    */
   async function getDataGraph(key, annee = null, mois = null) {
-    let tempDatas = null;
     const date = new Date();
     if (key === "Année") {
       if (annee === null) {
@@ -236,7 +233,7 @@ function Graphs({ typeCapteur, line = null }) {
    * @returns {{config: Object, param: {XAxis: string, datas: string[], amountOf: number}}} Configuration du graphique et paramètres
    */
   function generateConfig() {
-    let keys = [];
+    let keys;
     keys = Object.keys(ChartData[0]);
     let config = {};
     let param = {
@@ -333,10 +330,24 @@ function Graphs({ typeCapteur, line = null }) {
     return <div>No data</div>;
   }
 
+  const texte = params.datas[0];
+  const resultat = texte.charAt(0).toUpperCase() + texte.slice(1);
+
   return (
     <Card className="Card">
       <CardHeader>
-        <CardTitle className={"flex flex-row-reverse"}>
+        <CardTitle className={"flex justify-between"}>
+          <div>
+            {resultat} {params.datas.length > 1 ? "et " + params.datas[1] : ""}{" "}
+            {" au cours des " +
+              params.amountOf +
+              " derniers " +
+              params.XAxis +
+              (params.amountOf > 1 &&
+              params.XAxis.substring(params.XAxis.length - 1) !== "s"
+                ? "s"
+                : "")}
+          </div>
           <DropDownTempGraph
             nomSelection={
               typeof currentSelection === "object"
@@ -347,19 +358,7 @@ function Graphs({ typeCapteur, line = null }) {
             getDataGraph={getDataGraph}
           />
         </CardTitle>
-        <CardDescription className={"flex justify-between"}>
-          <div>
-            Montre : {params.datas[0]}{" "}
-            {params.datas.length > 1 ? "et " + params.datas[1] : ""}{" "}
-            {" au cours des " +
-              params.amountOf +
-              " derniers " +
-              params.XAxis +
-              (params.amountOf > 1 &&
-              params.XAxis.substring(params.XAxis.length - 1) !== "s"
-                ? "s"
-                : "")}
-          </div>
+        <CardDescription className={"flex justify-end"}>
           <div>
             {typeof currentSelection === "object" ? (
               <DropDown2Selector
@@ -464,7 +463,7 @@ function Graphs({ typeCapteur, line = null }) {
           </AreaChart>
         </ChartContainer>
       </CardContent>
-      <CardFooter>
+      {/*<CardFooter>
         <div className="flex w-full items-start gap-2 text-sm">
           <div className="grid gap-2">
             {params.datas.map((param, key) => {
@@ -500,7 +499,7 @@ function Graphs({ typeCapteur, line = null }) {
             })}
           </div>
         </div>
-      </CardFooter>
+      </CardFooter>*/}
     </Card>
   );
 }

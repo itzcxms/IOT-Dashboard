@@ -13,7 +13,7 @@ export default async function generateCallsAPI(
   route,
   data = null,
 ) {
-  const Route = import.meta.env.VITE_API_URL + route;
+  const Route = import.meta.env.VITE_API_URL_LOC + route;
   let res = null;
   switch (type) {
     case "GET":
