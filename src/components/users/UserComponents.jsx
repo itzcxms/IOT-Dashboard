@@ -366,7 +366,7 @@ export const UserTableRow = ({ user, onEdit, onDelete, getRoleColor }) => (
       <div className="flex flex-col gap-2">
         <Badge variant={getRoleColor(user.role_id?.name)}>
           <Shield className="w-3 h-3" />
-          {user.role_id?.name || "N/A"}
+          {user.role?.name || "N/A"}
         </Badge>
         <Badge
           variant={user.actif ? "default" : "destructive"}

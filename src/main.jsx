@@ -29,6 +29,10 @@ import SatisfactionForm from "./pages/SatisfactionForm";
 import AnalyseSatisfaction from "./pages/AnalyseSatisfaction";
 import AccessDenied from "./pages/AccessDenied";
 import AccountInactive from "./pages/AccountInactive";
+import Logout from "@/pages/Logout.jsx";
+import PermissionProvider from "@/context/PermissionProvider.jsx";
+
+console.log(location.pathname);
 
 ReactDOM.createRoot(document.getElementById("root")).render(
   <AuthProvider>
@@ -37,6 +41,7 @@ ReactDOM.createRoot(document.getElementById("root")).render(
         {/* Public */}
         <Route element={<PublicLayout />}>
           <Route path="/connexion" element={<Login />} />
+          <Route path="/logout" element={<Logout />} />
           <Route path="/" element={<Decouverte />} />
           <Route path="/mot-de-passe-oublie" element={<ForgotPassword />} />
           <Route path="/chaumont" element={<LandingPage />} />
@@ -46,7 +51,13 @@ ReactDOM.createRoot(document.getElementById("root")).render(
 
         {/* Privé avec permissions */}
         <Route element={<RequireAuth />}>
-          <Route element={<DashboardLayout />}>
+          <Route
+            element={
+              <PermissionProvider>
+                <DashboardLayout />
+              </PermissionProvider>
+            }
+          >
             <Route
               path="/dashboard"
               element={
@@ -79,8 +90,10 @@ ReactDOM.createRoot(document.getElementById("root")).render(
                 </ProtectedRoute>
               }
             />
+
             <Route path="/compte" element={<Account />} />
             <Route path="/compte/details" element={<DetailsAccount />} />
+
             <Route
               path="/admin/liste-utilisateurs"
               element={
@@ -97,6 +110,7 @@ ReactDOM.createRoot(document.getElementById("root")).render(
                 </ProtectedRoute>
               }
             />
+
             <Route
               path="/analyse-satisfaction"
               element={
@@ -105,12 +119,11 @@ ReactDOM.createRoot(document.getElementById("root")).render(
                 </ProtectedRoute>
               }
             />
-            {/* Page d'accès refusé */}
+
             <Route path="/acces-refuse" element={<AccessDenied />} />
           </Route>
         </Route>
 
-        {/* 404 */}
         <Route path="*" element={<NotFound />} />
       </Routes>
     </BrowserRouter>

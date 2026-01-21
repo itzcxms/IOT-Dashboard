@@ -19,8 +19,6 @@ import { CanAccess } from "@/components/security/CanAccess.jsx";
 
 function Users() {
   const { token } = useAuth();
-
-  // États
   const [users, setUsers] = useState([]);
   const [roles, setRoles] = useState([]);
   const [loading, setLoading] = useState(true);

@@ -44,7 +44,8 @@ import { useAuth } from "@/context/useAuth.jsx";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useState, useMemo } from "react";
 import { cn } from "@/lib/utils";
-import { canAccessRoute } from "@/utils/permission";
+import { usePermission } from "@/hooks/usePermission";
+import { ROUTE_PERMISSIONS } from "@/utils/permission";
 
 // Menu structure with collapsible groups
 const menuItems = [
@@ -95,6 +96,7 @@ const user_dropdown = [
 
 export function AppSidebar() {
   const { user, logout } = useAuth();
+  const { can, isSuperAdmin, loading } = usePermission();
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -102,13 +104,23 @@ export function AppSidebar() {
   const filteredMenuItems = useMemo(() => {
     if (!user) return [];
 
+    // Si chargement des permissions, retourner un menu vide temporairement
+    if (loading) return [];
+
     return menuItems
       .map((item) => {
         if (item.children) {
           // Filtrer les enfants selon les permissions
-          const filteredChildren = item.children.filter((child) =>
-            canAccessRoute(user, child.url),
-          );
+          const filteredChildren = item.children.filter((child) => {
+            // Si super admin, afficher tout
+            if (isSuperAdmin()) return true;
+            // Récupérer la permission requise pour cette route
+            const requiredPerm = ROUTE_PERMISSIONS[child.url];
+            // Si pas de permission requise, afficher
+            if (!requiredPerm) return true;
+            // Sinon vérifier la permission
+            return can(requiredPerm);
+          });
 
           // Si aucun enfant n'est accessible, ne pas afficher le groupe
           if (filteredChildren.length === 0) return null;
@@ -122,7 +134,7 @@ export function AppSidebar() {
         return item;
       })
       .filter((item) => item !== null);
-  }, [user]);
+  }, [user, can, isSuperAdmin, loading]);
 
   // Track which menus are open - all open by default
   const [openMenus, setOpenMenus] = useState(() => {
