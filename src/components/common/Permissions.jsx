@@ -199,6 +199,7 @@ function Permissions() {
     );
   }
 
+  console.log(droits);
   return (
     <div>
       <h2>Roles</h2>
@@ -228,48 +229,55 @@ function Permissions() {
       <h2>Droits</h2>
       <div className={"flex flex-col gap-4"}>
         {droits !== null
-          ? droits.map((droitData, key) => (
-              <div
-                key={key}
-                className={
-                  "border border-slate-800 p-2 rounded-md bg-slate-600 backdrop-blur"
-                }
-              >
-                <h2 className={"pb-4"}>{nomCategorie[droitData[0]]}</h2>
-                <div className="grid grid-cols-4 gap-4">
-                  {droitData[1].map((droit, key2) => {
-                    return (
-                      <Card key={droit._id}>
-                        <CardHeader data-brute={JSON.stringify(droit)}>
-                          <div className={"flex justify-between"}>
-                            <CardTitle>{droit.name.split(" - ")[1]}</CardTitle>
-                            <input
-                              type={"checkbox"}
-                              onChange={() =>
-                                updateDroit(
-                                  droit._id,
-                                  currentRole._id,
-                                  !droit.active,
-                                  { categorie: key, key: key2 },
-                                )
-                              }
-                              checked={droit.active}
-                            ></input>
-                          </div>
-                        </CardHeader>
-                        <CardContent>
-                          <p className={"capitalize"}>
-                            {droit.description.length > 0
-                              ? droit.description
-                              : "Description à implémenter"}
-                          </p>
-                        </CardContent>
-                      </Card>
-                    );
-                  })}
+          ? droits.map((droitData, key) => {
+              return (
+                <div
+                  key={key}
+                  className={
+                    "border border-slate-800 p-2 rounded-md bg-slate-600 backdrop-blur"
+                  }
+                >
+                  <h2 className={"pb-4"}>{droitData[0]}</h2>
+                  <div className="grid grid-cols-4 gap-4">
+                    {droitData[1].map((droit, key2) => {
+                      console.log(droit.name, key2);
+                      return (
+                        <Card key={droit._id}>
+                          <CardHeader data-brute={JSON.stringify(droit)}>
+                            <div className={"flex justify-between"}>
+                              <CardTitle>{droit.name}</CardTitle>
+                              <input
+                                type={"checkbox"}
+                                onChange={() =>
+                                  updateDroit(
+                                    droit._id,
+                                    currentRole._id,
+                                    !droit.active,
+                                    { categorie: key, key: key2 },
+                                  )
+                                }
+                                checked={droit.active}
+                              ></input>
+                            </div>
+                          </CardHeader>
+                          <CardContent>
+                            <p style={{ color: "#bbbbee" }}>
+                              {droit.description.length > 0
+                                ? droit.description
+                                    .toString()
+                                    .charAt(0)
+                                    .toUpperCase() +
+                                  droit.description.toString().slice(1)
+                                : "Description à implémenter"}
+                            </p>
+                          </CardContent>
+                        </Card>
+                      );
+                    })}
+                  </div>
                 </div>
-              </div>
-            ))
+              );
+            })
           : "Chargement..."}
       </div>
     </div>
