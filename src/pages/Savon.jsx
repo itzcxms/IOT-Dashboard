@@ -1,20 +1,65 @@
-import React from "react";
+import React, { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from "@/components/ui/dialog";
 import AppCard from "@/components/common/AppCard";
+import { useAuth } from "@/context/useAuth.jsx";
 
 function Savon() {
+  const { token } = useAuth();
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+
+  // Fonction pour réinitialiser le savon
+  const handleReset = async () => {
+    setIsLoading(true);
+    try {
+      // Appel API pour réinitialiser le savon
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/savon/reset`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error("Erreur lors de la réinitialisation");
+      }
+
+      // Afficher la boîte de dialogue de confirmation
+      setIsDialogOpen(true);
+    } catch (error) {
+      console.error("Erreur:", error);
+      alert("Erreur lors de la réinitialisation du savon");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   return (
     <div className="flex flex-col gap-6">
 
     {/* Titre */}
-    <div className="flex gap-2 flex-col">
-      <h1 className="text-3xl font-bold">Gestion du savon</h1>
-      {/* TODO API: Afficher la date de la dernière mise à jour */}
-      <span className="text-sm font-normal text-muted-foreground">Dernière mise à jour : 16/01/2026 15:12</span>
+    <div className="flex justify-between items-start">
+      <div className="flex gap-2 flex-col">
+        <h1 className="text-3xl font-bold">Gestion du savon</h1>
+        {/* TODO API: Afficher la date de la dernière mise à jour */}
+        <span className="text-sm font-normal text-muted-foreground">Dernière mise à jour : 16/01/2026 15:12</span>
+      </div>
+      <Button variant="outline" onClick={handleReset} disabled={isLoading}>
+        {isLoading ? "Réinitialisation..." : "Réinitialiser"}
+      </Button>
     </div>
 
     {/* Cartes */}
@@ -63,6 +108,21 @@ function Savon() {
       </div>
 
     </div>
+
+    {/* Boîte de dialogue de confirmation */}
+    <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>Réinitialisation effectuée</DialogTitle>
+          <DialogDescription>
+            Le savon a bien été réinitialisé. Le compteur de passages a été remis à zéro.
+          </DialogDescription>
+        </DialogHeader>
+        <DialogFooter>
+          <Button onClick={() => setIsDialogOpen(false)}>OK</Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
     
     </div>
   );
