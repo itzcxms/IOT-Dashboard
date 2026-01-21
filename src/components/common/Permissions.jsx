@@ -7,6 +7,9 @@ import {
 } from "@/components/ui/card.jsx";
 import { useAuth } from "@/context/useAuth.jsx";
 import generateCallsAPI from "@/functions/GestionnaireCallsAPI.jsx";
+import { Alert, AlertDescription } from "@/components/ui/alert.jsx";
+import { Button } from "@/components/ui/button.jsx";
+import { X } from "lucide-react";
 
 /**
  * @fileoverview Composant de gestion des permissions et rôles utilisateur
@@ -24,6 +27,7 @@ function Permissions() {
   const [roles, setRoles] = useState(null);
   const [currentRole, setCurrentRole] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [inError, setInError] = useState(false);
   const [droits, setDroits] = useState(null);
   const nomCategorie = {
     users: "Utilisateures",
@@ -145,6 +149,16 @@ function Permissions() {
       } else if (currentRole !== null && tempDroits === null) {
         tempDroits = await getDroits(currentRole._id);
       }
+      if (
+        tempRoles === null ||
+        tempDroits === null ||
+        Object.keys(tempRoles).find((e) => e === "message") ||
+        Object.keys(tempDroits).find((e) => e === "message")
+      ) {
+        setInError(true);
+      } else {
+        setInError(false);
+      }
       await setRoles(tempRoles);
       await setCurrentRole(tempCurrentRole);
       await setDroits(tempDroits);
@@ -157,6 +171,35 @@ function Permissions() {
     return <div>Chargement...</div>;
   }
 
+  if (inError) {
+    let message = {};
+    if (Object.keys(roles).find((e) => e === "message")) {
+      message = roles.message;
+    } else {
+      message = droits.message;
+    }
+
+    return (
+      <div>
+        <Alert variant="destructive">
+          <AlertDescription className="flex items-start justify-between flex-col w-full">
+            <div className="flex items-center gap-2">
+              <div className="w-5 h-5 bg-destructive text-destructive-foreground rounded-full flex items-center justify-center text-xs font-bold">
+                !
+              </div>
+              <div>
+                <div>{message}</div>
+                <div>Notre équipe technique à été informée de cette erreur</div>
+                <div>Essayez de recharger dans page dans quelques instants</div>
+              </div>
+            </div>
+          </AlertDescription>
+        </Alert>
+      </div>
+    );
+  }
+
+  console.log(droits);
   return (
     <div>
       <h2>Roles</h2>
@@ -186,48 +229,55 @@ function Permissions() {
       <h2>Droits</h2>
       <div className={"flex flex-col gap-4"}>
         {droits !== null
-          ? droits.map((droitData, key) => (
-              <div
-                key={key}
-                className={
-                  "border border-slate-800 p-2 rounded-md bg-slate-600 backdrop-blur"
-                }
-              >
-                <h2 className={"pb-4"}>{nomCategorie[droitData[0]]}</h2>
-                <div className="grid grid-cols-4 gap-4">
-                  {droitData[1].map((droit, key2) => {
-                    return (
-                      <Card key={droit._id}>
-                        <CardHeader data-brute={JSON.stringify(droit)}>
-                          <div className={"flex justify-between"}>
-                            <CardTitle>{droit.name.split(" - ")[1]}</CardTitle>
-                            <input
-                              type={"checkbox"}
-                              onChange={() =>
-                                updateDroit(
-                                  droit._id,
-                                  currentRole._id,
-                                  !droit.active,
-                                  { categorie: key, key: key2 },
-                                )
-                              }
-                              checked={droit.active}
-                            ></input>
-                          </div>
-                        </CardHeader>
-                        <CardContent>
-                          <p className={"capitalize"}>
-                            {droit.description.length > 0
-                              ? droit.description
-                              : "Description à implémenter"}
-                          </p>
-                        </CardContent>
-                      </Card>
-                    );
-                  })}
+          ? droits.map((droitData, key) => {
+              return (
+                <div
+                  key={key}
+                  className={
+                    "border border-slate-800 p-2 rounded-md bg-slate-600 backdrop-blur"
+                  }
+                >
+                  <h2 className={"pb-4"}>{droitData[0]}</h2>
+                  <div className="grid grid-cols-4 gap-4">
+                    {droitData[1].map((droit, key2) => {
+                      console.log(droit.name, key2);
+                      return (
+                        <Card key={droit._id}>
+                          <CardHeader data-brute={JSON.stringify(droit)}>
+                            <div className={"flex justify-between"}>
+                              <CardTitle>{droit.name}</CardTitle>
+                              <input
+                                type={"checkbox"}
+                                onChange={() =>
+                                  updateDroit(
+                                    droit._id,
+                                    currentRole._id,
+                                    !droit.active,
+                                    { categorie: key, key: key2 },
+                                  )
+                                }
+                                checked={droit.active}
+                              ></input>
+                            </div>
+                          </CardHeader>
+                          <CardContent>
+                            <p style={{ color: "#bbbbee" }}>
+                              {droit.description.length > 0
+                                ? droit.description
+                                    .toString()
+                                    .charAt(0)
+                                    .toUpperCase() +
+                                  droit.description.toString().slice(1)
+                                : "Description à implémenter"}
+                            </p>
+                          </CardContent>
+                        </Card>
+                      );
+                    })}
+                  </div>
                 </div>
-              </div>
-            ))
+              );
+            })
           : "Chargement..."}
       </div>
     </div>
