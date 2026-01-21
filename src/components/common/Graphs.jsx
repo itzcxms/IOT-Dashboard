@@ -1,10 +1,12 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
+import { TrendingUp } from "lucide-react";
 import {
   Card,
   CardContent,
   CardDescription,
+  CardFooter,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
@@ -28,97 +30,17 @@ import ReloadGraph from "@/components/common/ReloadGraph.jsx";
  * @returns {JSX.Element} A rendered graph component with dynamic data and configurations.
  */
 function Graphs({
-  isLoadingData,
-  ChartData,
-  currentSelection,
-  getDataGraph,
-  line = null,
-}) {
+                  isLoadingData,
+                  ChartData,
+                  currentSelection,
+                  getDataGraph,
+                  line = null,
+                }) {
   const [trends, setTrends] = useState(null);
   const [chartConfig, setChartConfig] = useState(null);
   const [params, setParams] = useState(null);
   const [yAxisConfigs, setYAxisConfigs] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
-  const [currentSelection, setCurrentSelection] = useState("Aujourd'hui");
-
-  /**
-   * Appelle les routes d'API
-   *
-   * @memberof module:Graphs
-   * @inner
-   * @async
-   * @function getDataAPI
-   * @param {string} type - Type de requête (GET|POST|PUT|DELETE)
-   * @param {string} route - Route de l'API
-   * @param {Object|null} [data=null] - Données à envoyer avec la requête
-   * @returns {Promise<any>} Réponse de l'API
-   */
-  async function getDataAPI(type, route, data = null) {
-    if (data === null) {
-      return generateCallsAPI(token, type, route);
-    }
-    return generateCallsAPI(token, type, route, data);
-  }
-
-  /**
-   * Récupère les informations pour les graphiques
-   *
-   * @memberof module:Graphs
-   * @inner
-   * @async
-   * @function getDataGraph
-   * @param {string} key - Période de données (Aujourd'hui|Mois|Année)
-   * @param {number|null} [annee=null] - Année spécifique (optionnel)
-   * @param {number|null} [mois=null] - Mois spécifique (optionnel)
-   * @returns {Promise<void>}
-   */
-  async function getDataGraph(key, annee = null, mois = null) {
-    const date = new Date();
-    if (key === "Année") {
-      if (annee === null) {
-        annee = date.getFullYear();
-      }
-      tempDatas = await getDataAPI("POST", "/api/graphs/capteurs/year", {
-        type: typeCapteur,
-        annee: parseInt(annee),
-      });
-      tempDatas = tempDatas.donnees;
-      if (Object.keys(tempDatas).length === 1) {
-        let dataSup = await getDataAPI("POST", "/api/graphs/capteurs/year", {
-          type: typeCapteur,
-          annee: parseInt(annee) - 1,
-        });
-        dataSup = dataSup.donnees;
-        dataSup = dataSup[dataSup.length - 1];
-        dataSup = [dataSup];
-        tempDatas = dataSup.concat(tempDatas);
-      }
-      await setCurrentSelection([key, annee]);
-    } else if (key === "Mois") {
-      if (annee === null) {
-        annee = date.getFullYear();
-      }
-      if (mois === null) {
-        mois = date.getMonth() + 1;
-      }
-      tempDatas = await getDataAPI("POST", "/api/graphs/capteurs/month", {
-        type: typeCapteur,
-        annee: annee,
-        start: NumToMois(mois),
-        end: NumToMois(mois),
-      });
-      tempDatas = tempDatas.donnees;
-      await setCurrentSelection([key, annee, mois]);
-    } else {
-      tempDatas = await getDataAPI("POST", "/api/graphs/capteurs/today", {
-        type: typeCapteur,
-      });
-      tempDatas = tempDatas.donnees;
-      await setCurrentSelection(key);
-    }
-    await setChartData(tempDatas);
-    await setIsLoading(true);
-  }
 
   /**
    * Calcule le pourcentage de la dernière augmentation ou diminution de la valeur de tocheck
@@ -135,7 +57,7 @@ function Graphs({
     while (
       ChartData[len].tocheck === ChartData[len - 1].tocheck &&
       ChartData[len - 1].tocheck === 0
-    ) {
+      ) {
       len -= 1;
     }
     const percentage = (
@@ -223,7 +145,7 @@ function Graphs({
    * @returns {{config: Object, param: {XAxis: string, datas: string[], amountOf: number}}} Configuration du graphique et paramètres
    */
   function generateConfig() {
-    let keys;
+    let keys = [];
     keys = Object.keys(ChartData[0]);
     let config = {};
     let param = {
@@ -318,24 +240,10 @@ function Graphs({
     return <div>No data</div>;
   }
 
-  const texte = params.datas[0];
-  const resultat = texte.charAt(0).toUpperCase() + texte.slice(1);
-
   return (
     <Card className="Card">
       <CardHeader>
-        <CardTitle className={"flex justify-between"}>
-          <div>
-            {resultat} {params.datas.length > 1 ? "et " + params.datas[1] : ""}{" "}
-            {" au cours des " +
-              params.amountOf +
-              " derniers " +
-              params.XAxis +
-              (params.amountOf > 1 &&
-              params.XAxis.substring(params.XAxis.length - 1) !== "s"
-                ? "s"
-                : "")}
-          </div>
+        <CardTitle className={"flex flex-row-reverse gap-2"}>
           <DropDownTempGraph
             nomSelection={
               typeof currentSelection === "object"
@@ -345,8 +253,23 @@ function Graphs({
             data={["Aujourd'hui", "Mois", "Année"]}
             getDataGraph={getDataGraph}
           />
+          <div>
+            {typeof currentSelection === "object" ? (
+              <ReloadGraph
+                nom={currentSelection[0]}
+                data={currentSelection.slice(1)}
+                getDataGraph={getDataGraph}
+              />
+            ) : (
+              <ReloadGraph
+                nom={currentSelection}
+                data={currentSelection.slice(1)}
+                getDataGraph={getDataGraph}
+              />
+            )}
+          </div>
         </CardTitle>
-        <CardDescription className={"flex justify-end"}>
+        <CardDescription className={"flex flex-row-reverse"}>
           <div>
             {typeof currentSelection === "object" ? (
               <DropDown2Selector
