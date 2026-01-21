@@ -1,10 +1,10 @@
 // src/components/ProtectedRoute.jsx
 import { Navigate } from "react-router-dom";
-import { useAuth } from "@/context/useAuth.jsx";
-import { canAccessRoute } from "@/utils/permission.js";
+import { usePermission } from "@/hooks/usePermission";
+import { ROUTE_PERMISSIONS } from "@/utils/permission";
 
 const ProtectedRoute = ({ children, route }) => {
-  const { user, loading } = useAuth();
+  const { can, isSuperAdmin, loading } = usePermission();
 
   // Attendre que les permissions soient chargées
   if (loading) {
@@ -19,8 +19,19 @@ const ProtectedRoute = ({ children, route }) => {
   }
 
   // Vérifier si l'utilisateur peut accéder à cette route
-  if (!canAccessRoute(user, route)) {
-    // Rediriger vers une page d'accès refusé
+  const requiredPermission = ROUTE_PERMISSIONS[route];
+
+  // Si pas de permission requise, autoriser l'accès
+  if (!requiredPermission) {
+    return children;
+  }
+  // Si super admin, autoriser l'accès
+  if (isSuperAdmin()) {
+    return children;
+  }
+
+  // Vérifier la permission spécifique
+  if (!can(requiredPermission)) {
     return <Navigate to="/acces-refuse" replace />;
   }
 

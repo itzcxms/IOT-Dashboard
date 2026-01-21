@@ -47,7 +47,10 @@ function Savon() {
           sousTitre="Depuis le dernier remplissage"
         />
       </div>
-      <CanAccess permission="savon.update">
+      <CanAccess
+        permission="savon.update"
+        loadingFallback={<div>Chargement…</div>}
+      >
         <div className="flex flex-col gap-4">
           <h2 className="text-2xl font-semibold">Paramètres</h2>
 
