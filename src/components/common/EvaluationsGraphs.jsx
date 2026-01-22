@@ -4,7 +4,7 @@ import generateCallsAPI from "@/functions/GestionnaireCallsAPI.jsx";
 import { useAuth } from "@/context/useAuth.jsx";
 import SourcesConnaissancesGraph from "@/components/common/SourcesConnaissancesGraph.jsx";
 
-function EvaluationsGraphs({ periode, date = null }) {
+function EvaluationsGraphs({ isLoadingGeneral, periode, date }) {
   const { token } = useAuth();
   const [isLoading, setIsLoading] = useState(true);
   const [cardsEvaluations, setCardsEvaluations] = useState(null);
@@ -32,7 +32,7 @@ function EvaluationsGraphs({ periode, date = null }) {
   };
 
   async function getEvaluationsData() {
-    if (date === null) {
+    if (periode === "Tout temps") {
       return generateCallsAPI(
         token,
         "GET",
@@ -82,7 +82,7 @@ function EvaluationsGraphs({ periode, date = null }) {
     }
   }, []);
 
-  if (isLoading) {
+  if (isLoading || isLoadingGeneral) {
     return <div>Chargement...</div>;
   }
 

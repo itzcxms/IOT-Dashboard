@@ -18,19 +18,49 @@ import GraphRadar from "@/components/common/GraphRadar";
 import EvaluationsGraphs from "@/components/common/EvaluationsGraphs.jsx";
 import ListeSuggestions from "@/components/common/ListeSuggestions.jsx";
 import SourcesConnaissancesGraph from "@/components/common/SourcesConnaissancesGraph.jsx";
+import DropDownTempSatisfaction from "@/components/common/DropDownTempSatisfaction.jsx";
 
 function AnalyseSatisfaction() {
-  const [periode, setPeriode] = useState("Tout temps");
+  const [periode, setPeriode] = useState("Aujourd'hui");
+  const [date] = useState(new Date().toISOString().split("T")[0]);
+  const [isLoading, setIsLoading] = useState(false);
+  const listePeriodes = [
+    "Tout temps",
+    "Aujourd'hui",
+    "7 derniers jours",
+    "Ce mois-ci",
+    "Cette année",
+  ];
+
+  async function editPeriode(newPeriode) {
+    if (listePeriodes.find((e) => e === newPeriode)) {
+      await setIsLoading(true);
+      await setPeriode(newPeriode);
+      await setIsLoading(false);
+    }
+  }
+
   return (
     <>
       <div className="gap-5 flex flex-col">
+        <div className={"flex justify-end"}>
+          <DropDownTempSatisfaction
+            periode={periode}
+            listePeriodes={listePeriodes}
+            editPeriode={editPeriode}
+          />
+        </div>
         {/* Questions 1-4 : Grille 2x2 (desktop) / 1x4 (mobile) */}
         <div className="grid lg:grid-cols-2 grid-cols-1 gap-4">
-          <EvaluationsGraphs periode={periode} />
+          <EvaluationsGraphs
+            isLoadingGeneral={isLoading}
+            periode={periode}
+            date={date}
+          />
         </div>
 
         {/* Question 5 : Tableau des remarques et suggestions */}
-        <ListeSuggestions />
+        <ListeSuggestions isLoadingGeneral={isLoading} />
       </div>
     </>
   );

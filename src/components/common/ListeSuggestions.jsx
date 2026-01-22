@@ -11,7 +11,7 @@ import {
 import { useAuth } from "@/context/useAuth.jsx";
 import generateCallsAPI from "@/functions/GestionnaireCallsAPI.jsx";
 
-function ListeSuggestions() {
+function ListeSuggestions({ isLoadingGeneral }) {
   const { token } = useAuth();
   const [suggestions, setSuggestions] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -47,7 +47,7 @@ function ListeSuggestions() {
           </span>
         </div>
 
-        {isLoading ? (
+        {isLoading || isLoadingGeneral ? (
           <div className="rounded-md border">Chargement en cours...</div>
         ) : (
           <div className="rounded-md border">
