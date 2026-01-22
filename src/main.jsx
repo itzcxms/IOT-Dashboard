@@ -37,7 +37,7 @@ ReactDOM.createRoot(document.getElementById("root")).render(
           {/* Public */}
           <Route element={<PublicLayout />}>
             <Route path="/connexion" element={<Login />} />
-            <Route path="/" element={<Decouverte />} />
+            <Route path="/decouverte" element={<Decouverte />} />
             <Route path="/mot-de-passe-oublie" element={<ForgotPassword />} />
             <Route path="/chaumont" element={<LandingPage />} />
             <Route path="/satisfaction" element={<SatisfactionForm />} />
@@ -46,7 +46,7 @@ ReactDOM.createRoot(document.getElementById("root")).render(
           {/* Privé */}
           <Route element={<RequireAuth />}>
             <Route element={<DashboardLayout />}>
-              <Route path="/dashboard" element={<ToutVoir />} />
+              <Route path="/" element={<ToutVoir />} />
               <Route path="/gestion-de-l-aire" element={<GestionAire />} />
               <Route path="/savon" element={<Savon />} />
               <Route path="/zone-inondable" element={<ZoneInondable />} />
