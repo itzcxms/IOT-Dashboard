@@ -155,11 +155,11 @@ export default function SatisfactionForm() {
                     <span className="flex-1 text-slate-900">Passable</span>
                   </Label>
                   <Label
-                    htmlFor="aire-mediocre"
+                    htmlFor="aire-mauvais"
                     className="flex items-center space-x-3 rounded-lg border border-gray-200 bg-white p-4 hover:bg-gray-50 cursor-pointer"
                   >
-                    <RadioGroupItem value="mediocre" id="aire-mediocre" />
-                    <span className="flex-1 text-slate-900">Médiocre</span>
+                    <RadioGroupItem value="mauvais" id="aire-mauvais" />
+                    <span className="flex-1 text-slate-900">Mauvais</span>
                   </Label>
                 </RadioGroup>
               </div>
@@ -199,11 +199,11 @@ export default function SatisfactionForm() {
                     <span className="flex-1 text-slate-900">Passable</span>
                   </Label>
                   <Label
-                    htmlFor="securite-mediocre"
+                    htmlFor="securite-mauvais"
                     className="flex items-center space-x-3 rounded-lg border border-gray-200 bg-white p-4 hover:bg-gray-50 cursor-pointer"
                   >
-                    <RadioGroupItem value="mediocre" id="securite-mediocre" />
-                    <span className="flex-1 text-slate-900">Médiocre</span>
+                    <RadioGroupItem value="mauvais" id="securite-mauvais" />
+                    <span className="flex-1 text-slate-900">Mauvais</span>
                   </Label>
                 </RadioGroup>
               </div>
@@ -243,11 +243,11 @@ export default function SatisfactionForm() {
                     <span className="flex-1 text-slate-900">Passable</span>
                   </Label>
                   <Label
-                    htmlFor="services-mediocre"
+                    htmlFor="services-mauvais"
                     className="flex items-center space-x-3 rounded-lg border border-gray-200 bg-white p-4 hover:bg-gray-50 cursor-pointer"
                   >
-                    <RadioGroupItem value="mediocre" id="services-mediocre" />
-                    <span className="flex-1 text-slate-900">Médiocre</span>
+                    <RadioGroupItem value="mauvais" id="services-mauvais" />
+                    <span className="flex-1 text-slate-900">Mauvais</span>
                   </Label>
                 </RadioGroup>
               </div>
