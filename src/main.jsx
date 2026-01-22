@@ -32,8 +32,6 @@ import AccountInactive from "./pages/AccountInactive";
 import Logout from "@/pages/Logout.jsx";
 import PermissionProvider from "@/context/PermissionProvider.jsx";
 
-console.log(location.pathname);
-
 ReactDOM.createRoot(document.getElementById("root")).render(
   <AuthProvider>
     <BrowserRouter>

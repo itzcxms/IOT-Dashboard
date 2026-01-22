@@ -29,13 +29,6 @@ function Permissions() {
   const [isLoading, setIsLoading] = useState(true);
   const [inError, setInError] = useState(false);
   const [droits, setDroits] = useState(null);
-  const nomCategorie = {
-    users: "Utilisateures",
-    roles: "Rôles",
-    permissions: "Permissions",
-    admin: "Administrateur",
-    Seuils: "Seuils",
-  };
 
   /**
    * Récupère la liste de tous les rôles disponibles depuis l'API
@@ -199,7 +192,6 @@ function Permissions() {
     );
   }
 
-  console.log(droits);
   return (
     <div>
       <h2>Roles</h2>
@@ -240,7 +232,6 @@ function Permissions() {
                   <h2 className={"pb-4"}>{droitData[0]}</h2>
                   <div className="grid grid-cols-4 gap-4">
                     {droitData[1].map((droit, key2) => {
-                      console.log(droit.name, key2);
                       return (
                         <Card key={droit._id}>
                           <CardHeader data-brute={JSON.stringify(droit)}>
