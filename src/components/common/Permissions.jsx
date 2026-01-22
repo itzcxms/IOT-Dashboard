@@ -29,13 +29,6 @@ function Permissions() {
   const [isLoading, setIsLoading] = useState(true);
   const [inError, setInError] = useState(false);
   const [droits, setDroits] = useState(null);
-  const nomCategorie = {
-    users: "Utilisateures",
-    roles: "Rôles",
-    permissions: "Permissions",
-    admin: "Administrateur",
-    Seuils: "Seuils",
-  };
 
   /**
    * Récupère la liste de tous les rôles disponibles depuis l'API
