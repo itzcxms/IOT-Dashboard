@@ -39,14 +39,14 @@ ReactDOM.createRoot(document.getElementById("root")).render(
             <Route path="/connexion" element={<Login />} />
             <Route path="/decouverte" element={<Decouverte />} />
             <Route path="/mot-de-passe-oublie" element={<ForgotPassword />} />
-            <Route path="/chaumont" element={<LandingPage />} />
+            <Route path="/" element={<LandingPage />} />
             <Route path="/satisfaction" element={<SatisfactionForm />} />
           </Route>
 
           {/* Privé */}
           <Route element={<RequireAuth />}>
             <Route element={<DashboardLayout />}>
-              <Route path="/" element={<ToutVoir />} />
+              <Route path="/dashboard" element={<ToutVoir />} />
               <Route path="/gestion-de-l-aire" element={<GestionAire />} />
               <Route path="/savon" element={<Savon />} />
               <Route path="/zone-inondable" element={<ZoneInondable />} />

@@ -132,7 +132,7 @@ function Login() {
                 <div className="flex justify-end">
                   <a
                     href="/mot-de-passe-oublie"
-                    className="mt-1 flex justify-end text-right text-xs text-indigo-400 hover:text-indigo-300"
+                    className="mt-1 flex justify-end text-right text-xs text-primary"
                   >
                     Mot de passe oublié ?
                   </a>
@@ -157,7 +157,7 @@ function Login() {
             <CardFooter>
               <button
                 type="submit"
-                className="w-full rounded-md bg-indigo-500 py-2 text-sm font-medium text-white hover:bg-indigo-400 transition-colors"
+                className="w-full rounded-md bg-primary py-2 text-sm font-medium text-white transition-colors"
               >
                 Connexion
               </button>
