@@ -18,9 +18,9 @@
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   --radius: 0.625rem;
-  --background: oklch(1 0 0);
+  --background: #e2e1e1;
   --foreground: oklch(0.145 0 0);
-  --card: oklch(1 0 0);
+  --card: #ECECEC;
   --card-foreground: oklch(0.145 0 0);
   --popover: oklch(1 0 0);
   --popover-foreground: oklch(0.145 0 0);
@@ -41,7 +41,7 @@
   --chart-3: #10b981;
   --chart-4: #059669;
   --chart-5: #047857;
-  --sidebar: oklch(0.985 0 0);
+  --sidebar: #DCDCDC;
   --sidebar-foreground: oklch(0.145 0 0);
   --sidebar-primary: #047857;
   --sidebar-primary-foreground: oklch(0.985 0 0);
