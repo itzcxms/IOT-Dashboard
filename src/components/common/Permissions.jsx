@@ -199,7 +199,6 @@ function Permissions() {
     );
   }
 
-  console.log(droits);
   return (
     <div>
       <h2>Roles</h2>
@@ -240,7 +239,6 @@ function Permissions() {
                   <h2 className={"pb-4"}>{droitData[0]}</h2>
                   <div className="grid grid-cols-4 gap-4">
                     {droitData[1].map((droit, key2) => {
-                      console.log(droit.name, key2);
                       return (
                         <Card key={droit._id}>
                           <CardHeader data-brute={JSON.stringify(droit)}>

@@ -25,7 +25,6 @@ function ListeSuggestions({ isLoadingGeneral }) {
         "GET",
         "/api/questionnaires/comments",
       );
-      console.log(response);
       setSuggestions(response["data"]);
       setTotal(response["total"]);
       setIsLoading(false);

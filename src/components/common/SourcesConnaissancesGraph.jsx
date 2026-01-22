@@ -47,7 +47,6 @@ function SourcesConnaissancesGraph({ isLoadingGeneralData, sourcesData }) {
     }
 
     if (!isLoadingGeneralData) {
-      console.log(sourcesData, isLoadingGeneralData, isLoading);
       void fetchData();
     }
   }, []);

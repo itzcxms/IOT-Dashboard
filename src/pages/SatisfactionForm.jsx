@@ -78,8 +78,6 @@ export default function SatisfactionForm() {
       return;
     }
 
-    console.log(donnees);
-
     let tempDonnees = { ...donnees };
 
     if (
@@ -95,7 +93,6 @@ export default function SatisfactionForm() {
     }
 
     const res = await setRating(tempDonnees);
-    console.log(res);
 
     if (Object.keys(res).includes("status")) {
       alert("Une erreur est survenue lors de l'envoi du formulaire.");

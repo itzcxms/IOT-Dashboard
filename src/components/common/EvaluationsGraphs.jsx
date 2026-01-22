@@ -70,7 +70,6 @@ function EvaluationsGraphs({ isLoadingGeneral, periode, date }) {
     async function fetchData() {
       let data = await getEvaluationsData();
       let dataCards = await traitementEvaluationsDatas(data["distributions"]);
-      console.log(data);
 
       setSourcesData(data["sourcesConnaissance"]);
       setCardsEvaluations(dataCards);
