@@ -158,7 +158,7 @@ function Graphs({
       let contentConfig = {};
       const label = keys[i];
       contentConfig["label"] = label.charAt(0).toUpperCase() + label.slice(1);
-      contentConfig["color"] = `var(--chart-${i + 1})`;
+      contentConfig["color"] = `var(--color-multi-chart-${i + 1})`;
       config[label] = contentConfig;
       param.datas.push(label);
     }

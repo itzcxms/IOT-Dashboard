@@ -52,7 +52,7 @@ function Login() {
   };
 
   return (
-    <main className="flex min-h-screen w-screen overflow-x-hidden bg-slate-900">
+    <main className="flex min-h-screen w-screen overflow-x-hidden bg-primary">
       <div className="relative flex-[7] h-screen overflow-hidden">
         <img
           src="/login/val-de-loir-bg.png"
@@ -66,13 +66,13 @@ function Login() {
         />
       </div>
 
-      <div className="flex flex-[3] w-full max-w-[50vw] min-h-screen items-center justify-center bg-slate-900 px-6 sm:px-10">
-        <Card className="w-full max-w-md border-slate-800 bg-slate-900/80 backdrop-blur">
+      <div className="flex flex-[3] w-full max-w-[50vw] min-h-screen items-center justify-center bg-background px-6 sm:px-10">
+        <Card className="w-full max-w-md bg-card backdrop-blur">
           <CardHeader>
-            <CardTitle className="text-2xl text-slate-50">
+            <CardTitle className="text-2xl">
               Heureux de vous retrouver !
             </CardTitle>
-            <CardDescription className="text-slate-400">
+            <CardDescription className="">
               Connectez-vous pour accéder à votre espace.
             </CardDescription>
           </CardHeader>
@@ -81,7 +81,7 @@ function Login() {
             <CardContent className="space-y-6">
               {/* Email */}
               <div className="space-y-1.5">
-                <Label htmlFor="email" className="text-slate-200">
+                <Label htmlFor="email" className="">
                   Adresse e-mail
                 </Label>
                 <Input
@@ -91,7 +91,7 @@ function Login() {
                   required
                   autoComplete="email"
                   placeholder="admin@exemple.com"
-                  className="bg-slate-900/60 border-slate-700 text-slate-100 placeholder:text-slate-500 focus-visible:ring-indigo-500/60"
+                  className="placeholder:text-slate-500 focus-visible:ring-primary/60"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                 />
@@ -99,7 +99,7 @@ function Login() {
 
               {/* Mot de passe */}
               <div className="space-y-1.5">
-                <Label htmlFor="password" className="text-slate-200">
+                <Label htmlFor="password" className="">
                   Mot de passe
                 </Label>
 
@@ -111,7 +111,7 @@ function Login() {
                     required
                     autoComplete="current-password"
                     placeholder="Votre mot de passe"
-                    className="bg-slate-900/60 border-slate-700 pr-10 text-slate-100 placeholder:text-slate-500 focus-visible:ring-indigo-500/60"
+                  className="placeholder:text-slate-500 focus-visible:ring-primary/60"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                   />
@@ -119,7 +119,7 @@ function Login() {
                   <button
                     type="button"
                     onClick={() => setShowPassword((v) => !v)}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-200"
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-primary"
                   >
                     {showPassword ? (
                       <EyeOff className="h-5 w-5" />
