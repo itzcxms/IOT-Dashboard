@@ -114,6 +114,7 @@ function Savon() {
               type="number"
               id="contenance"
               placeholder="Contenance (en mL)"
+              className={"ring-primary focus:ring-primary"}
             />
           </div>
 

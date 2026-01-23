@@ -66,7 +66,7 @@ function CardsList({ type, seuilPreco = null, seuilDanger = null }) {
       >
         <Button
           onClick={() => fetchCardData()}
-          className={"border-1 border-button-border bg-card"}
+          className={"border-1 border-button-border bg-primary"}
         >
           <RefreshCw size={16} />
         </Button>
