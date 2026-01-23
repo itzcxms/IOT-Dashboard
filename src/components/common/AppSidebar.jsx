@@ -89,7 +89,6 @@ const menuItems = [
 ];
 
 const user_dropdown = [
-  { title: "Compte", url: "/compte/", icon: User2 },
   { title: "Paramètres du compte", url: "/compte/details", icon: Settings },
   { title: "Déconnexion", url: "DECO" },
 ];

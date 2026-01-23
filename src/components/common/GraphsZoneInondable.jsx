@@ -4,7 +4,7 @@ import generateCallsAPI from "@/functions/GestionnaireCallsAPI.jsx";
 import { NumToMois } from "@/functions/GestionnaireDates.jsx";
 import Graphs from "@/components/common/Graphs.jsx";
 
-function GraphsZoneInondable() {
+function GraphsZoneInondable({ seuilDanger }) {
   const { token } = useAuth();
   const [ChartData, setChartData] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -107,6 +107,7 @@ function GraphsZoneInondable() {
         ChartData={ChartData}
         currentSelection={currentSelection}
         getDataGraph={getDataGraph}
+        line={seuilDanger}
       />
     </div>
   );

@@ -1,12 +1,10 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { TrendingUp } from "lucide-react";
 import {
   Card,
   CardContent,
   CardDescription,
-  CardFooter,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
@@ -158,7 +156,7 @@ function Graphs({
       let contentConfig = {};
       const label = keys[i];
       contentConfig["label"] = label.charAt(0).toUpperCase() + label.slice(1);
-      contentConfig["color"] = `var(--color-multi-chart-${i + 1})`;
+      contentConfig["color"] = `var(--color-multi-chart-${i})`;
       config[label] = contentConfig;
       param.datas.push(label);
     }
