@@ -36,19 +36,14 @@
   --border: oklch(0.922 0 0);
   --input: oklch(0.922 0 0);
   --ring: oklch(0.708 0 0);
-  /* Existing chart vars */
+
   --chart-1: #6ee7b7;
   --chart-2: #34d399;
   --chart-3: #10b981;
   --chart-4: #059669;
   --chart-5: #047857;
-  --chart-6: #8b5cf6;
-  --chart-7: #d946ef;
-  --chart-8: #f43f5e;
-  --chart-9: #f97316;
-  --chart-10: #eab308;
 
-  /* Multi-chart series */
+  /* Pour les graphiques a plusieurs courbes/entrées */
   --multi-chart-1: #3b82f6;
   --multi-chart-2: #ef4444;
   --multi-chart-3: #22c55e;
