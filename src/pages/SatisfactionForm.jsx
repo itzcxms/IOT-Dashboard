@@ -153,7 +153,7 @@ export default function SatisfactionForm() {
                     <span className="flex-1 text-slate-900">Satisfaisant</span>
                   </Label>
                   <Label
-                    htmlFor="aire-passable"
+                    htmlFor="aire-peu-satisfaisant"
                     className="flex items-center space-x-3 rounded-lg border border-gray-200 bg-white p-4 hover:bg-gray-50 cursor-pointer"
                   >
                     <RadioGroupItem
@@ -203,7 +203,7 @@ export default function SatisfactionForm() {
                     <span className="flex-1 text-slate-900">Satisfaisant</span>
                   </Label>
                   <Label
-                    htmlFor="securite-passable"
+                    htmlFor="securite-peu-satisfaisant"
                     className="flex items-center space-x-3 rounded-lg border border-gray-200 bg-white p-4 hover:bg-gray-50 cursor-pointer"
                   >
                     <RadioGroupItem
@@ -253,7 +253,7 @@ export default function SatisfactionForm() {
                     <span className="flex-1 text-slate-900">Satisfaisant</span>
                   </Label>
                   <Label
-                    htmlFor="services-passable"
+                    htmlFor="services-peu-satisfaisant"
                     className="flex items-center space-x-3 rounded-lg border border-gray-200 bg-white p-4 hover:bg-gray-50 cursor-pointer"
                   >
                     <RadioGroupItem
