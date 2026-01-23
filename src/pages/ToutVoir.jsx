@@ -268,7 +268,10 @@ function ToutVoir() {
               </CardTitle>
             </CardHeader>
             <CardContent className="flex-1 min-h-0 pb-4">
-              <ChartContainer config={chartConfig} className="h-full w-full aspect-auto">
+              <ChartContainer
+                config={chartConfig}
+                className="h-full w-full aspect-auto"
+              >
                 <AreaChart data={waterLevelData}>
                   <defs>
                     <linearGradient

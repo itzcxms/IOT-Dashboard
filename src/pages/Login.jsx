@@ -111,7 +111,7 @@ function Login() {
                     required
                     autoComplete="current-password"
                     placeholder="Votre mot de passe"
-                  className="placeholder:text-slate-500 focus-visible:ring-primary/60"
+                    className="placeholder:text-slate-500 focus-visible:ring-primary/60"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                   />

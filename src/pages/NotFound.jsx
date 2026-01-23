@@ -33,9 +33,7 @@ function NotFound() {
       <div className="flex flex-1 md:flex-[3] w-full md:max-w-[50vw] min-h-screen items-center justify-center bg-background px-6 sm:px-10">
         <Card className="w-full max-w-md bg-card backdrop-blur">
           <CardHeader>
-            <CardTitle className="text-3xl ">
-              404 — Oups !
-            </CardTitle>
+            <CardTitle className="text-3xl ">404 — Oups !</CardTitle>
             <CardDescription className="">
               La page que vous cherchez n’existe pas ou a été déplacée.
             </CardDescription>

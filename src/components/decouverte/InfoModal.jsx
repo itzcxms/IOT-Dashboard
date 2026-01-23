@@ -11,13 +11,13 @@ function InfoModal({ isOpen, onClose }) {
   return (
     <>
       {/* Backdrop */}
-      <div 
+      <div
         className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm"
         onClick={onClose}
       />
-      
+
       {/* Modal */}
-      <div 
+      <div
         className={cn(
           "fixed z-50",
           "left-4 right-4 top-1/2 -translate-y-1/2",
@@ -26,7 +26,7 @@ function InfoModal({ isOpen, onClose }) {
           "max-w-sm mx-auto",
           "bg-white rounded-2xl shadow-2xl",
           "max-h-[85vh] overflow-hidden",
-          "animate-in fade-in zoom-in-95 duration-200"
+          "animate-in fade-in zoom-in-95 duration-200",
         )}
       >
         {/* Close button */}
@@ -37,7 +37,7 @@ function InfoModal({ isOpen, onClose }) {
             "w-8 h-8 rounded-full",
             "flex items-center justify-center",
             "bg-gray-100 hover:bg-gray-200",
-            "transition-colors"
+            "transition-colors",
           )}
           aria-label="Fermer"
         >
@@ -54,12 +54,16 @@ function InfoModal({ isOpen, onClose }) {
           <div className="space-y-6">
             {/* Students */}
             <div className="text-gray-600 text-sm leading-relaxed">
-              <p className="text-gray-900 mb-1">Un projet conçu par les étudiants de la F@brique Numérique 41</p>
+              <p className="text-gray-900 mb-1">
+                Un projet conçu par les étudiants de la F@brique Numérique 41
+              </p>
             </div>
 
             {/* CD41 */}
             <div>
-              <p className="font-medium text-gray-900 text-sm mb-2">Une initiative portée par :</p>
+              <p className="font-medium text-gray-900 text-sm mb-2">
+                Une initiative portée par :
+              </p>
               <a
                 href="https://www.departement41.fr/"
                 target="_blank"
@@ -71,8 +75,8 @@ function InfoModal({ isOpen, onClose }) {
                   alt="Conseil Départemental du Loir-et-Cher"
                   className="h-12"
                   onError={(e) => {
-                    e.target.style.display = 'none';
-                    e.target.nextSibling.style.display = 'flex';
+                    e.target.style.display = "none";
+                    e.target.nextSibling.style.display = "flex";
                   }}
                 />
                 <span className="hidden items-center gap-1 text-blue-600 text-sm font-medium">
@@ -84,7 +88,9 @@ function InfoModal({ isOpen, onClose }) {
 
             {/* Commune */}
             <div>
-              <p className="font-medium text-gray-900 text-sm mb-2">Découvrez la commune :</p>
+              <p className="font-medium text-gray-900 text-sm mb-2">
+                Découvrez la commune :
+              </p>
               <a
                 href="https://www.chaumont-sur-loire.fr/"
                 target="_blank"
@@ -96,8 +102,8 @@ function InfoModal({ isOpen, onClose }) {
                   alt="Commune de Chaumont-sur-Loire"
                   className="h-12"
                   onError={(e) => {
-                    e.target.style.display = 'none';
-                    e.target.nextSibling.style.display = 'flex';
+                    e.target.style.display = "none";
+                    e.target.nextSibling.style.display = "flex";
                   }}
                 />
                 <span className="hidden items-center gap-1 text-blue-600 text-sm font-medium">

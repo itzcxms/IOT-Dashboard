@@ -10,7 +10,8 @@ const discoveryPoints = [
   {
     id: 1,
     label: "Déguster",
-    subtitle: "Découvrez l'AOC Touraine Mesland : L'Élégance du Loir-et-Cher en Bouteille",
+    subtitle:
+      "Découvrez l'AOC Touraine Mesland : L'Élégance du Loir-et-Cher en Bouteille",
     position: { top: 45, left: 57 },
     image: "/decouverte/deguster.jpg",
     // ⚠️ ALERTE: Droits photo expiration le 12/09/2030 - Changer la photo avant juin 2030
@@ -19,10 +20,16 @@ const discoveryPoints = [
     activities:
       "Dégustez des vins raffinés : Le Rosé, dominé par le Gamay, offrant une bouche fraîche et fruitée. Le Rouge, élaboré à partir de Côt et de Gamay, révèle des arômes de fruits rouges. Le Blanc, issu du Chenin ou du Sauvignon, exprime toute la minéralité de notre sol.",
     links: [
-      { label: "Poursuivez l'aventure et trouvez des adresses de dégustations", url: "https://www.vin-touraine-mesland.fr/" },
+      {
+        label: "Poursuivez l'aventure et trouvez des adresses de dégustations",
+        url: "https://www.vin-touraine-mesland.fr/",
+      },
     ],
     links: [
-      { label: "Poursuivez l'aventure et trouvez des adresses de dégustations", url: "https://www.vin-touraine-mesland.fr/" },
+      {
+        label: "Poursuivez l'aventure et trouvez des adresses de dégustations",
+        url: "https://www.vin-touraine-mesland.fr/",
+      },
     ],
     // x% (horizontal) y% (vertical) - ex: "50% 20%" pour remonter l'image
     imagePosition: "50% 75%",
@@ -79,7 +86,10 @@ const discoveryPoints = [
     activities:
       "Le Domaine National de Chambord, le Château Royal de Blois, et juste derrière vous, le Domaine de Chaumont-sur-Loire et son Festival des Jardins. Que vous arriviez de l'ouest ou que vous partiez vers l'Atlantique, faites une halte privilégiée sur nos rives. Profitez de la douceur de vivre ligérienne avant de poursuivre votre périple.",
     links: [
-      { label: "A vos vélos : planifiez votre découverte en Loir et Cher", url: "https://www.val-de-loire-41.com/circuits-et-randonnees/a-velo/circuits-velo-loir-et-cher/circuits-velo/" },
+      {
+        label: "A vos vélos : planifiez votre découverte en Loir et Cher",
+        url: "https://www.val-de-loire-41.com/circuits-et-randonnees/a-velo/circuits-velo-loir-et-cher/circuits-velo/",
+      },
     ],
     imagePosition: "50% 60%",
   },
