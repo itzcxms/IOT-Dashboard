@@ -23,6 +23,7 @@ function DiscoveryModal({
   imageSource,
   imageFit,
   imagePosition,
+  logo,
   links = [],
 }) {
   if (!isOpen) return null;
@@ -87,6 +88,17 @@ function DiscoveryModal({
 
           {/* Content section */}
           <div className="flex-1 flex flex-col p-5 md:p-6 overflow-y-auto">
+            {/* Logo */}
+            {logo && (
+              <div className="mb-4">
+                <img
+                  src={logo}
+                  alt="Logo"
+                  className="h-12 w-auto object-contain"
+                />
+              </div>
+            )}
+
             {/* Title */}
             <h2 className="text-xl md:text-2xl font-bold text-gray-900 pr-8 mb-3">
               {subtitle || title}

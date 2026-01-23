@@ -10,6 +10,7 @@ const discoveryPoints = [
   {
     id: 1,
     label: "Déguster",
+    logo: "/decouverte/logos/touraine.png",
     subtitle:
       "Découvrez l'AOC Touraine Mesland : L'Élégance du Loir-et-Cher en Bouteille",
     position: { top: 45, left: 57 },
@@ -256,6 +257,7 @@ function Decouverte() {
         imageSource={selectedPoint?.imageSource}
         imageFit={selectedPoint?.imageFit}
         imagePosition={selectedPoint?.imagePosition}
+        logo={selectedPoint?.logo}
         links={selectedPoint?.links || []}
       />
 
