@@ -1,14 +1,18 @@
 import React, { useMemo } from "react";
-import {
-  Card,
-  CardContent,
-} from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import {
   ChartContainer,
   ChartTooltip,
   ChartTooltipContent,
 } from "@/components/ui/chart";
-import { Bar, BarChart, XAxis, YAxis, CartesianGrid } from "recharts";
+import {
+  Bar,
+  BarChart,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  LabelList,
+} from "recharts";
 
 function GraphCardBar({ titre, texte, reponses = [] }) {
   // Transformer les reponses en données pour le graphique
@@ -33,22 +37,20 @@ function GraphCardBar({ titre, texte, reponses = [] }) {
 
   // Calculer le total des réponses
   const totalReponses = useMemo(() => {
-    return reponses.reduce((sum, r) => sum + r.value, 0);
+    return reponses.reduce((sum, r) => sum + parseInt(r.value), 0);
   }, [reponses]);
 
   return (
     <Card>
       <CardContent className={"gap-6 flex flex-col"}>
-
         <div className={"flex-col flex gap-2"}>
           <span className={"text-base font-semibold"}>{titre}</span>
-          <span className={"text-sm font-normal text-muted-foreground"}>{texte}</span>
+          <span className={"text-sm font-normal text-muted-foreground"}>
+            {texte}
+          </span>
         </div>
 
-        <ChartContainer
-          config={chartConfig}
-          className="w-full max-h-[250px]"
-        >
+        <ChartContainer config={chartConfig} className="w-full max-h-[250px]">
           <BarChart
             data={chartData}
             layout="vertical"
@@ -73,22 +75,18 @@ function GraphCardBar({ titre, texte, reponses = [] }) {
               cursor={{ fill: "rgba(255,255,255,0.1)" }}
               content={<ChartTooltipContent />}
             />
-            <Bar
-              dataKey="value"
-              radius={[0, 4, 4, 0]}
-            />
+            <Bar dataKey="value" radius={[0, 4, 4, 0]} />
           </BarChart>
         </ChartContainer>
 
         <div className="flex justify-center">
-          <span className={"text-sm font-medium"}>Nombre de réponses : {totalReponses}</span>
+          <span className={"text-sm font-medium"}>
+            Nombre de réponses : {totalReponses}
+          </span>
         </div>
-
       </CardContent>
     </Card>
   );
 }
 
 export default GraphCardBar;
-
-

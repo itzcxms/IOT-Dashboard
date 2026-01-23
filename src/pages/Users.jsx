@@ -15,11 +15,10 @@ import {
 } from "../components/users/UserComponents";
 import { UsersFilters } from "../components/users/UsersFilters";
 import { UsersTable } from "../components/users/UsersTable";
+import { CanAccess } from "@/components/security/CanAccess.jsx";
 
 function Users() {
   const { token } = useAuth();
-
-  // États
   const [users, setUsers] = useState([]);
   const [roles, setRoles] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -159,7 +158,7 @@ function Users() {
       const response = await generateCallsAPI(
         token,
         "DELETE",
-        `/api/users/delete/user/${deletingUser._id}`,
+        `/api/users/delete/${deletingUser._id}`,
       );
 
       if (response && response.message === "Supprimé") {
@@ -257,10 +256,12 @@ function Users() {
               Gérez les comptes et les permissions
             </p>
           </div>
-          <Button onClick={handleCreate} size="lg">
-            <Plus className="w-4 h-4" />
-            Nouvel utilisateur
-          </Button>
+          <CanAccess permission={"users.create"}>
+            <Button onClick={handleCreate} size="lg">
+              <Plus className="w-4 h-4" />
+              Nouvel utilisateur
+            </Button>
+          </CanAccess>
         </div>
 
         {/* Statistiques */}

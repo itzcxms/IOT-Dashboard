@@ -30,12 +30,12 @@ import ReloadGraph from "@/components/common/ReloadGraph.jsx";
  * @returns {JSX.Element} A rendered graph component with dynamic data and configurations.
  */
 function Graphs({
-  isLoadingData,
-  ChartData,
-  currentSelection,
-  getDataGraph,
-  line = null,
-}) {
+                  isLoadingData,
+                  ChartData,
+                  currentSelection,
+                  getDataGraph,
+                  line = null,
+                }) {
   const [trends, setTrends] = useState(null);
   const [chartConfig, setChartConfig] = useState(null);
   const [params, setParams] = useState(null);
@@ -57,7 +57,7 @@ function Graphs({
     while (
       ChartData[len].tocheck === ChartData[len - 1].tocheck &&
       ChartData[len - 1].tocheck === 0
-    ) {
+      ) {
       len -= 1;
     }
     const percentage = (

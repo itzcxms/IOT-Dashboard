@@ -26,6 +26,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Checkbox } from "@/components/ui/checkbox";
+import { CanAccess } from "@/components/security/CanAccess.jsx";
 
 // Dialog simplifié (car pas de dialog dans vos composants)
 const Dialog = ({ open, onOpenChange, children }) => {
@@ -365,7 +366,7 @@ export const UserTableRow = ({ user, onEdit, onDelete, getRoleColor }) => (
       <div className="flex flex-col gap-2">
         <Badge variant={getRoleColor(user.role_id?.name)}>
           <Shield className="w-3 h-3" />
-          {user.role_id?.name || "N/A"}
+          {user.role?.name || "N/A"}
         </Badge>
         <Badge
           variant={user.actif ? "default" : "destructive"}
@@ -392,23 +393,27 @@ export const UserTableRow = ({ user, onEdit, onDelete, getRoleColor }) => (
     </td>
     <td className="p-4 text-right">
       <div className="flex items-center justify-end gap-2">
-        <Button
-          variant="ghost"
-          size="icon-sm"
-          onClick={() => onEdit(user)}
-          title="Modifier"
-        >
-          <Edit className="w-4 h-4" />
-        </Button>
-        <Button
-          variant="ghost"
-          size="icon-sm"
-          onClick={() => onDelete(user)}
-          title="Supprimer"
-          className="text-destructive hover:text-destructive"
-        >
-          <Trash2 className="w-4 h-4" />
-        </Button>
+        <CanAccess permission={"users.update"}>
+          <Button
+            variant="ghost"
+            size="icon-sm"
+            onClick={() => onEdit(user)}
+            title="Modifier"
+          >
+            <Edit className="w-4 h-4" />
+          </Button>
+        </CanAccess>
+        <CanAccess permission={"users.delete"}>
+          <Button
+            variant="ghost"
+            size="icon-sm"
+            onClick={() => onDelete(user)}
+            title="Supprimer"
+            className="text-destructive hover:text-destructive"
+          >
+            <Trash2 className="w-4 h-4" />
+          </Button>
+        </CanAccess>
       </div>
     </td>
   </tr>

@@ -42,8 +42,10 @@ import {
 
 import { useAuth } from "@/context/useAuth.jsx";
 import { useNavigate, useLocation } from "react-router-dom";
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { cn } from "@/lib/utils";
+import { usePermission } from "@/hooks/usePermission";
+import { ROUTE_PERMISSIONS } from "@/utils/permission";
 
 // Menu structure with collapsible groups
 const menuItems = [
@@ -52,7 +54,11 @@ const menuItems = [
     icon: LayoutDashboard,
     children: [
       { title: "Tout voir", url: "/dashboard", icon: Home },
-      { title: "Gestion de l'aire", url: "/gestion-de-l-aire", icon: ClipboardList },
+      {
+        title: "Gestion de l'aire",
+        url: "/gestion-de-l-aire",
+        icon: ClipboardList,
+      },
       { title: "Savon", url: "/savon", icon: Droplets },
       { title: "Zone Inondable", url: "/zone-inondable", icon: AlertTriangle },
     ],
@@ -68,8 +74,16 @@ const menuItems = [
     title: "Utilisateurs",
     icon: Users,
     children: [
-      { title: "Liste des utilisateurs", url: "/admin/liste-utilisateurs", icon: Users },
-      { title: "Gestion des permissions", url: "/admin/permissions", icon: Shield },
+      {
+        title: "Liste des utilisateurs",
+        url: "/admin/liste-utilisateurs",
+        icon: Users,
+      },
+      {
+        title: "Gestion des permissions",
+        url: "/admin/permissions",
+        icon: Shield,
+      },
     ],
   },
 ];
@@ -82,14 +96,51 @@ const user_dropdown = [
 
 export function AppSidebar() {
   const { user, logout } = useAuth();
+  const { can, isSuperAdmin, loading } = usePermission();
   const navigate = useNavigate();
   const location = useLocation();
-  
+
+  // Filtrer les menus selon les permissions de l'utilisateur
+  const filteredMenuItems = useMemo(() => {
+    if (!user) return [];
+
+    // Si chargement des permissions, retourner un menu vide temporairement
+    if (loading) return [];
+
+    return menuItems
+      .map((item) => {
+        if (item.children) {
+          // Filtrer les enfants selon les permissions
+          const filteredChildren = item.children.filter((child) => {
+            // Si super admin, afficher tout
+            if (isSuperAdmin()) return true;
+            // Récupérer la permission requise pour cette route
+            const requiredPerm = ROUTE_PERMISSIONS[child.url];
+            // Si pas de permission requise, afficher
+            if (!requiredPerm) return true;
+            // Sinon vérifier la permission
+            return can(requiredPerm);
+          });
+
+          // Si aucun enfant n'est accessible, ne pas afficher le groupe
+          if (filteredChildren.length === 0) return null;
+
+          return {
+            ...item,
+            children: filteredChildren,
+          };
+        }
+
+        return item;
+      })
+      .filter((item) => item !== null);
+  }, [user, can, isSuperAdmin, loading]);
+
   // Track which menus are open - all open by default
   const [openMenus, setOpenMenus] = useState(() => {
     const initial = {};
-    menuItems.forEach((item) => {
-      initial[item.title] = true; // Tous les menus ouverts par défaut
+    filteredMenuItems.forEach((item) => {
+      initial[item.title] = true;
     });
     return initial;
   });
@@ -120,7 +171,7 @@ export function AppSidebar() {
         <SidebarGroup>
           <SidebarGroupContent>
             <SidebarMenu>
-              {menuItems.map((item) => {
+              {filteredMenuItems.map((item) => {
                 const menuActive = isMenuActive(item);
                 const isOpen = openMenus[item.title] || false;
 
@@ -135,7 +186,7 @@ export function AppSidebar() {
                         <SidebarMenuButton
                           className={cn(
                             "relative flex items-center gap-3 px-4 py-6 text-base font-medium transition-colors cursor-pointer",
-                            menuActive && "text-sidebar-primary"
+                            menuActive && "text-sidebar-primary",
                           )}
                         >
                           <item.icon className="h-5 w-5" />
@@ -143,7 +194,7 @@ export function AppSidebar() {
                           <ChevronDown
                             className={cn(
                               "ml-auto h-4 w-4 transition-transform duration-200",
-                              isOpen && "rotate-180"
+                              isOpen && "rotate-180",
                             )}
                           />
                         </SidebarMenuButton>
@@ -160,7 +211,7 @@ export function AppSidebar() {
                                   isActive={childActive}
                                   className={cn(
                                     "relative py-5 text-sm transition-colors px-3",
-                                    childActive && "font-medium"
+                                    childActive && "font-medium",
                                   )}
                                 >
                                   <button
@@ -195,7 +246,7 @@ export function AppSidebar() {
               asChild
               className={cn(
                 "flex items-center gap-3 px-4 py-6 text-base font-medium",
-                isItemActive("/compte/details") && "text-sidebar-primary"
+                isItemActive("/compte/details") && "text-sidebar-primary",
               )}
             >
               <button

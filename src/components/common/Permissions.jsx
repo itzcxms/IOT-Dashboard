@@ -12,16 +12,19 @@ import { Skeleton } from "@/components/ui/skeleton.jsx";
 import { useAuth } from "@/context/useAuth.jsx";
 import generateCallsAPI from "@/functions/GestionnaireCallsAPI.jsx";
 import { Alert, AlertDescription } from "@/components/ui/alert.jsx";
-import { 
-  Shield, 
-  UserCircle, 
+import {
+  Shield,
+  UserCircle,
   PenLine,
-  Key, 
-  Settings, 
+  Key,
+  Settings,
   AlertTriangle,
   Check,
   Gauge
 } from "lucide-react";
+import { Alert, AlertDescription } from "@/components/ui/alert.jsx";
+import { Button } from "@/components/ui/button.jsx";
+import { X } from "lucide-react";
 
 /**
  * @fileoverview Composant de gestion des permissions et rôles utilisateur
@@ -53,10 +56,10 @@ function Permissions() {
 
   // Fonction pour obtenir la config d'une catégorie
   const getCategoryConfig = (categoryKey) => {
-    return categoriesConfig[categoryKey] || { 
-      name: categoryKey, 
-      icon: Settings, 
-      color: "text-muted-foreground" 
+    return categoriesConfig[categoryKey] || {
+      name: categoryKey,
+      icon: Settings,
+      color: "text-muted-foreground"
     };
   };
 
@@ -196,8 +199,36 @@ function Permissions() {
 
   // Calculer les stats pour le rôle actuel
   const totalPermissions = droits?.reduce((acc, cat) => acc + cat[1].length, 0) || 0;
-  const activePermissions = droits?.reduce((acc, cat) => 
+  const activePermissions = droits?.reduce((acc, cat) =>
     acc + cat[1].filter(d => d.active).length, 0) || 0;
+
+  if (inError) {
+    let message = {};
+    if (Object.keys(roles).find((e) => e === "message")) {
+      message = roles.message;
+    } else {
+      message = droits.message;
+    }
+
+    return (
+      <div>
+        <Alert variant="destructive">
+          <AlertDescription className="flex items-start justify-between flex-col w-full">
+            <div className="flex items-center gap-2">
+              <div className="w-5 h-5 bg-destructive text-destructive-foreground rounded-full flex items-center justify-center text-xs font-bold">
+                !
+              </div>
+              <div>
+                <div>{message}</div>
+                <div>Notre équipe technique à été informée de cette erreur</div>
+                <div>Essayez de recharger dans page dans quelques instants</div>
+              </div>
+            </div>
+          </AlertDescription>
+        </Alert>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">
@@ -350,7 +381,7 @@ function Permissions() {
                             </div>
                             <p className={`text-xs text-muted-foreground line-clamp-2 ${droit.active ? 'ml-6' : ''}`}>
                               {droit.description?.length > 0
-                                ? droit.description.charAt(0).toUpperCase() + 
+                                ? droit.description.charAt(0).toUpperCase() +
                                   droit.description.slice(1)
                                 : "Aucune description disponible"}
                             </p>
