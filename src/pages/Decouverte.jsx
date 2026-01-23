@@ -142,11 +142,38 @@ function Decouverte() {
         </div>
       </div>
 
+      {/* Mobile swipe hint */}
       <div className="fixed bottom-4 left-1/2 -translate-x-1/2 z-10 md:hidden pointer-events-none">
         <div className="bg-black/50 text-white text-xs px-3 py-1.5 rounded-full backdrop-blur-sm flex items-center gap-2">
           <span>↔</span>
           <span>Glissez pour explorer</span>
         </div>
+      </div>
+
+      {/* Partner Logos - Bottom Left */}
+      <div className="fixed bottom-4 left-4 z-10 flex items-center gap-2 bg-white/95 backdrop-blur-sm p-2 rounded-lg shadow-lg">
+        <a
+          href="https://www.val-de-loire-41.com/"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          <img
+            src="/decouverte/logos/RVB-ValdeLoire-Vertical-Quadri.jpg"
+            alt="Val de Loire"
+            className="h-10 md:h-12 rounded"
+          />
+        </a>
+        <a
+          href="https://www.loireavelo.fr/"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          <img
+            src="/decouverte/logos/La_Loire_à_vélo_Logo.png"
+            alt="La Loire à Vélo"
+            className="h-10 md:h-12 rounded"
+          />
+        </a>
       </div>
 
       <DiscoveryModal

@@ -74,7 +74,7 @@ function DiscoveryModal({
           )}
 
           {/* Content section */}
-          <div className="flex-1 p-5 md:p-6 overflow-y-auto">
+          <div className="flex-1 flex flex-col p-5 md:p-6 overflow-y-auto">
             {/* Title */}
             <h2 className="text-xl md:text-2xl font-bold text-gray-900 pr-8 mb-3">
               {subtitle || title}
@@ -94,8 +94,12 @@ function DiscoveryModal({
                 </p>
               </div>
             )}
-            {/* Links and Social Icons Container */}
-            <div className="flex items-center justify-between pt-2 mt-auto">
+
+            {/* Spacer to push links to bottom */}
+            <div className="flex-grow"></div>
+
+            {/* Links and Social Icons Container - Fixed at bottom */}
+            <div className="flex items-center justify-between pt-4 border-t border-gray-100 mt-4">
               {/* Site Links */}
               <div className="flex flex-wrap items-center gap-2">
                 {links.map((link, index) => (
