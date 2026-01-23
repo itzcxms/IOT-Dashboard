@@ -20,7 +20,7 @@ import {
   Settings,
   AlertTriangle,
   Check,
-  Gauge
+  Gauge,
 } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert.jsx";
 import { Button } from "@/components/ui/button.jsx";
@@ -56,18 +56,26 @@ function Permissions() {
 
   // Fonction pour obtenir la config d'une catégorie
   const getCategoryConfig = (categoryKey) => {
-    return categoriesConfig[categoryKey] || {
-      name: categoryKey,
-      icon: Settings,
-      color: "text-muted-foreground"
-    };
+    return (
+      categoriesConfig[categoryKey] || {
+        name: categoryKey,
+        icon: Settings,
+        color: "text-muted-foreground",
+      }
+    );
   };
 
   // Fonction pour obtenir l'icône selon le nom du rôle
   const getRoleIcon = (roleName) => {
     const name = roleName?.toLowerCase();
-    if (name?.includes('utilisateur') || name?.includes('user')) return UserCircle;
-    if (name?.includes('editeur') || name?.includes('editor') || name?.includes('éditeur')) return PenLine;
+    if (name?.includes("utilisateur") || name?.includes("user"))
+      return UserCircle;
+    if (
+      name?.includes("editeur") ||
+      name?.includes("editor") ||
+      name?.includes("éditeur")
+    )
+      return PenLine;
     return Shield; // admin ou autre
   };
 
@@ -179,17 +187,23 @@ function Permissions() {
     return (
       <div className="space-y-6">
         <div>
-          <h2 className="text-3xl font-bold tracking-tight">Gestion des permissions</h2>
+          <h2 className="text-3xl font-bold tracking-tight">
+            Gestion des permissions
+          </h2>
           <p className="text-muted-foreground">
             Gérez les rôles et droits d'accès des utilisateurs
           </p>
         </div>
-        <Alert variant="destructive" className="border-destructive/50 bg-destructive/10">
+        <Alert
+          variant="destructive"
+          className="border-destructive/50 bg-destructive/10"
+        >
           <AlertTriangle className="h-5 w-5" />
           <AlertDescription className="ml-2">
             <div className="font-medium">{message}</div>
             <div className="text-sm opacity-80 mt-1">
-              Notre équipe technique a été informée. Essayez de recharger la page dans quelques instants.
+              Notre équipe technique a été informée. Essayez de recharger la
+              page dans quelques instants.
             </div>
           </AlertDescription>
         </Alert>
@@ -198,9 +212,13 @@ function Permissions() {
   }
 
   // Calculer les stats pour le rôle actuel
-  const totalPermissions = droits?.reduce((acc, cat) => acc + cat[1].length, 0) || 0;
-  const activePermissions = droits?.reduce((acc, cat) =>
-    acc + cat[1].filter(d => d.active).length, 0) || 0;
+  const totalPermissions =
+    droits?.reduce((acc, cat) => acc + cat[1].length, 0) || 0;
+  const activePermissions =
+    droits?.reduce(
+      (acc, cat) => acc + cat[1].filter((d) => d.active).length,
+      0,
+    ) || 0;
 
   if (inError) {
     let message = {};
@@ -234,7 +252,9 @@ function Permissions() {
     <div className="space-y-6">
       {/* En-tête */}
       <div>
-        <h2 className="text-3xl font-bold tracking-tight">Gestion des permissions</h2>
+        <h2 className="text-3xl font-bold tracking-tight">
+          Gestion des permissions
+        </h2>
         <p className="text-muted-foreground">
           Gérez les rôles et droits d'accès des utilisateurs
         </p>
@@ -265,9 +285,10 @@ function Permissions() {
                   className={`
                     px-4 py-2 rounded-lg font-medium transition-all duration-200
                     flex items-center gap-2 capitalize
-                    ${currentRole?.name === role.name
-                      ? "bg-primary text-primary-foreground shadow-md scale-105"
-                      : "bg-muted hover:bg-muted/80 text-foreground hover:scale-102"
+                    ${
+                      currentRole?.name === role.name
+                        ? "bg-primary text-primary-foreground shadow-md scale-105"
+                        : "bg-muted hover:bg-muted/80 text-foreground hover:scale-102"
                     }
                   `}
                 >
@@ -289,8 +310,12 @@ function Permissions() {
             <CardContent className="pt-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm text-muted-foreground">Rôle sélectionné</p>
-                  <p className="text-2xl font-bold capitalize">{currentRole.name}</p>
+                  <p className="text-sm text-muted-foreground">
+                    Rôle sélectionné
+                  </p>
+                  <p className="text-2xl font-bold capitalize">
+                    {currentRole.name}
+                  </p>
                 </div>
                 <Shield className="h-10 w-10 text-primary opacity-50" />
               </div>
@@ -300,8 +325,12 @@ function Permissions() {
             <CardContent className="pt-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm text-muted-foreground">Permissions actives</p>
-                  <p className="text-2xl font-bold">{activePermissions} / {totalPermissions}</p>
+                  <p className="text-sm text-muted-foreground">
+                    Permissions actives
+                  </p>
+                  <p className="text-2xl font-bold">
+                    {activePermissions} / {totalPermissions}
+                  </p>
                 </div>
                 <Check className="h-10 w-10 text-primary opacity-50" />
               </div>
@@ -334,25 +363,38 @@ function Permissions() {
             const permissions = droitData[1];
             const config = getCategoryConfig(categoryKey);
             const IconComponent = config.icon;
-            const activeCount = permissions.filter(p => p.active).length;
+            const activeCount = permissions.filter((p) => p.active).length;
 
             return (
               <Card key={categoryIndex} className="overflow-hidden">
                 <CardHeader className="p-4 pb-3">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-3">
-                      <div className={`p-2 rounded-lg bg-muted ${config.color}`}>
+                      <div
+                        className={`p-2 rounded-lg bg-muted ${config.color}`}
+                      >
                         <IconComponent className="h-5 w-5" />
                       </div>
                       <div>
-                        <CardTitle className="text-base">{config.name}</CardTitle>
+                        <CardTitle className="text-base">
+                          {config.name}
+                        </CardTitle>
                         <CardDescription>
-                          {activeCount} / {permissions.length} permissions actives
+                          {activeCount} / {permissions.length} permissions
+                          actives
                         </CardDescription>
                       </div>
                     </div>
-                    <Badge variant={activeCount === permissions.length ? "default" : "secondary"}>
-                      {activeCount === permissions.length ? "Complet" : `${activeCount}/${permissions.length}`}
+                    <Badge
+                      variant={
+                        activeCount === permissions.length
+                          ? "default"
+                          : "secondary"
+                      }
+                    >
+                      {activeCount === permissions.length
+                        ? "Complet"
+                        : `${activeCount}/${permissions.length}`}
                     </Badge>
                   </div>
                 </CardHeader>
@@ -363,9 +405,10 @@ function Permissions() {
                         key={droit._id}
                         className={`
                           p-3 rounded-lg border transition-all duration-200
-                          ${droit.active 
-                            ? "bg-primary/5 border-primary/30 hover:border-primary/50" 
-                            : "bg-muted/30 border-border hover:border-muted-foreground/30"
+                          ${
+                            droit.active
+                              ? "bg-primary/5 border-primary/30 hover:border-primary/50"
+                              : "bg-muted/30 border-border hover:border-muted-foreground/30"
                           }
                         `}
                       >
@@ -379,7 +422,9 @@ function Permissions() {
                                 {droit.name}
                               </span>
                             </div>
-                            <p className={`text-xs text-muted-foreground line-clamp-2 ${droit.active ? 'ml-6' : ''}`}>
+                            <p
+                              className={`text-xs text-muted-foreground line-clamp-2 ${droit.active ? "ml-6" : ""}`}
+                            >
                               {droit.description?.length > 0
                                 ? droit.description.charAt(0).toUpperCase() +
                                   droit.description.slice(1)
@@ -393,7 +438,7 @@ function Permissions() {
                                 droit._id,
                                 currentRole._id,
                                 !droit.active,
-                                { categorie: categoryIndex, key: permIndex }
+                                { categorie: categoryIndex, key: permIndex },
                               )
                             }
                             className="mt-0.5"

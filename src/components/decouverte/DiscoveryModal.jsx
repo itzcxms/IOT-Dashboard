@@ -5,35 +5,35 @@ import { cn } from "@/lib/utils";
 // Liens réseaux sociaux
 const socialLinks = {
   instagram: "https://www.instagram.com/loiretcher_en_valdeloire/",
-  facebook: "https://www.facebook.com/Loir.et.Cher.en.Val.de.Loire"
+  facebook: "https://www.facebook.com/Loir.et.Cher.en.Val.de.Loire",
 };
 
 /**
  * Modal popup for discovery point content
  * Horizontal layout: image left, content right (mobile: stacked)
  */
-function DiscoveryModal({ 
-  isOpen, 
-  onClose, 
-  title, 
+function DiscoveryModal({
+  isOpen,
+  onClose,
+  title,
   subtitle,
   content,
   activities,
   image,
-  links = [] 
+  links = [],
 }) {
   if (!isOpen) return null;
 
   return (
     <>
       {/* Backdrop */}
-      <div 
+      <div
         className="fixed inset-0 z-40 bg-black/50 backdrop-blur-sm"
         onClick={onClose}
       />
-      
+
       {/* Modal */}
-      <div 
+      <div
         className={cn(
           "fixed z-50",
           "left-4 right-4 top-1/2 -translate-y-1/2",
@@ -42,7 +42,7 @@ function DiscoveryModal({
           "max-w-sm mx-auto",
           "bg-white rounded-2xl shadow-2xl",
           "max-h-[85vh] overflow-hidden",
-          "animate-in fade-in zoom-in-95 duration-200"
+          "animate-in fade-in zoom-in-95 duration-200",
         )}
       >
         {/* Close button */}
@@ -53,7 +53,7 @@ function DiscoveryModal({
             "w-8 h-8 rounded-full",
             "flex items-center justify-center",
             "bg-white/90 hover:bg-gray-100",
-            "transition-colors shadow-sm"
+            "transition-colors shadow-sm",
           )}
           aria-label="Fermer"
         >
@@ -88,7 +88,9 @@ function DiscoveryModal({
             {/* Activities section */}
             {activities && (
               <div className="mb-4">
-                <h3 className="text-sm font-bold text-gray-900 mb-2">Activités :</h3>
+                <h3 className="text-sm font-bold text-gray-900 mb-2">
+                  Activités :
+                </h3>
                 <p className="text-gray-600 text-sm leading-relaxed">
                   {activities}
                 </p>
@@ -112,7 +114,7 @@ function DiscoveryModal({
                       "inline-flex items-center gap-2",
                       "text-blue-600 hover:text-blue-800",
                       "text-sm font-medium",
-                      "transition-colors"
+                      "transition-colors",
                     )}
                   >
                     <Globe className="w-4 h-4" />
@@ -151,4 +153,3 @@ function DiscoveryModal({
 }
 
 export default DiscoveryModal;
-

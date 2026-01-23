@@ -9,11 +9,13 @@ const discoveryPoints = [
     subtitle: "Un territoire viticole",
     position: { top: 45, left: 57 },
     image: "/decouverte/deguster.jpg",
-    content: "Le vignoble de Touraine Mesland s'étend sur les coteaux dominant la Loire, offrant des vins d'exception dans un cadre naturel préservé. Cette appellation produit des vins rouges, rosés et blancs caractéristiques du terroir ligérien.",
-    activities: "Découverte de l'AOC Touraine Mesland avec dégustation de vins locaux. Visite des caves et rencontre avec les vignerons du territoire.",
+    content:
+      "Le vignoble de Touraine Mesland s'étend sur les coteaux dominant la Loire, offrant des vins d'exception dans un cadre naturel préservé. Cette appellation produit des vins rouges, rosés et blancs caractéristiques du terroir ligérien.",
+    activities:
+      "Découverte de l'AOC Touraine Mesland avec dégustation de vins locaux. Visite des caves et rencontre avec les vignerons du territoire.",
     links: [
-      { label: "Site de l'ADT41", url: "https://www.coeur-val-de-loire.com/" }
-    ]
+      { label: "Site de l'ADT41", url: "https://www.coeur-val-de-loire.com/" },
+    ],
   },
   {
     id: 2,
@@ -21,11 +23,16 @@ const discoveryPoints = [
     subtitle: "Un fleuve sauvage",
     position: { top: 65, left: 50 },
     image: "/decouverte/proteger.jpg",
-    content: "Le Val de Loire, de Sully-sur-Loire à Chalonnes-sur-Loire, est inscrit sur la Liste du patrimoine mondial de l'Unesco depuis le 30 novembre 2000. Cette reconnaissance internationale consacre un paysage culturel exceptionnel façonné par des siècles d'interactions entre les populations et leur environnement.",
-    activities: "Parcours découverte de la nature avec GuidiGo adapté aux enfants de 7 à 12 ans. Veuzain-sur-Loire : Terrasse de la Loire, un paysage à « croquer » avec Beaver, la jeune castor passionnée de dessin naturaliste.",
+    content:
+      "Le Val de Loire, de Sully-sur-Loire à Chalonnes-sur-Loire, est inscrit sur la Liste du patrimoine mondial de l'Unesco depuis le 30 novembre 2000. Cette reconnaissance internationale consacre un paysage culturel exceptionnel façonné par des siècles d'interactions entre les populations et leur environnement.",
+    activities:
+      "Parcours découverte de la nature avec GuidiGo adapté aux enfants de 7 à 12 ans. Veuzain-sur-Loire : Terrasse de la Loire, un paysage à « croquer » avec Beaver, la jeune castor passionnée de dessin naturaliste.",
     links: [
-      { label: "GuidiGo Terrasses de la Loire", url: "https://www.guidigo.com/" }
-    ]
+      {
+        label: "GuidiGo Terrasses de la Loire",
+        url: "https://www.guidigo.com/",
+      },
+    ],
   },
   {
     id: 3,
@@ -33,10 +40,14 @@ const discoveryPoints = [
     subtitle: "Un site marqué par l'histoire humaine",
     position: { top: 72, left: 25 },
     image: "/decouverte/decouvrir.jpg",
-    content: "1858, date de la construction d'un pont suspendu sur la Loire. En 1816, le bac de Chaumont utilise un bateau passe cheval de 11,34 m x 1,15 m pourvu d'un gouvernail, de deux bourdes ferrées et d'une corde d'amarrage.",
+    content:
+      "1858, date de la construction d'un pont suspendu sur la Loire. En 1816, le bac de Chaumont utilise un bateau passe cheval de 11,34 m x 1,15 m pourvu d'un gouvernail, de deux bourdes ferrées et d'une corde d'amarrage.",
     links: [
-      { label: "Vers une promenade en bateau sur la Loire", url: "https://www.coeur-val-de-loire.com/" }
-    ]
+      {
+        label: "Vers une promenade en bateau sur la Loire",
+        url: "https://www.coeur-val-de-loire.com/",
+      },
+    ],
   },
   {
     id: 4,
@@ -44,12 +55,13 @@ const discoveryPoints = [
     subtitle: "La Loire à vélo",
     position: { top: 58, left: 82 },
     image: "/decouverte/explorer.jpg",
-    content: "Un voyage mythique au cœur du dernier fleuve sauvage d'Europe. La Loire à Vélo est l'itinéraire cyclable touristique le plus long de France, offrant une aventure unique sur près de 900 km le long du majestueux fleuve de la Loire.",
+    content:
+      "Un voyage mythique au cœur du dernier fleuve sauvage d'Europe. La Loire à Vélo est l'itinéraire cyclable touristique le plus long de France, offrant une aventure unique sur près de 900 km le long du majestueux fleuve de la Loire.",
     activities: null,
     links: [
-      { label: "Site de la loire à Vélo", url: "https://www.loireavelo.fr/" }
-    ]
-  }
+      { label: "Site de la loire à Vélo", url: "https://www.loireavelo.fr/" },
+    ],
+  },
 ];
 
 function Decouverte() {
@@ -75,24 +87,24 @@ function Decouverte() {
         </p>
       </div>
 
-      <div 
+      <div
         ref={containerRef}
         className="absolute inset-0 overflow-auto"
         style={{
-          overflowX: 'auto',
-          overflowY: 'auto',
-          WebkitOverflowScrolling: 'touch'
+          overflowX: "auto",
+          overflowY: "auto",
+          WebkitOverflowScrolling: "touch",
         }}
       >
         {}
-        <div 
+        <div
           className="relative"
           style={{
-            minWidth: '100vw',
-            minHeight: '100vh',
+            minWidth: "100vw",
+            minHeight: "100vh",
 
-            width: 'max-content',
-            height: 'max-content'
+            width: "max-content",
+            height: "max-content",
           }}
         >
           {}
@@ -101,11 +113,11 @@ function Decouverte() {
             alt="Vue du Port de Chaumont-sur-Loire"
             className="block"
             style={{
-              minWidth: '100vw',
-              minHeight: '100vh',
-              objectFit: 'cover',
-              width: 'auto',
-              height: '100vh'
+              minWidth: "100vw",
+              minHeight: "100vh",
+              objectFit: "cover",
+              width: "auto",
+              height: "100vh",
             }}
             draggable={false}
           />
@@ -117,7 +129,7 @@ function Decouverte() {
               label={point.label}
               position={{
                 top: `${point.position.top}%`,
-                left: `${point.position.left}%`
+                left: `${point.position.left}%`,
               }}
               isActive={selectedPoint?.id === point.id}
               onClick={() => handlePointClick(point)}
@@ -131,7 +143,7 @@ function Decouverte() {
               style={{
                 top: `${point.position.top}%`,
                 left: `${point.position.left}%`,
-                transform: "translate(-50%, 24px)"
+                transform: "translate(-50%, 24px)",
               }}
             >
               <span className="bg-black/70 text-white text-xs px-2 py-1 rounded-full whitespace-nowrap backdrop-blur-sm">

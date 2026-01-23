@@ -72,12 +72,11 @@ function ForgotPassword() {
             )}
 
             <button
-                type="submit"
-                className="w-full rounded-md bg-primary py-2 text-sm font-medium text-white transition-colors"
-              >
-                Envoyer le lien de réinitialisation
-              </button>
-              
+              type="submit"
+              className="w-full rounded-md bg-primary py-2 text-sm font-medium text-white transition-colors"
+            >
+              Envoyer le lien de réinitialisation
+            </button>
 
             <div className="text-center text-xs text-slate-400">
               <a href="/connexion" className="underline hover:text-slate-200">

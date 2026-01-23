@@ -27,15 +27,21 @@ const waterLevelData = [
   { time: "9h", level: 1.25 },
   { time: "12h", level: 1.28 },
   { time: "14h", level: 1.23 },
-  { time: "17h", level: 1.20 },
+  { time: "17h", level: 1.2 },
   { time: "20h", level: 1.18 },
   { time: "23h", level: 1.15 },
 ];
 
 // Données simulées pour les remarques
 const remarques = [
-  { text: "Aire de repos très propre et bien entretenue, merci !", positive: true },
-  { text: "Super expérience sur la Loire à Vélo ! Les paysages sont magnifiques.", positive: true },
+  {
+    text: "Aire de repos très propre et bien entretenue, merci !",
+    positive: true,
+  },
+  {
+    text: "Super expérience sur la Loire à Vélo ! Les paysages sont magnifiques.",
+    positive: true,
+  },
   { text: "Excellent itinéraire, je recommande vivement.", positive: true },
   { text: "Excellent itinéraire, je recommande vivement.", positive: true },
 ];
@@ -49,7 +55,14 @@ const chartConfig = {
 };
 
 // Composant StatCard réutilisable
-function StatCard({ icon: Icon, title, subtitle, value, unit, className = "" }) {
+function StatCard({
+  icon: Icon,
+  title,
+  subtitle,
+  value,
+  unit,
+  className = "",
+}) {
   return (
     <Card className={`relative overflow-hidden ${className}`}>
       <button className="absolute top-3 right-3 p-1 rounded-md hover:bg-black/5 transition-colors">
@@ -59,7 +72,8 @@ function StatCard({ icon: Icon, title, subtitle, value, unit, className = "" }) 
         <div className="flex items-center gap-2 text-muted-foreground">
           <Icon className="h-4 w-4" />
           <span className="text-xs">
-            {title} <span className="text-muted-foreground/70">({subtitle})</span>
+            {title}{" "}
+            <span className="text-muted-foreground/70">({subtitle})</span>
           </span>
         </div>
       </CardHeader>
@@ -76,7 +90,12 @@ function StatCard({ icon: Icon, title, subtitle, value, unit, className = "" }) 
 // Fonction pour formater la date
 function formatDate() {
   const now = new Date();
-  const options = { weekday: "long", day: "numeric", month: "long", year: "numeric" };
+  const options = {
+    weekday: "long",
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+  };
   const dateStr = now.toLocaleDateString("fr-FR", options);
   // Capitaliser la première lettre
   return dateStr.charAt(0).toUpperCase() + dateStr.slice(1);
@@ -84,7 +103,10 @@ function formatDate() {
 
 function formatTime() {
   const now = new Date();
-  return now.toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" });
+  return now.toLocaleTimeString("fr-FR", {
+    hour: "2-digit",
+    minute: "2-digit",
+  });
 }
 
 // Icône météo dynamique
@@ -103,7 +125,7 @@ function WeatherIcon({ condition }) {
 
 function ToutVoir() {
   const { user } = useAuth();
-  
+
   // Données simulées (à remplacer par de vraies données)
   const weatherCondition = "sunny";
   const temperature = 24;
@@ -139,18 +161,21 @@ function ToutVoir() {
               <div className="flex items-center justify-between">
                 <span className="text-5xl font-semi-bold">{temperature}°C</span>
               </div>
-              
+
               {/* Placeholder pour la carte */}
               <div className="mt-4 h-32 bg-gray-100 rounded-lg flex items-center justify-center">
                 {/* <span className="text-muted-foreground text-sm">Carte interactive</span> */}
               </div>
-              
+
               {/* Météo */}
               <div className="mt-4 flex items-center gap-3">
                 <WeatherIcon condition={weatherCondition} />
                 <span className="text-sm font-medium">
-                  {weatherCondition === "sunny" ? "Ensoleillé" : 
-                   weatherCondition === "cloudy" ? "Nuageux" : "Pluvieux"}
+                  {weatherCondition === "sunny"
+                    ? "Ensoleillé"
+                    : weatherCondition === "cloudy"
+                      ? "Nuageux"
+                      : "Pluvieux"}
                 </span>
               </div>
             </CardContent>
@@ -215,16 +240,22 @@ function ToutVoir() {
               <ArrowUpRight className="h-4 w-4 text-muted-foreground" />
             </button>
             <CardHeader className="pb-2">
-              <CardTitle className="text-base font-semibold">Remarques et suggestions</CardTitle>
+              <CardTitle className="text-base font-semibold">
+                Remarques et suggestions
+              </CardTitle>
             </CardHeader>
             <CardContent>
               <ul className="space-y-2">
                 {remarques.map((remarque, index) => (
                   <li key={index} className="flex items-start gap-2">
-                    <span className={`mt-1.5 h-2 w-2 rounded-full flex-shrink-0 ${
-                      remarque.positive ? "bg-green-500" : "bg-red-500"
-                    }`} />
-                    <span className="text-sm text-muted-foreground">{remarque.text}</span>
+                    <span
+                      className={`mt-1.5 h-2 w-2 rounded-full flex-shrink-0 ${
+                        remarque.positive ? "bg-green-500" : "bg-red-500"
+                      }`}
+                    />
+                    <span className="text-sm text-muted-foreground">
+                      {remarque.text}
+                    </span>
                   </li>
                 ))}
               </ul>
@@ -237,15 +268,31 @@ function ToutVoir() {
               <ArrowUpRight className="h-4 w-4 text-muted-foreground" />
             </button>
             <CardHeader className="pb-2">
-              <CardTitle className="text-base font-semibold">Évolution du niveau de l'eau</CardTitle>
+              <CardTitle className="text-base font-semibold">
+                Évolution du niveau de l'eau
+              </CardTitle>
             </CardHeader>
             <CardContent>
               <ChartContainer config={chartConfig} className="h-48 w-full">
                 <AreaChart data={waterLevelData}>
                   <defs>
-                    <linearGradient id="waterGradient" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="5%" stopColor="var(--chart-3)" stopOpacity={0.3} />
-                      <stop offset="95%" stopColor="var(--chart-3)" stopOpacity={0} />
+                    <linearGradient
+                      id="waterGradient"
+                      x1="0"
+                      y1="0"
+                      x2="0"
+                      y2="1"
+                    >
+                      <stop
+                        offset="5%"
+                        stopColor="var(--chart-3)"
+                        stopOpacity={0.3}
+                      />
+                      <stop
+                        offset="95%"
+                        stopColor="var(--chart-3)"
+                        stopOpacity={0}
+                      />
                     </linearGradient>
                   </defs>
                   <XAxis
@@ -254,10 +301,7 @@ function ToutVoir() {
                     tickLine={false}
                     tick={{ fontSize: 12, fill: "var(--muted-foreground)" }}
                   />
-                  <YAxis
-                    hide
-                    domain={["dataMin - 0.1", "dataMax + 0.1"]}
-                  />
+                  <YAxis hide domain={["dataMin - 0.1", "dataMax + 0.1"]} />
                   <ChartTooltip
                     content={<ChartTooltipContent />}
                     cursor={false}

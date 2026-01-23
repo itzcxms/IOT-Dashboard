@@ -36,87 +36,92 @@ import { ThemeProvider } from "@/context/ThemeContext.jsx";
 
 ReactDOM.createRoot(document.getElementById("root")).render(
   <ThemeProvider>
-  <AuthProvider>
-    <BrowserRouter>
-      <Routes>
-        {/* Public */}
-        <Route element={<PublicLayout />}>
-          <Route path="/connexion" element={<Login />} />
-          <Route path="/logout" element={<Logout />} />
-          <Route path="/" element={<Decouverte />} />
-          <Route path="/mot-de-passe-oublie" element={<ForgotPassword />} />
-          <Route path="/chaumont" element={<LandingPage />} />
-          <Route path="/satisfaction" element={<SatisfactionForm />} />
-          <Route path="/compte-inactif" element={<AccountInactive />} />
-        </Route>
+    <AuthProvider>
+      <BrowserRouter>
+        <Routes>
+          {/* Public */}
+          <Route element={<PublicLayout />}>
+            <Route path="/connexion" element={<Login />} />
+            <Route path="/logout" element={<Logout />} />
+            <Route path="/" element={<Decouverte />} />
+            <Route path="/mot-de-passe-oublie" element={<ForgotPassword />} />
+            <Route path="/chaumont" element={<LandingPage />} />
+            <Route path="/satisfaction" element={<SatisfactionForm />} />
+            <Route path="/compte-inactif" element={<AccountInactive />} />
+          </Route>
 
           {/* Privé avec permissions*/}
           <Route element={<RequireAuth />}>
-            <Route element={<PermissionProvider>
-                <DashboardLayout />
-              </PermissionProvider>
-            }
-          >
             <Route
-              path="/dashboard"
               element={
-                <ProtectedRoute route="/dashboard">
-                  <ToutVoir />
-              </ProtectedRoute>
+                <PermissionProvider>
+                  <DashboardLayout />
+                </PermissionProvider>
               }
-            />
-            <Route
-              path="/gestion-de-l-aire"
-              element={
-                <ProtectedRoute route="/gestion-de-l-aire">
-                  <GestionAire />
-              </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/savon"
-              element={
-                <ProtectedRoute route="/savon">
-                  <Savon />
-              </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/zone-inondable"
-              element={
-                <ProtectedRoute route="/zone-inondable">
-                  <ZoneInondable />
-                </ProtectedRoute>
-              }
-            />
+            >
+              <Route
+                path="/dashboard"
+                element={
+                  <ProtectedRoute route="/dashboard">
+                    <ToutVoir />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/gestion-de-l-aire"
+                element={
+                  <ProtectedRoute route="/gestion-de-l-aire">
+                    <GestionAire />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/savon"
+                element={
+                  <ProtectedRoute route="/savon">
+                    <Savon />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/zone-inondable"
+                element={
+                  <ProtectedRoute route="/zone-inondable">
+                    <ZoneInondable />
+                  </ProtectedRoute>
+                }
+              />
               <Route path="/compte" element={<Account />} />
               <Route path="/compte/details" element={<DetailsAccount />} />
-              <Route path="/admin/liste-utilisateurs" element={<ProtectedRoute route="/admin/liste-utilisateurs">
-                  <Users />
-              </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/admin/permissions"
-              element={
-                <ProtectedRoute route="/admin/permissions">
-                  <GestionPermissions />
-              </ProtectedRoute>
-              }
-            />
+              <Route
+                path="/admin/liste-utilisateurs"
+                element={
+                  <ProtectedRoute route="/admin/liste-utilisateurs">
+                    <Users />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/admin/permissions"
+                element={
+                  <ProtectedRoute route="/admin/permissions">
+                    <GestionPermissions />
+                  </ProtectedRoute>
+                }
+              />
 
-            <Route
+              <Route
                 path="/analyse-satisfaction"
-                element={<ProtectedRoute route="/analyse-satisfaction">
-                  <AnalyseSatisfaction />
-              </ProtectedRoute>
-              }
-            />
+                element={
+                  <ProtectedRoute route="/analyse-satisfaction">
+                    <AnalyseSatisfaction />
+                  </ProtectedRoute>
+                }
+              />
 
-            <Route path="/acces-refuse" element={<AccessDenied />}/>
+              <Route path="/acces-refuse" element={<AccessDenied />} />
             </Route>
           </Route>
-
 
           <Route path="*" element={<NotFound />} />
         </Routes>
