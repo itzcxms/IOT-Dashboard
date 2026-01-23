@@ -21,6 +21,8 @@ function DiscoveryModal({
   activities,
   image,
   imageSource,
+  imageFit,
+  imagePosition,
   links = [],
 }) {
   if (!isOpen) return null;
@@ -69,7 +71,11 @@ function DiscoveryModal({
               <img
                 src={image}
                 alt={title}
-                className="w-full h-48 md:h-full object-cover"
+                style={{
+                  objectFit: imageFit || "cover",
+                  objectPosition: imagePosition || "center",
+                }}
+                className="w-full h-52 md:h-full"
               />
               {imageSource && (
                 <span className="absolute bottom-1 left-1 text-[10px] text-white/80 bg-black/40 px-1 rounded">

@@ -135,14 +135,14 @@ function ToutVoir() {
   const questionnaires = 5;
 
   return (
-    <div className="space-y-6">
+    <div className="flex flex-col h-[calc(100vh-2rem)] space-y-4">
       {/* Header avec nom utilisateur */}
       <h1 className="text-2xl font-semibold">
         Bonjour, {user?.prenom || "Utilisateur"} {user?.nom || ""}
       </h1>
 
       {/* Grille principale */}
-      <div className="grid grid-cols-12 gap-4">
+      <div className="grid grid-cols-12 gap-4 flex-1 min-h-0">
         {/* Colonne gauche */}
         <div className="col-span-12 lg:col-span-5 space-y-4">
           {/* Carte Météo */}
@@ -160,11 +160,6 @@ function ToutVoir() {
             <CardContent className="pt-4">
               <div className="flex items-center justify-between">
                 <span className="text-5xl font-semi-bold">{temperature}°C</span>
-              </div>
-
-              {/* Placeholder pour la carte */}
-              <div className="mt-4 h-32 bg-gray-100 rounded-lg flex items-center justify-center">
-                {/* <span className="text-muted-foreground text-sm">Carte interactive</span> */}
               </div>
 
               {/* Météo */}
@@ -215,9 +210,9 @@ function ToutVoir() {
         </div>
 
         {/* Colonne droite */}
-        <div className="col-span-12 lg:col-span-7 space-y-4">
+        <div className="col-span-12 lg:col-span-7 flex flex-col gap-4 h-full">
           {/* Ligne du haut - 2 petites cartes */}
-          <div className="grid grid-cols-2 gap-4">
+          {/* <div className="grid grid-cols-2 gap-4">
             <StatCard
               icon={ClipboardList}
               title="Questionnaires remplis"
@@ -232,10 +227,10 @@ function ToutVoir() {
               value={hauteurEau.toFixed(2).replace(".", ",")}
               unit="m"
             />
-          </div>
+          </div> */}
 
           {/* Remarques et suggestions */}
-          <Card className="relative">
+          <Card className="relative flex-1 flex flex-col min-h-0">
             <button className="absolute top-3 right-3 p-1 rounded-md hover:bg-black/5 transition-colors">
               <ArrowUpRight className="h-4 w-4 text-muted-foreground" />
             </button>
@@ -244,7 +239,7 @@ function ToutVoir() {
                 Remarques et suggestions
               </CardTitle>
             </CardHeader>
-            <CardContent>
+            <CardContent className="flex-1 overflow-auto">
               <ul className="space-y-2">
                 {remarques.map((remarque, index) => (
                   <li key={index} className="flex items-start gap-2">
@@ -263,7 +258,7 @@ function ToutVoir() {
           </Card>
 
           {/* Graphique évolution niveau d'eau */}
-          <Card className="relative">
+          <Card className="relative flex-[1.5] flex flex-col min-h-0">
             <button className="absolute top-3 right-3 p-1 rounded-md hover:bg-black/5 transition-colors">
               <ArrowUpRight className="h-4 w-4 text-muted-foreground" />
             </button>
@@ -272,8 +267,8 @@ function ToutVoir() {
                 Évolution du niveau de l'eau
               </CardTitle>
             </CardHeader>
-            <CardContent>
-              <ChartContainer config={chartConfig} className="h-48 w-full">
+            <CardContent className="flex-1 min-h-0 pb-4">
+              <ChartContainer config={chartConfig} className="h-full w-full aspect-auto">
                 <AreaChart data={waterLevelData}>
                   <defs>
                     <linearGradient

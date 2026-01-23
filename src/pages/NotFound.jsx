@@ -13,9 +13,9 @@ function NotFound() {
   const navigate = useNavigate();
 
   return (
-    <main className="flex min-h-screen w-screen overflow-x-hidden bg-slate-900">
+    <main className="flex flex-col md:flex-row min-h-screen w-screen overflow-x-hidden bg-slate-900">
       {/* Gauche */}
-      <div className="relative flex-[7] h-screen overflow-hidden">
+      <div className="hidden md:block relative md:flex-[7] h-screen overflow-hidden">
         <img
           src="/login/val-de-loir-bg.png"
           alt="img-bg"
@@ -30,7 +30,7 @@ function NotFound() {
       </div>
 
       {/* Droite */}
-      <div className="flex flex-[3] w-full max-w-[50vw] min-h-screen items-center justify-center bg-background px-6 sm:px-10">
+      <div className="flex flex-1 md:flex-[3] w-full md:max-w-[50vw] min-h-screen items-center justify-center bg-background px-6 sm:px-10">
         <Card className="w-full max-w-md bg-card backdrop-blur">
           <CardHeader>
             <CardTitle className="text-3xl ">
@@ -55,7 +55,7 @@ function NotFound() {
               </Link>
 
               <Link
-                to="/"
+                to="/dashboard"
                 className="w-full rounded-md border border-primary/50 bg-primary px-4 py-2 text-center text-white hover:bg-primary/10"
               >
                 Retour à l’accueil

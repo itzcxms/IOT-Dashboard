@@ -21,6 +21,11 @@ const discoveryPoints = [
     links: [
       { label: "Poursuivez l'aventure et trouvez des adresses de dégustations", url: "https://www.vin-touraine-mesland.fr/" },
     ],
+    links: [
+      { label: "Poursuivez l'aventure et trouvez des adresses de dégustations", url: "https://www.vin-touraine-mesland.fr/" },
+    ],
+    // x% (horizontal) y% (vertical) - ex: "50% 20%" pour remonter l'image
+    imagePosition: "50% 75%",
   },
   {
     id: 2,
@@ -40,6 +45,7 @@ const discoveryPoints = [
         url: "https://www.guidigo.com/",
       },
     ],
+    imagePosition: "45% 30%",
   },
   {
     id: 3,
@@ -59,6 +65,7 @@ const discoveryPoints = [
         url: "https://www.coeur-val-de-loire.com/",
       },
     ],
+    imagePosition: "50% 80%",
   },
   {
     id: 4,
@@ -74,12 +81,14 @@ const discoveryPoints = [
     links: [
       { label: "A vos vélos : planifiez votre découverte en Loir et Cher", url: "https://www.val-de-loire-41.com/circuits-et-randonnees/a-velo/circuits-velo-loir-et-cher/circuits-velo/" },
     ],
+    imagePosition: "50% 60%",
   },
 ];
 
 function Decouverte() {
   const [selectedPoint, setSelectedPoint] = useState(null);
   const [showInfoModal, setShowInfoModal] = useState(false);
+  const [hasScrolled, setHasScrolled] = useState(false);
   const containerRef = useRef(null);
 
   const handlePointClick = (point) => {
@@ -88,6 +97,16 @@ function Decouverte() {
 
   const handleCloseModal = () => {
     setSelectedPoint(null);
+  };
+
+  const handleScroll = (e) => {
+    if (!hasScrolled) {
+      const { scrollLeft, scrollTop } = e.currentTarget;
+      // Fade out only after scrolling 50px in any direction
+      if (Math.abs(scrollLeft) > 50 || Math.abs(scrollTop) > 50) {
+        setHasScrolled(true);
+      }
+    }
   };
 
   return (
@@ -103,6 +122,7 @@ function Decouverte() {
 
       <div
         ref={containerRef}
+        onScroll={handleScroll}
         className="absolute inset-0 overflow-auto"
         style={{
           overflowX: "auto",
@@ -169,7 +189,11 @@ function Decouverte() {
       </div>
 
       {/* Mobile swipe hint */}
-      <div className="fixed bottom-4 left-1/2 -translate-x-1/2 z-10 md:hidden pointer-events-none">
+      <div
+        className={`fixed bottom-24 left-1/2 -translate-x-1/2 z-10 md:hidden landscape:hidden pointer-events-none transition-opacity duration-700 ${
+          hasScrolled ? "opacity-0" : "opacity-100"
+        }`}
+      >
         <div className="bg-black/50 text-white text-xs px-3 py-1.5 rounded-full backdrop-blur-sm flex items-center gap-2">
           <span>↔</span>
           <span>Glissez pour explorer</span>
@@ -220,6 +244,8 @@ function Decouverte() {
         activities={selectedPoint?.activities}
         image={selectedPoint?.image}
         imageSource={selectedPoint?.imageSource}
+        imageFit={selectedPoint?.imageFit}
+        imagePosition={selectedPoint?.imagePosition}
         links={selectedPoint?.links || []}
       />
 
