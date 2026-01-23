@@ -6,12 +6,13 @@ import generateCallsAPI from "@/functions/GestionnaireCallsAPI.jsx";
 import { Card, CardHeader } from "@/components/ui/card.jsx";
 import { Button } from "../ui/button";
 
-function CardsList({ type }) {
+function CardsList({ type, seuilPreco = null, seuilDanger = null }) {
   const { token } = useAuth();
   const [cards, setCards] = useState([]);
 
   async function fetchCardData() {
     let tempCards = [];
+    let hauteur = null;
     const data = await generateCallsAPI(
       token,
       "POST",
@@ -22,11 +23,24 @@ function CardsList({ type }) {
     for (let i = 0; i < keys.length; i++) {
       let tempTexte = "";
       if (keys[i] === "haut") {
+        hauteur = data[keys[i]];
         tempTexte = data[keys[i]] + " m";
       } else {
         tempTexte = data[keys[i]];
       }
       tempCards.push({ titre: keys[i], texte: tempTexte, sousTitre: "" });
+    }
+    if (seuilPreco !== null && seuilDanger !== null && hauteur !== null) {
+      tempCards.push({
+        titre: "Zone inondable",
+        texte:
+          seuilPreco <= hauteur
+            ? seuilDanger <= hauteur
+              ? "Dangereux"
+              : "Attention"
+            : "Ok",
+        sousTitre: "",
+      });
     }
     setCards(tempCards);
   }

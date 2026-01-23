@@ -85,6 +85,10 @@ function GraphsGestion() {
         type: "toilette",
       });
       tempDatas = tempDatas.donnees;
+      for (let i = 0; i < tempDatas.length; i++) {
+        tempDatas[i].vent = Math.floor(Math.random() * 56) + 1;
+        tempDatas[i].temperature = Math.floor(Math.random() * 35) + 1;
+      }
       await setCurrentSelection(key);
     }
     await setChartData(tempDatas);
