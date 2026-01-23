@@ -1,5 +1,6 @@
 import React from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Link, useNavigate } from "react-router-dom";
 import {
   ChartContainer,
   ChartTooltip,
@@ -35,15 +36,26 @@ const waterLevelData = [
 // Données simulées pour les remarques
 const remarques = [
   {
-    text: "Aire de repos très propre et bien entretenue, merci !",
-    positive: true,
+    "text": "Le balisage est parfait, impossible de se perdre même sans GPS !",
+    "positive": true
   },
   {
-    text: "Super expérience sur la Loire à Vélo ! Les paysages sont magnifiques.",
-    positive: true,
+    "text": "Très pratique : les bornes de recharge pour VAE fonctionnent à merveille.",
+    "positive": true
   },
-  { text: "Excellent itinéraire, je recommande vivement.", positive: true },
-  { text: "Excellent itinéraire, je recommande vivement.", positive: true },
+  {
+    "text": "Les points de vue sur les châteaux depuis la piste sont tout simplement époustouflants.",
+    "positive": true
+  },
+  {
+    "text": "Un parcours plat et accessible, idéal pour une sortie en famille avec des enfants.",
+    "positive": true
+  },
+  {
+    "text": "Accueil chaleureux chez les commerçants labellisés 'Accueil Vélo', un vrai plaisir.",
+    "positive": true
+  },
+  { text: "Aire de repos très propre et bien entretenue, merci !", positive: true, },
 ];
 
 // Configuration du graphique
@@ -62,10 +74,14 @@ function StatCard({
   value,
   unit,
   className = "",
+  onClick,
 }) {
   return (
     <Card className={`relative overflow-hidden ${className}`}>
-      <button className="absolute top-3 right-3 p-1 rounded-md hover:bg-black/5 transition-colors">
+      <button 
+        onClick={onClick}
+        className="absolute top-3 right-3 p-1 rounded-md hover:bg-black/5 transition-colors cursor-pointer"
+      >
         <ArrowUpRight className="h-4 w-4 text-muted-foreground" />
       </button>
       <CardHeader className="pb-2">
@@ -125,10 +141,11 @@ function WeatherIcon({ condition }) {
 
 function ToutVoir() {
   const { user } = useAuth();
+  const navigate = useNavigate();
 
   // Données simulées (à remplacer par de vraies données)
-  const weatherCondition = "sunny";
-  const temperature = 24;
+  const weatherCondition = "cloudy";
+  const temperature = 9;
   const frequentation = 132;
   const contenanceSavon = 175;
   const hauteurEau = 1.23;
@@ -144,9 +161,18 @@ function ToutVoir() {
       {/* Grille principale */}
       <div className="grid grid-cols-12 gap-4 flex-1 min-h-0">
         {/* Colonne gauche */}
-        <div className="col-span-12 lg:col-span-5 space-y-4">
+        <div className="col-span-12 lg:col-span-5 grid grid-cols-2 grid-rows-4 gap-4 h-full">
           {/* Carte Météo */}
-          <Card className="overflow-hidden">
+          <Card
+            className="overflow-hidden col-span-2 row-span-2 h-full flex flex-col relative group"
+            style={{
+              backgroundImage: "url('/maps/chaumont-stylized.png')",
+              backgroundSize: "cover",
+              backgroundPosition: "center",
+            }}
+          >
+            <div className="absolute inset-0 bg-white/90 backdrop-blur-[1px]" />
+            <div className="relative z-10 flex flex-col h-full">
             <CardHeader className="flex flex-row items-start justify-between pb-0">
               <div className="flex items-center gap-2 text-muted-foreground">
                 <MapPin className="h-4 w-4" />
@@ -157,7 +183,7 @@ function ToutVoir() {
                 <div>{formatTime()}</div>
               </div>
             </CardHeader>
-            <CardContent className="pt-4">
+            <CardContent className="pt-4 flex-1 flex flex-col justify-end">
               <div className="flex items-center justify-between">
                 <span className="text-5xl font-semi-bold">{temperature}°C</span>
               </div>
@@ -174,39 +200,46 @@ function ToutVoir() {
                 </span>
               </div>
             </CardContent>
+            </div>
           </Card>
 
-          {/* Grille de statistiques */}
-          <div className="grid grid-cols-2 gap-4">
-            <StatCard
-              icon={Users}
-              title="Fréquentation"
-              subtitle="du jour"
-              value={frequentation}
-              unit="personnes"
-            />
-            <StatCard
-              icon={Droplets}
-              title="Contenance estimée"
-              subtitle="du savon"
-              value={contenanceSavon}
-              unit="mL"
-            />
-            <StatCard
-              icon={Waves}
-              title="Hauteur"
-              subtitle="du jour"
-              value={hauteurEau.toFixed(2).replace(".", ",")}
-              unit="m"
-            />
-            <StatCard
-              icon={ClipboardList}
-              title="Questionnaires remplis"
-              subtitle="semaine"
-              value={questionnaires}
-              unit="fois"
-            />
-          </div>
+          {/* Grille de statistiques - maintenant enfants directs */}
+          <StatCard
+            icon={Users}
+            title="Fréquentation"
+            subtitle="du jour"
+            value={frequentation}
+            unit="personnes"
+            className="h-full"
+            onClick={() => navigate("/gestion-de-l-aire")}
+          />
+          <StatCard
+            icon={Droplets}
+            title="Contenance estimée"
+            subtitle="du savon"
+            value={contenanceSavon}
+            unit="mL"
+            className="h-full"
+            onClick={() => navigate("/savon")}
+          />
+          <StatCard
+            icon={Waves}
+            title="Hauteur"
+            subtitle="du jour"
+            value={hauteurEau.toFixed(2).replace(".", ",")}
+            unit="m"
+            className="h-full"
+            onClick={() => navigate("/zone-inondable")}
+          />
+          <StatCard
+            icon={ClipboardList}
+            title="Questionnaires remplis"
+            subtitle="semaine"
+            value={questionnaires}
+            unit="fois"
+            className="h-full"
+            onClick={() => navigate("/analyse-satisfaction")}
+          />
         </div>
 
         {/* Colonne droite */}
@@ -231,7 +264,10 @@ function ToutVoir() {
 
           {/* Remarques et suggestions */}
           <Card className="relative flex-1 flex flex-col min-h-0">
-            <button className="absolute top-3 right-3 p-1 rounded-md hover:bg-black/5 transition-colors">
+            <button 
+              onClick={() => navigate("/analyse-satisfaction")}
+              className="absolute top-3 right-3 p-1 rounded-md hover:bg-black/5 transition-colors cursor-pointer"
+            >
               <ArrowUpRight className="h-4 w-4 text-muted-foreground" />
             </button>
             <CardHeader className="pb-2">
@@ -240,15 +276,15 @@ function ToutVoir() {
               </CardTitle>
             </CardHeader>
             <CardContent className="flex-1 overflow-auto">
-              <ul className="space-y-2">
+              <ul className="space-y-4">
                 {remarques.map((remarque, index) => (
-                  <li key={index} className="flex items-start gap-2">
+                  <li key={index} className="flex items-start gap-3">
                     <span
                       className={`mt-1.5 h-2 w-2 rounded-full flex-shrink-0 ${
                         remarque.positive ? "bg-green-500" : "bg-red-500"
                       }`}
                     />
-                    <span className="text-sm text-muted-foreground">
+                    <span className="text-md text-muted-foreground">
                       {remarque.text}
                     </span>
                   </li>
@@ -259,7 +295,10 @@ function ToutVoir() {
 
           {/* Graphique évolution niveau d'eau */}
           <Card className="relative flex-[1.5] flex flex-col min-h-0">
-            <button className="absolute top-3 right-3 p-1 rounded-md hover:bg-black/5 transition-colors">
+            <button 
+              onClick={() => navigate("/zone-inondable")}
+              className="absolute top-3 right-3 p-1 rounded-md hover:bg-black/5 transition-colors cursor-pointer"
+            >
               <ArrowUpRight className="h-4 w-4 text-muted-foreground" />
             </button>
             <CardHeader className="pb-2">

@@ -62,7 +62,7 @@ function Savon() {
             Dernière mise à jour : 16/01/2026 15:12
           </span>
         </div>
-        <Button variant="outline" onClick={handleReset} disabled={isLoading}>
+        <Button  onClick={handleReset} disabled={isLoading}>
           {isLoading ? "Réinitialisation..." : "Réinitialiser"}
         </Button>
       </div>
