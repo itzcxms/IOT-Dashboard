@@ -22,10 +22,19 @@ function Savon() {
   const [isLoading, setIsLoading] = useState(false);
 
   // Fonction pour réinitialiser le savon
+  // TODO: Réactiver l'appel API quand le backend sera prêt
   const handleReset = async () => {
     setIsLoading(true);
+    
+    // Simulation d'un délai pour le feedback utilisateur
+    await new Promise((resolve) => setTimeout(resolve, 500));
+    
+    // Afficher la boîte de dialogue de confirmation
+    setIsDialogOpen(true);
+    setIsLoading(false);
+
+    /* Code API à réactiver plus tard:
     try {
-      // Appel API pour réinitialiser le savon
       const response = await fetch(
         `${import.meta.env.VITE_API_URL}/api/savon/reset`,
         {
@@ -41,7 +50,6 @@ function Savon() {
         throw new Error("Erreur lors de la réinitialisation");
       }
 
-      // Afficher la boîte de dialogue de confirmation
       setIsDialogOpen(true);
     } catch (error) {
       console.error("Erreur:", error);
@@ -49,6 +57,7 @@ function Savon() {
     } finally {
       setIsLoading(false);
     }
+    */
   };
 
   return (

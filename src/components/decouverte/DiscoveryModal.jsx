@@ -1,5 +1,5 @@
-import React from "react";
-import { X, Globe, Instagram, Facebook } from "lucide-react";
+import React, { useState, useEffect } from "react";
+import { X, Globe, Instagram, Facebook, ChevronsUpDown } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 // Liens réseaux sociaux
@@ -26,6 +26,30 @@ function DiscoveryModal({
   logo,
   links = [],
 }) {
+  const [showScrollHint, setShowScrollHint] = useState(false);
+
+  // Show scroll hint on mobile when modal opens, hide after 2 seconds or on scroll
+  useEffect(() => {
+    if (isOpen) {
+      setShowScrollHint(true);
+      const timer = setTimeout(() => setShowScrollHint(false), 2000);
+      
+      // Hide immediately on scroll
+      const handleScroll = () => setShowScrollHint(false);
+      const contentEl = document.querySelector('.discovery-modal-content');
+      if (contentEl) {
+        contentEl.addEventListener('scroll', handleScroll, { once: true });
+      }
+      
+      return () => {
+        clearTimeout(timer);
+        if (contentEl) {
+          contentEl.removeEventListener('scroll', handleScroll);
+        }
+      };
+    }
+  }, [isOpen]);
+
   if (!isOpen) return null;
 
   return (
@@ -87,7 +111,25 @@ function DiscoveryModal({
           )}
 
           {/* Content section */}
-          <div className="flex-1 flex flex-col p-5 md:p-6 overflow-y-auto">
+          <div 
+            className="flex-1 flex flex-col p-5 md:p-6 overflow-y-auto relative discovery-modal-content"
+            style={{
+              /* Scrollbar styles - always visible on mobile */
+              scrollbarWidth: 'thin',
+              scrollbarColor: '#cbd5e1 #f1f5f9',
+            }}
+          >
+            {/* Scroll hint message - mobile only */}
+            <div 
+              className={`md:hidden fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-50 transition-opacity duration-300 ${ 
+                showScrollHint ? 'opacity-100' : 'opacity-0 pointer-events-none'
+              }`}
+            >
+              <div className="bg-gray-700/80 text-white text-sm px-4 py-2 rounded-md shadow-md flex items-center gap-2">
+                <ChevronsUpDown className="w-4 h-4" />
+                <span>Faites défiler</span>
+              </div>
+            </div>
             {/* Logo */}
             {logo && (
               <div className="mb-4">
