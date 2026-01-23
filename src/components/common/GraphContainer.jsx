@@ -64,7 +64,7 @@ function GraphContainer({
                 value: chartConfig[param].label,
                 angle: -90,
                 position: "insideLeft",
-                offset: index % 2 === 1 ? 40 : 20,
+                offset: index % 2 === 1 ? 40 : 16,
                 style: { textAnchor: "middle" },
               }}
             />
