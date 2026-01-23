@@ -1,17 +1,25 @@
 import React from "react";
-import { X, ExternalLink } from "lucide-react";
+import { X, Globe, Instagram, Facebook } from "lucide-react";
 import { cn } from "@/lib/utils";
+
+// Liens réseaux sociaux
+const socialLinks = {
+  instagram: "https://www.instagram.com/loiretcher_en_valdeloire/",
+  facebook: "https://www.facebook.com/Loir.et.Cher.en.Val.de.Loire"
+};
 
 /**
  * Modal popup for discovery point content
- * Light mode style with scrollable content
+ * Horizontal layout: image left, content right (mobile: stacked)
  */
 function DiscoveryModal({ 
   isOpen, 
   onClose, 
   title, 
   subtitle,
-  content, 
+  content,
+  activities,
+  image,
   links = [] 
 }) {
   if (!isOpen) return null;
@@ -29,66 +37,109 @@ function DiscoveryModal({
         className={cn(
           "fixed z-50",
           "left-4 right-4 top-1/2 -translate-y-1/2",
-          "max-w-lg mx-auto",
-          "bg-white rounded-xl shadow-2xl",
-          "max-h-[80vh] overflow-hidden",
+          "md:left-1/2 md:-translate-x-1/2 md:right-auto",
+          "md:max-w-3xl md:w-full",
+          "max-w-sm mx-auto",
+          "bg-white rounded-2xl shadow-2xl",
+          "max-h-[85vh] overflow-hidden",
           "animate-in fade-in zoom-in-95 duration-200"
         )}
       >
-        {/* Header */}
-        <div className="relative p-4 border-b border-gray-100">
-          <button
-            onClick={onClose}
-            className={cn(
-              "absolute top-3 right-3",
-              "w-8 h-8 rounded-full",
-              "flex items-center justify-center",
-              "bg-gray-100 hover:bg-gray-200",
-              "transition-colors"
-            )}
-            aria-label="Fermer"
-          >
-            <X className="w-4 h-4 text-gray-600" />
-          </button>
-          
-          <h2 className="text-xl font-bold text-gray-900 pr-10">
-            {title}
-          </h2>
-          {subtitle && (
-            <p className="text-sm text-gray-500 mt-1">
-              {subtitle}
-            </p>
+        {/* Close button */}
+        <button
+          onClick={onClose}
+          className={cn(
+            "absolute top-3 right-3 z-10",
+            "w-8 h-8 rounded-full",
+            "flex items-center justify-center",
+            "bg-white/90 hover:bg-gray-100",
+            "transition-colors shadow-sm"
           )}
-        </div>
-        
-        {/* Content */}
-        <div className="p-4 overflow-y-auto max-h-[50vh]">
-          <div className="text-gray-700 text-sm leading-relaxed whitespace-pre-line">
-            {content}
-          </div>
-          
-          {/* Links */}
-          {links.length > 0 && (
-            <div className="mt-4 pt-4 border-t border-gray-100 space-y-2">
-              {links.map((link, index) => (
-                <a
-                  key={index}
-                  href={link.url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className={cn(
-                    "flex items-center gap-2",
-                    "text-blue-600 hover:text-blue-800",
-                    "text-sm font-medium",
-                    "transition-colors"
-                  )}
-                >
-                  <ExternalLink className="w-4 h-4" />
-                  {link.label}
-                </a>
-              ))}
+          aria-label="Fermer"
+        >
+          <X className="w-5 h-5 text-gray-600" />
+        </button>
+
+        {/* Layout container */}
+        <div className="flex flex-col md:flex-row max-h-[85vh]">
+          {/* Image section */}
+          {image && (
+            <div className="md:w-2/5 shrink-0">
+              <img
+                src={image}
+                alt={title}
+                className="w-full h-48 md:h-full object-cover"
+              />
             </div>
           )}
+
+          {/* Content section */}
+          <div className="flex-1 p-5 md:p-6 overflow-y-auto">
+            {/* Title */}
+            <h2 className="text-xl md:text-2xl font-bold text-gray-900 pr-8 mb-3">
+              {subtitle || title}
+            </h2>
+
+            {/* Description */}
+            <div className="text-gray-600 text-sm leading-relaxed mb-4">
+              {content}
+            </div>
+
+            {/* Activities section */}
+            {activities && (
+              <div className="mb-4">
+                <h3 className="text-sm font-bold text-gray-900 mb-2">Activités :</h3>
+                <p className="text-gray-600 text-sm leading-relaxed">
+                  {activities}
+                </p>
+              </div>
+            )}
+            {/* Links and Social Icons Container */}
+            <div className="flex items-center justify-between pt-2 mt-auto">
+              {/* Site Links */}
+              <div className="flex flex-wrap items-center gap-2">
+                {links.map((link, index) => (
+                  <a
+                    key={index}
+                    href={link.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className={cn(
+                      "inline-flex items-center gap-2",
+                      "text-blue-600 hover:text-blue-800",
+                      "text-sm font-medium",
+                      "transition-colors"
+                    )}
+                  >
+                    <Globe className="w-4 h-4" />
+                    {link.label}
+                  </a>
+                ))}
+              </div>
+
+              {/* Social Media Icons - Bottom Right */}
+              <div className="flex items-center gap-3">
+                <a
+                  href={socialLinks.instagram}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-pink-600 hover:text-pink-700 transition-colors"
+                  aria-label="Instagram"
+                >
+                  <Instagram className="w-5 h-5" />
+                </a>
+                <a
+                  href={socialLinks.facebook}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-blue-700 hover:text-blue-800 transition-colors"
+                  aria-label="Facebook"
+                >
+                  <Facebook className="w-5 h-5" />
+                </a>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </>
@@ -96,3 +147,4 @@ function DiscoveryModal({
 }
 
 export default DiscoveryModal;
+

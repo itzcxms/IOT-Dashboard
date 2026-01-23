@@ -116,8 +116,7 @@ function ToutVoir() {
     <div className="space-y-6">
       {/* Header avec nom utilisateur */}
       <h1 className="text-2xl font-semibold">
-        {/* Bonjour, {user?.prenom || "Utilisateur"} {user?.nom || ""} */}
-        Bonjour, Sacha Touille
+        Bonjour, {user?.prenom || "Utilisateur"} {user?.nom || ""}
       </h1>
 
       {/* Grille principale */}
