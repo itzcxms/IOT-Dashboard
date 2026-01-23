@@ -266,11 +266,11 @@ export function AppSidebar() {
                   <div className="flex h-8 w-8 items-center justify-center rounded-full bg-sidebar-accent">
                     <User2 className="h-4 w-4" />
                   </div>
-                  <div className="flex flex-col items-start text-left">
-                    <span className="text-sm font-medium">
+                  <div className="flex flex-col items-start text-left min-w-0 flex-1 overflow-hidden">
+                    <span className="text-sm font-medium truncate w-full">
                       {user?.prenom} {user?.nom}
                     </span>
-                    <span className="text-xs text-muted-foreground">
+                    <span className="text-xs text-muted-foreground truncate w-full">
                       {user?.email || "Utilisateur"}
                     </span>
                   </div>

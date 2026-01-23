@@ -4,6 +4,7 @@ import { Home, RefreshCw } from "lucide-react";
 import { useAuth } from "@/context/useAuth.jsx";
 import generateCallsAPI from "@/functions/GestionnaireCallsAPI.jsx";
 import { Card, CardHeader } from "@/components/ui/card.jsx";
+import { Button } from "../ui/button";
 
 function CardsList({ type }) {
   const { token } = useAuth();
@@ -45,22 +46,16 @@ function CardsList({ type }) {
         />
       ))}
       <div
-        className={"flex items-center"}
+        className={"flex items-end"}
         data-slot="refresh-slot"
         data-slot-refresh="true"
       >
-        <Card
-          className={"h-fit w-30"}
-          data-slot="refresh"
-          data-slot-refresh="true"
+        <Button
           onClick={() => fetchCardData()}
+          className={"border-1 border-button-border bg-card"}
         >
-          <CardHeader
-            className={"flex items-center justify-center w-fit, h-fit"}
-          >
-            <RefreshCw size={48} />
-          </CardHeader>
-        </Card>
+          <RefreshCw size={16} />
+        </Button>
       </div>
     </>
   );

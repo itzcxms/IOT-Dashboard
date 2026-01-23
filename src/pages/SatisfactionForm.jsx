@@ -251,10 +251,10 @@ export default function SatisfactionForm() {
 
               {/* Question 4 : Sources de connaissance (checkboxes) */}
               <div className="space-y-3">
-                <Label className="text-slate-800 text-base font-medium">
+                <Label className="text-slate-800 text-base font-medium flex flex-col items-start">
                   Comment avez-vous eu connaissance de "La Loire à Vélo", et qui
                   vous a donné envie de la découvrir ?
-                  <span className="text-gray-500 font-normal text-sm block mt-1">
+                  <span className="text-gray-500 font-normal text-xs block mt-1">
                     (plusieurs réponses possibles)
                   </span>
                 </Label>
@@ -283,7 +283,7 @@ export default function SatisfactionForm() {
                 {donnees.sourcesConnaissance.includes("autre") && (
                   <Input
                     placeholder="Précisez..."
-                    className="mt-3 bg-white text-slate-800 border-gray-200 focus-visible:ring-emerald-500"
+                    className="mt-3 !bg-white text-slate-800 border-gray-200 focus-visible:ring-emerald-500"
                     value={donnees.autreSource}
                     onChange={(e) =>
                       changerValeur("autreSource", e.target.value)
@@ -300,7 +300,7 @@ export default function SatisfactionForm() {
                 </Label>
                 <Textarea
                   placeholder="Partagez vos remarques et suggestions..."
-                  className="min-h-[120px] text-slate-800 bg-white border-gray-200 focus-visible:ring-emerald-500"
+                  className="min-h-[120px] text-slate-800 !bg-white border-gray-200 focus-visible:ring-emerald-500"
                   value={donnees.remarques}
                   onChange={(e) => changerValeur("remarques", e.target.value)}
                 />
