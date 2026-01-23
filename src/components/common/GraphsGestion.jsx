@@ -9,6 +9,14 @@ function GraphsGestion() {
   const [ChartData, setChartData] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [currentSelection, setCurrentSelection] = useState("Aujourd'hui");
+  const temperature = [
+    10, 12, 13, 14, 16, 18, 19, 20, 21, 22, 23, 24, 25, 27, 27, 28, 28, 26, 20,
+    16, 13, 10, 8, 7,
+  ];
+  const vent = [
+    10, 10, 11, 11, 11, 12, 12, 8, 8, 7, 6, 8, 9, 9, 11, 14, 16, 20, 25, 26, 27,
+    27, 27, 26,
+  ];
 
   /**
    * Appelle les routes d'API
@@ -86,8 +94,8 @@ function GraphsGestion() {
       });
       tempDatas = tempDatas.donnees;
       for (let i = 0; i < tempDatas.length; i++) {
-        tempDatas[i].vent = Math.floor(Math.random() * 56) + 1;
-        tempDatas[i].temperature = Math.floor(Math.random() * 35) + 1;
+        tempDatas[i].vent = vent[i];
+        tempDatas[i].temperature = temperature[i];
       }
       await setCurrentSelection(key);
     }
