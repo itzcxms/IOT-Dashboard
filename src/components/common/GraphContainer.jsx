@@ -74,7 +74,7 @@ function GraphContainer({
           cursor={false}
           content={<ChartTooltipContent indicator="dot" hideLabel />}
         />
-        {params.datas.map((param) => {
+        {params.datas.map((param, key) => {
           if (yAxisConfigs[param].domain[0] >= 0 && params.datas.length === 1) {
             return (
               <Area
@@ -82,9 +82,9 @@ function GraphContainer({
                 dataKey={param}
                 yAxisId={param}
                 type="linear"
-                fill={`var(--color-${param})`}
+                fill={`var(--multi-chart-${key + 1})`}
                 fillOpacity={0.4}
-                stroke={`var(--color-${param})`}
+                stroke={`var(--multi-chart-${key + 1})`}
               />
             );
           } else {
@@ -95,7 +95,7 @@ function GraphContainer({
                 yAxisId={param}
                 type="linear"
                 fillOpacity={0}
-                stroke={`var(--color-${param})`}
+                stroke={`var(--multi-chart-${key + 1})`}
               />
             );
           }
