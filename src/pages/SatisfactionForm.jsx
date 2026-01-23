@@ -131,32 +131,38 @@ export default function SatisfactionForm() {
                   className="space-y-3"
                 >
                   <Label
-                    htmlFor="aire-excellent"
+                    htmlFor="aire-tres-satisfaisant"
                     className="flex items-center space-x-3 rounded-lg border border-gray-200 bg-white p-4 hover:bg-gray-50 cursor-pointer"
                   >
-                    <RadioGroupItem value="excellent" id="aire-excellent" />
-                    <span className="flex-1 text-slate-900">Excellent</span>
+                    <RadioGroupItem
+                      value="tres-satisfaisant"
+                      id="aire-tres-satisfaisant"
+                    />
+                    <span className="flex-1 text-slate-900">
+                      Très satisfaisant
+                    </span>
                   </Label>
                   <Label
-                    htmlFor="aire-bon"
+                    htmlFor="aire-satisfaisant"
                     className="flex items-center space-x-3 rounded-lg border border-gray-200 bg-white p-4 hover:bg-gray-50 cursor-pointer"
                   >
-                    <RadioGroupItem value="bon" id="aire-bon" />
-                    <span className="flex-1 text-slate-900">Bon</span>
+                    <RadioGroupItem
+                      value="satisfaisant"
+                      id="aire-satisfaisant"
+                    />
+                    <span className="flex-1 text-slate-900">Satisfaisant</span>
                   </Label>
                   <Label
                     htmlFor="aire-passable"
                     className="flex items-center space-x-3 rounded-lg border border-gray-200 bg-white p-4 hover:bg-gray-50 cursor-pointer"
                   >
-                    <RadioGroupItem value="passable" id="aire-passable" />
-                    <span className="flex-1 text-slate-900">Passable</span>
-                  </Label>
-                  <Label
-                    htmlFor="aire-mauvais"
-                    className="flex items-center space-x-3 rounded-lg border border-gray-200 bg-white p-4 hover:bg-gray-50 cursor-pointer"
-                  >
-                    <RadioGroupItem value="mauvais" id="aire-mauvais" />
-                    <span className="flex-1 text-slate-900">Mauvais</span>
+                    <RadioGroupItem
+                      value="peu-satisfaisant"
+                      id="aire-peu-satisfaisant"
+                    />
+                    <span className="flex-1 text-slate-900">
+                      Peu satisfaisant
+                    </span>
                   </Label>
                 </RadioGroup>
               </div>
@@ -175,32 +181,38 @@ export default function SatisfactionForm() {
                   className="space-y-3"
                 >
                   <Label
-                    htmlFor="securite-excellent"
+                    htmlFor="securite-tres-satisfaisant"
                     className="flex items-center space-x-3 rounded-lg border border-gray-200 bg-white p-4 hover:bg-gray-50 cursor-pointer"
                   >
-                    <RadioGroupItem value="excellent" id="securite-excellent" />
-                    <span className="flex-1 text-slate-900">Excellent</span>
+                    <RadioGroupItem
+                      value="tres-satisfaisant"
+                      id="securite-tres-satisfaisant"
+                    />
+                    <span className="flex-1 text-slate-900">
+                      Très satisfaisant
+                    </span>
                   </Label>
                   <Label
-                    htmlFor="securite-bon"
+                    htmlFor="securite-satisfaisant"
                     className="flex items-center space-x-3 rounded-lg border border-gray-200 bg-white p-4 hover:bg-gray-50 cursor-pointer"
                   >
-                    <RadioGroupItem value="bon" id="securite-bon" />
-                    <span className="flex-1 text-slate-900">Bon</span>
+                    <RadioGroupItem
+                      value="satisfaisant"
+                      id="securite-satisfaisant"
+                    />
+                    <span className="flex-1 text-slate-900">Satisfaisant</span>
                   </Label>
                   <Label
                     htmlFor="securite-passable"
                     className="flex items-center space-x-3 rounded-lg border border-gray-200 bg-white p-4 hover:bg-gray-50 cursor-pointer"
                   >
-                    <RadioGroupItem value="passable" id="securite-passable" />
-                    <span className="flex-1 text-slate-900">Passable</span>
-                  </Label>
-                  <Label
-                    htmlFor="securite-mauvais"
-                    className="flex items-center space-x-3 rounded-lg border border-gray-200 bg-white p-4 hover:bg-gray-50 cursor-pointer"
-                  >
-                    <RadioGroupItem value="mauvais" id="securite-mauvais" />
-                    <span className="flex-1 text-slate-900">Mauvais</span>
+                    <RadioGroupItem
+                      value="peu-satisfaisant"
+                      id="securite-peu-satisfaisant"
+                    />
+                    <span className="flex-1 text-slate-900">
+                      Peu satisfaisant
+                    </span>
                   </Label>
                 </RadioGroup>
               </div>
@@ -219,32 +231,38 @@ export default function SatisfactionForm() {
                   className="space-y-3"
                 >
                   <Label
-                    htmlFor="services-excellent"
+                    htmlFor="services-tres-satisfaisant"
                     className="flex items-center space-x-3 rounded-lg border border-gray-200 bg-white p-4 hover:bg-gray-50 cursor-pointer"
                   >
-                    <RadioGroupItem value="excellent" id="services-excellent" />
-                    <span className="flex-1 text-slate-900">Excellent</span>
+                    <RadioGroupItem
+                      value="tres-satisfaisant"
+                      id="services-tres-satisfaisant"
+                    />
+                    <span className="flex-1 text-slate-900">
+                      Très satisfaisant
+                    </span>
                   </Label>
                   <Label
-                    htmlFor="services-bon"
+                    htmlFor="services-satisfaisant"
                     className="flex items-center space-x-3 rounded-lg border border-gray-200 bg-white p-4 hover:bg-gray-50 cursor-pointer"
                   >
-                    <RadioGroupItem value="bon" id="services-bon" />
-                    <span className="flex-1 text-slate-900">Bon</span>
+                    <RadioGroupItem
+                      value="satisfaisant"
+                      id="services-satisfaisant"
+                    />
+                    <span className="flex-1 text-slate-900">Satisfaisant</span>
                   </Label>
                   <Label
                     htmlFor="services-passable"
                     className="flex items-center space-x-3 rounded-lg border border-gray-200 bg-white p-4 hover:bg-gray-50 cursor-pointer"
                   >
-                    <RadioGroupItem value="passable" id="services-passable" />
-                    <span className="flex-1 text-slate-900">Passable</span>
-                  </Label>
-                  <Label
-                    htmlFor="services-mauvais"
-                    className="flex items-center space-x-3 rounded-lg border border-gray-200 bg-white p-4 hover:bg-gray-50 cursor-pointer"
-                  >
-                    <RadioGroupItem value="mauvais" id="services-mauvais" />
-                    <span className="flex-1 text-slate-900">Mauvais</span>
+                    <RadioGroupItem
+                      value="peu-satisfaisant"
+                      id="services-peu-satisfaisant"
+                    />
+                    <span className="flex-1 text-slate-900">
+                      Peu satisfaisant
+                    </span>
                   </Label>
                 </RadioGroup>
               </div>

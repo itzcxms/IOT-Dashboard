@@ -17,12 +17,6 @@ function EvaluationsGraphs({ isLoadingGeneral, periode, date }) {
     satisfactionServices:
       'Évaluez votre satisfaction sur les services présents le long de l\'itinéraire "La Loire à Vélo" ?',
   };
-  const modeleReponse = [
-    { label: "Excellent", value: 0, color: "var(--chart-1)" },
-    { label: "Bon", value: 0, color: "var(--chart-2)" },
-    { label: "Passable", value: 0, color: "var(--chart-3)" },
-    { label: "Mauvais", value: 0, color: "var(--chart-4)" },
-  ];
   const periodeMap = {
     "Tout temps": "all",
     "Aujourd'hui": "day",
@@ -50,18 +44,29 @@ function EvaluationsGraphs({ isLoadingGeneral, periode, date }) {
 
   async function traitementEvaluationsDatas(datas) {
     let tempDatas = [];
-    let modele = [...modeleReponse];
+    let modele = [];
+    let label = "";
+    let dataKeys = [];
     const keys = Object.keys(datas);
     for (let i = 0; i < keys.length; i++) {
-      for (let j = 0; j < modele.length; j++) {
-        modele[j].value = datas[keys[i]][modele[j].label.toLowerCase()];
+      dataKeys = Object.keys(datas[keys[i]]);
+      for (let j = 0; j < dataKeys.length; j++) {
+        label = dataKeys[j];
+        label = label.replaceAll("-", " ");
+        modele.push({
+          label: label.charAt(0).toUpperCase() + label.slice(1),
+          value: 0,
+          color: "var(--chart-" + (j + 1) + ")",
+        });
+        modele[j].value = datas[keys[i]][dataKeys[j]];
       }
       tempDatas.push({
         titre: "Evaluations",
         texte: correspondanceQuestionTexteCarte[keys[i]],
         reponses: modele,
       });
-      modele = [...modeleReponse];
+      dataKeys = [];
+      modele = [];
     }
     return tempDatas;
   }
