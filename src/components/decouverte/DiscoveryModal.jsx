@@ -20,6 +20,7 @@ function DiscoveryModal({
   content,
   activities,
   image,
+  imageSource,
   links = [],
 }) {
   if (!isOpen) return null;
@@ -64,12 +65,17 @@ function DiscoveryModal({
         <div className="flex flex-col md:flex-row max-h-[85vh]">
           {/* Image section */}
           {image && (
-            <div className="md:w-2/5 shrink-0">
+            <div className="md:w-2/5 shrink-0 relative">
               <img
                 src={image}
                 alt={title}
                 className="w-full h-48 md:h-full object-cover"
               />
+              {imageSource && (
+                <span className="absolute bottom-1 left-1 text-[10px] text-white/80 bg-black/40 px-1 rounded">
+                  {imageSource}
+                </span>
+              )}
             </div>
           )}
 

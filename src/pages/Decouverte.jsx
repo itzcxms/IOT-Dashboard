@@ -1,20 +1,25 @@
 import React, { useState, useRef } from "react";
+import { Info } from "lucide-react";
 import DiscoveryPoint from "@/components/decouverte/DiscoveryPoint";
 import DiscoveryModal from "@/components/decouverte/DiscoveryModal";
+import InfoModal from "@/components/decouverte/InfoModal";
+
+// TODO : Alertes expiration droits des images
 
 const discoveryPoints = [
   {
     id: 1,
     label: "Déguster",
-    subtitle: "Un territoire viticole",
+    subtitle: "Découvrez l'AOC Touraine Mesland : L'Élégance du Loir-et-Cher en Bouteille",
     position: { top: 45, left: 57 },
     image: "/decouverte/deguster.jpg",
+    // ⚠️ ALERTE: Droits photo expiration le 12/09/2030 - Changer la photo avant juin 2030
     content:
-      "Le vignoble de Touraine Mesland s'étend sur les coteaux dominant la Loire, offrant des vins d'exception dans un cadre naturel préservé. Cette appellation produit des vins rouges, rosés et blancs caractéristiques du terroir ligérien.",
+      "Cette appellation d'origine contrôlée, nichée sur les coteaux de la Loire, se distingue par un terroir exceptionnel, souvent composé de sables et d'argiles à silex (appelés localement \"perruches\") qui confèrent à ce vin son caractère unique. Chaque verre révèle le terroir unique de Touraine Mesland. Venez rencontrer des vignerons passionnés et partagez un moment d'authenticité et de plaisir au fil de la Loire.",
     activities:
-      "Découverte de l'AOC Touraine Mesland avec dégustation de vins locaux. Visite des caves et rencontre avec les vignerons du territoire.",
+      "Dégustez des vins raffinés : Le Rosé, dominé par le Gamay, offrant une bouche fraîche et fruitée. Le Rouge, élaboré à partir de Côt et de Gamay, révèle des arômes de fruits rouges. Le Blanc, issu du Chenin ou du Sauvignon, exprime toute la minéralité de notre sol.",
     links: [
-      { label: "Site de l'ADT41", url: "https://www.coeur-val-de-loire.com/" },
+      { label: "Poursuivez l'aventure et trouvez des adresses de dégustations", url: "https://www.vin-touraine-mesland.fr/" },
     ],
   },
   {
@@ -23,13 +28,15 @@ const discoveryPoints = [
     subtitle: "Un fleuve sauvage",
     position: { top: 65, left: 50 },
     image: "/decouverte/proteger.jpg",
+    // ⚠️ ALERTE: Droits photo expiration le 31/12/2026 - Changer la photo avant octobre 2026
+    imageSource: "©Laurent Alvarez - ADT41",
     content:
-      "Le Val de Loire, de Sully-sur-Loire à Chalonnes-sur-Loire, est inscrit sur la Liste du patrimoine mondial de l'Unesco depuis le 30 novembre 2000. Cette reconnaissance internationale consacre un paysage culturel exceptionnel façonné par des siècles d'interactions entre les populations et leur environnement.",
+      "Bienvenue sur les rives de la Loire, le dernier fleuve sauvage d'Europe ! Traversant le Loir-et-Cher, ce géant naturel est un trésor exceptionnel : le Val de Loire est inscrit au Patrimoine Mondial de l'UNESCO depuis l'an 2000 en tant que \"paysage culturel vivant\". Ce fleuve unique vit au rythme des saisons qui le façonne et le transforme. C'est le lieu idéal pour une immersion dans une nature préservée.",
     activities:
-      "Parcours découverte de la nature avec GuidiGo adapté aux enfants de 7 à 12 ans. Veuzain-sur-Loire : Terrasse de la Loire, un paysage à « croquer » avec Beaver, la jeune castor passionnée de dessin naturaliste.",
+      "Ouvrez l'œil et laissez-vous surprendre par la faune ligérienne : le discret Castor d'Europe qui travaille les berges, la gracieuse Sterne pierregarin en pleine pêche, et une multitude d'oiseaux migrateurs. La Loire vous offre un spectacle naturel fascinant et changeant, invitant à la contemplation. Alors n'hésitez pas à partir à sa découverte.",
     links: [
       {
-        label: "GuidiGo Terrasses de la Loire",
+        label: "Aventure en Famille : lancez-vous dans l'exploration",
         url: "https://www.guidigo.com/",
       },
     ],
@@ -40,8 +47,12 @@ const discoveryPoints = [
     subtitle: "Un site marqué par l'histoire humaine",
     position: { top: 72, left: 25 },
     image: "/decouverte/decouvrir.jpg",
+    // ⚠️ ALERTE: Droits photo expiration le 31/12/2026 - Changer la photo avant octobre 2026
+    imageSource: "©Enola Création / ADT41",
     content:
-      "1858, date de la construction d'un pont suspendu sur la Loire. En 1816, le bac de Chaumont utilise un bateau passe cheval de 11,34 m x 1,15 m pourvu d'un gouvernail, de deux bourdes ferrées et d'une corde d'amarrage.",
+      "Avant la construction du premier pont suspendu en 1858, la traversée du fleuve se faisait depuis le port de Chaumont-sur-Loire vers Onzain par un bac. On retrouve des traces de l'existence de ce bac dès le Moyen-âge. Aujourd'hui le pont de Chaumont-sur-Loire constitue un trait d'union important entre les deux rives du fleuve (un des 4 ponts sur la Loire en Loir-et-Cher).",
+    activities:
+      "Chaumont-sur-Loire bénéficie depuis 1792 d'un port construit, lieu fort pour l'économie et le commerce local. Aujourd'hui, le port permet d'embarquer dans un bateau traditionnel et de s'offrir une découverte hors du temps sur le dernier fleuve sauvage d'Europe.",
     links: [
       {
         label: "Vers une promenade en bateau sur la Loire",
@@ -52,20 +63,23 @@ const discoveryPoints = [
   {
     id: 4,
     label: "Explorer",
-    subtitle: "La Loire à vélo",
+    subtitle: "La Loire à Vélo : Une Étape Royale Incontournable",
     position: { top: 58, left: 82 },
     image: "/decouverte/explorer.jpg",
+    // ⚠️ ALERTE: Droits photo expiration le 31/12/2026 - Changer la photo avant octobre 2026
     content:
-      "Un voyage mythique au cœur du dernier fleuve sauvage d'Europe. La Loire à Vélo est l'itinéraire cyclable touristique le plus long de France, offrant une aventure unique sur près de 900 km le long du majestueux fleuve de la Loire.",
-    activities: null,
+      "La Loire à Vélo est un itinéraire exceptionnel qui vous mène au cœur du dernier fleuve sauvage d'Europe mais dont les rives sont habitées depuis des siècles. Sur près de 55 kilomètres balisés, vous pédalez au cœur du Val de Loire. Cette portion est la promesse d'une exploration royale qui vous donne accès à un patrimoine mondial remarquable.",
+    activities:
+      "Le Domaine National de Chambord, le Château Royal de Blois, et juste derrière vous, le Domaine de Chaumont-sur-Loire et son Festival des Jardins. Que vous arriviez de l'ouest ou que vous partiez vers l'Atlantique, faites une halte privilégiée sur nos rives. Profitez de la douceur de vivre ligérienne avant de poursuivre votre périple.",
     links: [
-      { label: "Site de la loire à Vélo", url: "https://www.loireavelo.fr/" },
+      { label: "A vos vélos : planifiez votre découverte en Loir et Cher", url: "https://www.val-de-loire-41.com/circuits-et-randonnees/a-velo/circuits-velo-loir-et-cher/circuits-velo/" },
     ],
   },
 ];
 
 function Decouverte() {
   const [selectedPoint, setSelectedPoint] = useState(null);
+  const [showInfoModal, setShowInfoModal] = useState(false);
   const containerRef = useRef(null);
 
   const handlePointClick = (point) => {
@@ -188,6 +202,15 @@ function Decouverte() {
         </a>
       </div>
 
+      {/* Info Button - Bottom Right */}
+      <button
+        onClick={() => setShowInfoModal(true)}
+        className="fixed bottom-4 right-4 z-10 w-10 h-10 bg-white/95 backdrop-blur-sm rounded-full shadow-lg flex items-center justify-center hover:bg-gray-100 transition-colors"
+        aria-label="Informations"
+      >
+        <Info className="w-5 h-5 text-gray-700" />
+      </button>
+
       <DiscoveryModal
         isOpen={selectedPoint !== null}
         onClose={handleCloseModal}
@@ -196,7 +219,13 @@ function Decouverte() {
         content={selectedPoint?.content}
         activities={selectedPoint?.activities}
         image={selectedPoint?.image}
+        imageSource={selectedPoint?.imageSource}
         links={selectedPoint?.links || []}
+      />
+
+      <InfoModal
+        isOpen={showInfoModal}
+        onClose={() => setShowInfoModal(false)}
       />
     </div>
   );

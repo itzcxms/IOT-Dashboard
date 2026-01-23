@@ -22,9 +22,6 @@ import {
   Check,
   Gauge,
 } from "lucide-react";
-import { Alert, AlertDescription } from "@/components/ui/alert.jsx";
-import { Button } from "@/components/ui/button.jsx";
-import { X } from "lucide-react";
 
 /**
  * @fileoverview Composant de gestion des permissions et rôles utilisateur
