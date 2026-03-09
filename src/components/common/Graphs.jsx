@@ -53,13 +53,13 @@ function Graphs({
   function getTrendAndPercentage(tocheck) {
     let len = ChartData.length - 1;
     while (
-      ChartData[len].tocheck === ChartData[len - 1].tocheck &&
-      ChartData[len - 1].tocheck === 0
+      ChartData[len][tocheck] === ChartData[len - 1][tocheck] &&
+      ChartData[len - 1][tocheck] === 0
     ) {
       len -= 1;
     }
     const percentage = (
-      (ChartData[len].tocheck / ChartData[len - 1].tocheck) * 100 -
+      (ChartData[len][tocheck] / ChartData[len - 1][tocheck]) * 100 -
       100
     ).toFixed(2);
     const trend = percentage > 0 ? "up" : "down";
