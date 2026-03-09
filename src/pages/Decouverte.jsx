@@ -26,12 +26,6 @@ const discoveryPoints = [
         url: "https://www.vin-touraine-mesland.fr/",
       },
     ],
-    links: [
-      {
-        label: "Poursuivez l'aventure et trouvez des adresses de dégustations",
-        url: "https://www.vin-touraine-mesland.fr/",
-      },
-    ],
     // x% (horizontal) y% (vertical) - ex: "50% 20%" pour remonter l'image
     imagePosition: "50% 75%",
   },
