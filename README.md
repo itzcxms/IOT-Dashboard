@@ -34,7 +34,7 @@ Elle affiche les données des capteurs, gère les utilisateurs et les permission
 
 ```bash
 # 1. Cloner le dépôt
-git clone <url-du-repo>
+git clone https://github.com/itzcxms/IOT-Dashboard
 cd dashboard-iot
 
 # 2. Installer les dépendances
