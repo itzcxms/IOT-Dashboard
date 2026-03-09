@@ -14,13 +14,6 @@ function SourcesConnaissancesGraph({ isLoadingGeneralData, sourcesData }) {
     const keys = Object.keys(datas);
     let tempLabel = "";
     let modele = { ...modeleSources };
-    if (keys.length === 0) {
-      modele.reponses.push({
-        label: "Arrête de jouer avec les tables en BDD",
-        value: 1000000,
-        color: "var(--chart-1)",
-      });
-    }
     let count = 1;
     for (let i = 0; i < keys.length; i++) {
       if (count > 5) {
