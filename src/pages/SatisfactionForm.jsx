@@ -310,8 +310,9 @@ export default function SatisfactionForm() {
                 )}
               </div>
 
+              {/* Retiré pour des questions de sécurité */}
               {/* Question 5 : Remarques et suggestions */}
-              <div className="space-y-3">
+              {/*<div className="space-y-3">
                 <Label className="text-slate-800 text-base font-medium">
                   Avez-vous des remarques ou suggestions sur votre expérience le
                   long de "La Loire à Vélo" ?
@@ -322,7 +323,7 @@ export default function SatisfactionForm() {
                   value={donnees.remarques}
                   onChange={(e) => changerValeur("remarques", e.target.value)}
                 />
-              </div>
+              </div>*/}
             </CardContent>
 
             <CardFooter className="flex justify-center mt-6 pb-8">

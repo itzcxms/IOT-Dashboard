@@ -59,8 +59,9 @@ function AnalyseSatisfaction() {
           />
         </div>
 
+        {/* Retiré pour des questions de sécurité indirectes */}
         {/* Question 5 : Tableau des remarques et suggestions */}
-        <ListeSuggestions isLoadingGeneral={isLoading} />
+        {/*<ListeSuggestions isLoadingGeneral={isLoading} />*/}
       </div>
     </>
   );
