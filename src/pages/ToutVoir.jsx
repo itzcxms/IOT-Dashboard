@@ -1,4 +1,4 @@
-import React from "react";
+import React, {useEffect, useState} from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   ChartContainer,
@@ -18,19 +18,7 @@ import {
   CloudRain,
 } from "lucide-react";
 import { useAuth } from "@/context/useAuth";
-
-// Données simulées pour le graphique
-const waterLevelData = [
-  { time: "00h", level: 1.15 },
-  { time: "3h", level: 1.18 },
-  { time: "6h", level: 1.22 },
-  { time: "9h", level: 1.25 },
-  { time: "12h", level: 1.28 },
-  { time: "14h", level: 1.23 },
-  { time: "17h", level: 1.2 },
-  { time: "20h", level: 1.18 },
-  { time: "23h", level: 1.15 },
-];
+import generateCallsAPI from "@/functions/GestionnaireCallsAPI.jsx";
 
 // Données simulées pour les remarques
 const remarques = [
@@ -48,7 +36,7 @@ const remarques = [
 
 // Configuration du graphique
 const chartConfig = {
-  level: {
+  haut: {
     label: "Niveau d'eau",
     color: "var(--chart-3)",
   },
@@ -124,7 +112,10 @@ function WeatherIcon({ condition }) {
 }
 
 function ToutVoir() {
-  const { user } = useAuth();
+  const { user, token } = useAuth();
+  const [isLoading, setIsLoading] = useState(true);
+  const [waterLevelData, setWaterLevelData] = useState(null);
+  const [dataMin, setDataMin] = useState(null);
 
   // Données simulées (à remplacer par de vraies données)
   const weatherCondition = "sunny";
@@ -133,6 +124,27 @@ function ToutVoir() {
   const contenanceSavon = 175;
   const hauteurEau = 1.23;
   const questionnaires = 5;
+
+  useEffect(() => {
+    async function fetchData() {
+      let reponse = await generateCallsAPI(token, "POST", "/api/graphs/capteurs/today", {"type": "sonde"});
+      const dataLen = Object.keys(reponse).length;
+      if (dataLen > 0) {
+        let min = parseInt(reponse.donnees[0].haut);
+        for (let i = 1; i < reponse.donnees.length; i++) {
+          if (parseInt(reponse.donnees[i].haut) < min) {
+            min = parseInt(reponse.donnees[i].haut);
+          }
+        }
+        setWaterLevelData(reponse.donnees);
+        setDataMin(min);
+        setIsLoading(false)
+      }
+    }
+    if (isLoading) {
+      void fetchData()
+    }
+  })
 
   return (
     <div className="flex flex-col h-[calc(100vh-2rem)] space-y-4">
@@ -230,7 +242,7 @@ function ToutVoir() {
           </div> */}
 
           {/* Remarques et suggestions */}
-          <Card className="relative flex-1 flex flex-col min-h-0">
+          {/*<Card className="relative flex-1 flex flex-col min-h-0">
             <button className="absolute top-3 right-3 p-1 rounded-md hover:bg-black/5 transition-colors">
               <ArrowUpRight className="h-4 w-4 text-muted-foreground" />
             </button>
@@ -255,7 +267,7 @@ function ToutVoir() {
                 ))}
               </ul>
             </CardContent>
-          </Card>
+          </Card>*/}
 
           {/* Graphique évolution niveau d'eau */}
           <Card className="relative flex-[1.5] flex flex-col min-h-0">
@@ -268,51 +280,51 @@ function ToutVoir() {
               </CardTitle>
             </CardHeader>
             <CardContent className="flex-1 min-h-0 pb-4">
-              <ChartContainer
-                config={chartConfig}
-                className="h-full w-full aspect-auto"
+              {isLoading ? (<div>Chargement en cours...</div>) : (<ChartContainer
+                  config={chartConfig}
+                  className="h-full w-full aspect-auto"
               >
                 <AreaChart data={waterLevelData}>
                   <defs>
                     <linearGradient
-                      id="waterGradient"
-                      x1="0"
-                      y1="0"
-                      x2="0"
-                      y2="1"
+                        id="waterGradient"
+                        x1="0"
+                        y1="0"
+                        x2="0"
+                        y2="1"
                     >
                       <stop
-                        offset="5%"
-                        stopColor="var(--chart-3)"
-                        stopOpacity={0.3}
+                          offset="5%"
+                          stopColor="var(--chart-3)"
+                          stopOpacity={0.3}
                       />
                       <stop
-                        offset="95%"
-                        stopColor="var(--chart-3)"
-                        stopOpacity={0}
+                          offset="95%"
+                          stopColor="var(--chart-3)"
+                          stopOpacity={0}
                       />
                     </linearGradient>
                   </defs>
                   <XAxis
-                    dataKey="time"
-                    axisLine={false}
-                    tickLine={false}
-                    tick={{ fontSize: 12, fill: "var(--muted-foreground)" }}
+                      dataKey="heure"
+                      axisLine={false}
+                      tickLine={false}
+                      tick={{fontSize: 12, fill: "var(--muted-foreground)"}}
                   />
-                  <YAxis hide domain={["dataMin - 0.1", "dataMax + 0.1"]} />
+                  <YAxis hide domain={[dataMin - 0.1, "dataMax + 0.1"]}/>
                   <ChartTooltip
-                    content={<ChartTooltipContent />}
-                    cursor={false}
+                      content={<ChartTooltipContent/>}
+                      cursor={false}
                   />
                   <Area
-                    type="monotone"
-                    dataKey="level"
-                    stroke="var(--chart-3)"
-                    strokeWidth={2}
-                    fill="url(#waterGradient)"
+                      type="monotone"
+                      dataKey="haut"
+                      stroke="var(--chart-3)"
+                      strokeWidth={2}
+                      fill="url(#waterGradient)"
                   />
                 </AreaChart>
-              </ChartContainer>
+              </ChartContainer>)}
             </CardContent>
           </Card>
         </div>
