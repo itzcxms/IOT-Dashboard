@@ -1,5 +1,7 @@
 # Dashboard IoT — Frontend
 
+![image.png](GUIDE_UTILISATEUR/Guide%20Utilisateur%20-%20Plateforme%20IoT%20Chaumont-sur-Lo/image%204.png)
+
 Application web (React / Vite) servant de tableau de bord et de vitrine pour la plateforme IoT de l'aire de repos de **Chaumont-sur-Loire**.  
 Elle affiche les données des capteurs, gère les utilisateurs et les permissions, et propose un questionnaire de satisfaction.
 
