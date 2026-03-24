@@ -30,20 +30,13 @@ import {
 } from "lucide-react";
 import { useAuth } from "@/context/useAuth";
 import generateCallsAPI from "@/functions/GestionnaireCallsAPI.jsx";
-
-// Données simulées pour les remarques
-const remarques = [
-  {
-    text: "Aire de repos très propre et bien entretenue, merci !",
-    positive: true,
-  },
-  {
-    text: "Super expérience sur la Loire à Vélo ! Les paysages sont magnifiques.",
-    positive: true,
-  },
-  { text: "Excellent itinéraire, je recommande vivement.", positive: true },
-  { text: "Excellent itinéraire, je recommande vivement.", positive: true },
-];
+import {
+  aggregateObservationsByInterval,
+  formatObservationsForChart,
+  getLatestObservation,
+  getObservationsToday,
+  getObservationsVigicrues,
+} from "@/functions/FonctionsAppelVigicrue.jsx";
 
 // Configuration du graphique
 const chartConfig = {
@@ -220,6 +213,7 @@ function WeatherIcon({ condition }) {
 function ToutVoir() {
   const { user, token } = useAuth();
   const [isLoading, setIsLoading] = useState(true);
+  const [isLoadingVigicrue, setIsLoadingVigicrue] = useState(true);
   const [waterLevelData, setWaterLevelData] = useState(null);
   const [dataMin, setDataMin] = useState(null);
   const [weatherCondition, setWeatherCondition] = useState(null);
@@ -228,6 +222,9 @@ function ToutVoir() {
   const [contenueSavon, setContenueSavon] = useState(null);
   const [hauteurEau, setHauteurEau] = useState(null);
   const [questionnaires, setQuestionnaires] = useState(null);
+
+  // Code de la station Vigicrues pour Chaumont-sur-Loire (à adapter selon votre zone)
+  const CODE_STATION_VIGICRUES = "K447001001";
 
   async function traitementDataMeteo(data) {
     let weatherKeywords = [];
@@ -255,32 +252,47 @@ function ToutVoir() {
   }
 
   async function getWaterLevelDataGraph() {
-    let reponse = await generateCallsAPI(
-      token,
-      "POST",
-      "/api/graphs/capteurs/today",
-      { type: "sonde" },
-    );
-    const dataLen = Object.keys(reponse).length;
-    if (dataLen > 0) {
-      let min = parseInt(reponse.donnees[0].haut);
-      for (let i = 1; i < reponse.donnees.length; i++) {
-        if (parseInt(reponse.donnees[i].haut) < min) {
-          min = parseInt(reponse.donnees[i].haut);
+    try {
+      const data = await getObservationsToday(CODE_STATION_VIGICRUES, "H");
+      console.log(data);
+      const formattedData = aggregateObservationsByInterval(
+        data,
+        "hour",
+        "average",
+      );
+
+      if (formattedData.length > 0) {
+        let min = formattedData[0].haut;
+        for (let i = 1; i < formattedData.length; i++) {
+          if (formattedData[i].haut < min) {
+            min = formattedData[i].haut;
+          }
         }
+        console.log(formattedData);
+        return { waterGraph: formattedData, min: min };
       }
-      return { waterGraph: reponse.donnees, min: min };
+      return null;
+    } catch (error) {
+      console.error(
+        "Erreur lors de la récupération des données Vigicrues:",
+        error,
+      );
     }
   }
 
   async function getDataEauCard() {
-    let hauteurEauCard = await generateCallsAPI(
-      token,
-      "POST",
-      "/api/graphs/capteurs/lastinfo",
-      { type: "sonde" },
-    );
-    return parseInt(hauteurEauCard.haut);
+    try {
+      const data = await getObservationsVigicrues(CODE_STATION_VIGICRUES, "H");
+      console.log(data);
+      const lastestValue = getLatestObservation(data);
+      console.log(lastestValue);
+      return lastestValue;
+    } catch (error) {
+      console.error(
+        "Erreur lors de la récupération de la hauteur d'eau Vigicrues:",
+        error,
+      );
+    }
   }
 
   async function getDataMeteo() {
@@ -387,20 +399,20 @@ function ToutVoir() {
       if (questRes !== null) {
         setQuestionnaires(questRes);
       }
+      if (waterLevelData !== null && dataMin !== null && hauteurEau !== null) {
+        setIsLoadingVigicrue(false);
+      }
       if (
-        waterLevelData !== null &&
-        dataMin !== null &&
         weatherCondition !== null &&
         temperature !== null &&
         frequentation !== null &&
         contenueSavon !== null &&
-        hauteurEau !== null &&
         questionnaires !== null
       ) {
         setIsLoading(false);
       }
     }
-    if (isLoading) {
+    if (isLoading || isLoadingVigicrue) {
       void fetchData();
     }
   });
