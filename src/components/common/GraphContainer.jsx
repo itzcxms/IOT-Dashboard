@@ -55,7 +55,11 @@ function GraphContainer({
               yAxisId={param}
               domain={axisConfig.domain}
               allowDecimals={true}
-              ticks={axisConfig.ticks}
+              tickCount={5}
+              tickFormatter={(value) => {
+                // Arrondir à 2 décimales pour éviter les erreurs de précision
+                return parseFloat(value.toFixed(2)).toString();
+              }}
               tickLine={true}
               axisLine={true}
               tickMargin={10}

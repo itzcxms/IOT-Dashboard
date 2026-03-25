@@ -5,7 +5,7 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from "@/components/ui/chart";
-import { AreaChart, Area, XAxis, YAxis, ResponsiveContainer } from "recharts";
+import { AreaChart, Area, XAxis, YAxis } from "recharts";
 import {
   MapPin,
   Sun,
@@ -27,16 +27,16 @@ import {
   CloudRainWind,
   Wind,
   SunSnow,
+  AlertCircle,
 } from "lucide-react";
-import { useAuth } from "@/context/useAuth";
-import generateCallsAPI from "@/functions/GestionnaireCallsAPI.jsx";
 import {
-  aggregateObservationsByInterval,
   aggregateObservationsByIntervalWithMinMax,
   getLatestObservation,
   getObservationsToday,
   getObservationsVigicrues,
 } from "@/functions/FonctionsAppelVigicrue.jsx";
+import { useAuth } from "@/context/useAuth";
+import generateCallsAPI from "@/functions/GestionnaireCallsAPI.jsx";
 
 // Configuration du graphique
 const chartConfig = {
@@ -44,7 +44,7 @@ const chartConfig = {
     label: "Min",
     color: "var(--chart-3)",
   },
-  haut: {
+  moyenne: {
     label: "Moyenne",
     color: "var(--chart-3)",
   },
@@ -97,7 +97,6 @@ function formatDate() {
     year: "numeric",
   };
   const dateStr = now.toLocaleDateString("fr-FR", options);
-  // Capitaliser la première lettre
   return dateStr.charAt(0).toUpperCase() + dateStr.slice(1);
 }
 
@@ -220,21 +219,39 @@ function WeatherIcon({ condition }) {
 
 function ToutVoir() {
   const { user, token } = useAuth();
-  const [isLoading, setIsLoading] = useState(true);
-  const [isLoadingVigicrue, setIsLoadingVigicrue] = useState(true);
-  const [waterLevelData, setWaterLevelData] = useState(null);
-  const [dataMin, setDataMin] = useState(null);
-  const [weatherCondition, setWeatherCondition] = useState(null);
-  const [temperature, setTemperature] = useState(null);
-  const [frequentation, setFrequentation] = useState(null);
-  const [contenueSavon, setContenueSavon] = useState(null);
-  const [hauteurEau, setHauteurEau] = useState(null);
-  const [questionnaires, setQuestionnaires] = useState(null);
 
-  // Code de la station Vigicrues pour Chaumont-sur-Loire (à adapter selon votre zone)
+  // 🎯 CONSOLIDATION DES STATES - 3 états composites au lieu de 13
+  const [isLoading, setIsLoading] = useState(true);
+
+  // État pour données de Vigicrues (eau)
+  const [waterData, setWaterData] = useState({
+    levelData: null,
+    minLevel: null,
+    currentHeight: null,
+  });
+
+  // État pour données générales (météo, fréquentation, etc.)
+  const [dashboardData, setDashboardData] = useState({
+    weatherCondition: null,
+    temperature: null,
+    frequentation: null,
+    soap: null,
+    questionnaires: null,
+  });
+
+  // État pour erreurs
+  const [errors, setErrors] = useState({
+    vigicrues: null,
+    weather: null,
+    general: null,
+  });
+
   const CODE_STATION_VIGICRUES = "K447001001";
 
-  async function traitementDataMeteo(data) {
+  /**
+   * Traite les données météo - MAINTENANT AVEC useCallback!
+   */
+  const traitementDataMeteo = useCallback((data) => {
     let weatherKeywords = [];
     if (data.cloud_cover > 0) {
       if (data.cloud_cover <= 20) {
@@ -257,12 +274,11 @@ function ToutVoir() {
       weatherKeywords.push("Wind");
     }
     return weatherKeywords.join("");
-  }
+  }, []);
 
   const getWaterLevelDataGraph = useCallback(async () => {
     try {
       const data = await getObservationsToday(CODE_STATION_VIGICRUES, "H");
-      console.log(data);
       const formattedData = aggregateObservationsByIntervalWithMinMax(
         data,
         "hour",
@@ -270,14 +286,8 @@ function ToutVoir() {
       );
 
       if (formattedData && formattedData.length > 0) {
-        let min = formattedData[0].min;
-        for (let i = 1; i < formattedData.length; i++) {
-          if (formattedData[i].min < min) {
-            min = formattedData[i].min;
-          }
-        }
-        console.log(formattedData);
-        return { waterGraph: formattedData, min: min };
+        const minLevel = Math.min(...formattedData.map((d) => d.min));
+        return { levelData: formattedData, minLevel };
       }
       return null;
     } catch (error) {
@@ -285,6 +295,7 @@ function ToutVoir() {
         "Erreur lors de la récupération des données Vigicrues:",
         error,
       );
+      setErrors((prev) => ({ ...prev, vigicrues: error.message }));
       return null;
     }
   }, []);
@@ -292,41 +303,41 @@ function ToutVoir() {
   const getDataEauCard = useCallback(async () => {
     try {
       const data = await getObservationsVigicrues(CODE_STATION_VIGICRUES, "H");
-      console.log(data);
-      const lastestValue = getLatestObservation(data);
-      console.log(lastestValue);
-      return lastestValue;
+      return getLatestObservation(data);
     } catch (error) {
       console.error(
-        "Erreur lors de la récupération de la hauteur d'eau Vigicrues:",
+        "Erreur lors de la récupération de la hauteur d'eau:",
         error,
       );
+      setErrors((prev) => ({ ...prev, vigicrues: error.message }));
       return null;
     }
   }, []);
 
   const getDataMeteo = useCallback(async () => {
     try {
-      let meteo = await fetch(
+      const response = await fetch(
         "https://api.open-meteo.com/v1/forecast?latitude=47.48&longitude=1.18&models=meteofrance_seamless&current=rain,showers,snowfall,precipitation,temperature_2m,apparent_temperature,wind_speed_10m,is_day,cloud_cover&timezone=Europe%2FBerlin",
       );
-      if (meteo.status === 200) {
-        meteo = await meteo.text();
-        meteo = JSON.parse(meteo);
-        const temperatureTemp = meteo.current.temperature_2m;
-        meteo = await traitementDataMeteo(meteo.current);
-        return { meteo: meteo, tempe: temperatureTemp };
+      if (response.status === 200) {
+        const data = await response.json();
+        const temperature = data.current.temperature_2m;
+        // ✅ Utiliser traitementDataMeteo directement au lieu de passer en dépendance
+        const condition = traitementDataMeteo(data.current);
+        return { temperature, condition };
       }
-      return null;
+      throw new Error("Réponse non-200 de l'API météo");
     } catch (error) {
       console.error("Erreur lors de la récupération de la météo:", error);
+      setErrors((prev) => ({ ...prev, weather: error.message }));
       return null;
     }
-  }, []);
+  }, []); // ✅ Dépendances vides - pas de traitementDataMeteo ici
 
   const getDataFrequentation = useCallback(async () => {
     try {
-      let freq = await generateCallsAPI(
+      if (!token) throw new Error("Token d'authentification manquant");
+      const freq = await generateCallsAPI(
         token,
         "POST",
         "/api/graphs/capteurs/today",
@@ -334,157 +345,161 @@ function ToutVoir() {
       );
       return freq?.total || null;
     } catch (error) {
-      console.error("Erreur lors de la récupération de la fréquentation:", error);
+      console.error("Erreur fréquentation:", error);
+      setErrors((prev) => ({ ...prev, general: error.message }));
       return null;
     }
   }, [token]);
 
   const getDataSavon = useCallback(async () => {
     try {
-      let savon = await generateCallsAPI(token, "GET", "/api/savon/");
-      console.log(savon);
+      if (!token) throw new Error("Token d'authentification manquant");
+      const savon = await generateCallsAPI(token, "GET", "/api/savon/");
       if (savon && savon.length > 0) {
-        savon =
+        return (
           savon[0].seuils.actuel -
           savon[0].consommationParPassage *
-            savon[0].dernierRemplissage.compteurPassages;
-        return savon;
+            savon[0].dernierRemplissage.compteurPassages
+        );
       }
       return null;
     } catch (error) {
-      console.error("Erreur lors de la récupération du savon:", error);
+      console.error("Erreur savon:", error);
+      setErrors((prev) => ({ ...prev, general: error.message }));
       return null;
     }
   }, [token]);
 
-  const getDataTotalQuestionnaireLast7Days = useCallback(async () => {
+  const getDataQuestionnaires = useCallback(async () => {
     try {
-      let total = await generateCallsAPI(
+      if (!token) throw new Error("Token d'authentification manquant");
+      const total = await generateCallsAPI(
         token,
         "GET",
         "/api/questionnaires/stats/last7days",
       );
       return total?.total || null;
     } catch (error) {
-      console.error(
-        "Erreur lors de la récupération des questionnaires:",
-        error
-      );
+      console.error("Erreur questionnaires:", error);
+      setErrors((prev) => ({ ...prev, general: error.message }));
       return null;
     }
   }, [token]);
 
+  /**
+   * UN SEUL useEffect COHÉRENT pour charger les données
+   */
   useEffect(() => {
-    async function fetchData() {
-      try {
-        // Niveau de l'eau (Graphique)
-        if (waterLevelData === null && dataMin === null) {
-          let dataGraph = await getWaterLevelDataGraph();
-          if (dataGraph) {
-            setWaterLevelData(dataGraph.waterGraph);
-            setDataMin(dataGraph.min);
-          }
-        }
-        
-        // Hauteur de l'eau (Card)
-        if (hauteurEau === null) {
-          let hautEau = await getDataEauCard();
-          if (hautEau !== null) {
-            setHauteurEau(hautEau);
-          }
-        }
-        
-        // Météo
-        if (weatherCondition === null && temperature === null) {
-          let dataMeteo = await getDataMeteo();
-          if (dataMeteo) {
-            setWeatherCondition(dataMeteo.meteo);
-            setTemperature(dataMeteo.tempe);
-          }
-        }
-        
-        // Fréquentation
-        if (frequentation === null) {
-          let freq = await getDataFrequentation();
-          if (freq !== null) {
-            setFrequentation(freq);
-          }
-        }
-        
-        // Savon
-        if (contenueSavon === null) {
-          let savon = await getDataSavon();
-          if (savon !== null) {
-            setContenueSavon(savon);
-          }
-        }
-        
-        // Questionnaires
-        if (questionnaires === null) {
-          let questRes = await getDataTotalQuestionnaireLast7Days();
-          if (questRes !== null) {
-            setQuestionnaires(questRes);
-          }
-        }
-      } catch (error) {
-        console.error("Erreur lors du chargement des données:", error);
+    const fetchAllData = async () => {
+      // Vérifier token
+      if (!token) {
+        setErrors((prev) => ({ ...prev, general: "Non authentifié" }));
+        setIsLoading(false);
+        return;
       }
-    }
 
-    // Appeler fetchData uniquement si isLoading ou isLoadingVigicrue est true
-    if (isLoading || isLoadingVigicrue) {
-      void fetchData();
-    }
+      setIsLoading(true);
+      setErrors({ vigicrues: null, weather: null, general: null });
+
+      try {
+        // ✅ Utiliser Promise.allSettled au lieu de Promise.all
+        // Permet à certains appels de échouer sans tout bloquer
+        const results = await Promise.allSettled([
+          getWaterLevelDataGraph(),
+          getDataEauCard(),
+          getDataMeteo(),
+          getDataFrequentation(),
+          getDataSavon(),
+          getDataQuestionnaires(),
+        ]);
+
+        const [
+          waterGraphResult,
+          waterHeightResult,
+          meteoResult,
+          freqResult,
+          soapResult,
+          questionsResult,
+        ] = results;
+
+        // Traiter les résultats
+        const waterGraph =
+          waterGraphResult.status === "fulfilled"
+            ? waterGraphResult.value
+            : null;
+        const waterHeight =
+          waterHeightResult.status === "fulfilled"
+            ? waterHeightResult.value
+            : null;
+        const meteo =
+          meteoResult.status === "fulfilled" ? meteoResult.value : null;
+        const freq =
+          freqResult.status === "fulfilled" ? freqResult.value : null;
+        const soap =
+          soapResult.status === "fulfilled" ? soapResult.value : null;
+        const questions =
+          questionsResult.status === "fulfilled" ? questionsResult.value : null;
+
+        // Mettre à jour Vigicrues
+        if (waterGraph || waterHeight) {
+          setWaterData({
+            levelData: waterGraph?.levelData || null,
+            minLevel: waterGraph?.minLevel || null,
+            currentHeight: waterHeight || null,
+          });
+        }
+
+        // Mettre à jour dashboard
+        setDashboardData({
+          weatherCondition: meteo?.condition || null,
+          temperature: meteo?.temperature || null,
+          frequentation: freq || null,
+          soap: soap || null,
+          questionnaires: questions || null,
+        });
+      } catch (error) {
+        console.error("Erreur générale:", error);
+        setErrors((prev) => ({ ...prev, general: error.message }));
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchAllData();
   }, [
-    isLoading,
-    isLoadingVigicrue,
-    waterLevelData,
-    dataMin,
-    hauteurEau,
-    weatherCondition,
-    temperature,
-    frequentation,
-    contenueSavon,
-    questionnaires,
+    token,
     getWaterLevelDataGraph,
     getDataEauCard,
     getDataMeteo,
     getDataFrequentation,
     getDataSavon,
-    getDataTotalQuestionnaireLast7Days,
+    getDataQuestionnaires,
   ]);
 
-  // Effet pour vérifier si tous les données sont chargées
-  useEffect(() => {
-    if (waterLevelData !== null && dataMin !== null && hauteurEau !== null) {
-      setIsLoadingVigicrue(false);
-    }
-    if (
-      weatherCondition !== null &&
-      temperature !== null &&
-      frequentation !== null &&
-      contenueSavon !== null &&
-      questionnaires !== null
-    ) {
-      setIsLoading(false);
-    }
-  }, [
-    waterLevelData,
-    dataMin,
-    hauteurEau,
-    weatherCondition,
-    temperature,
-    frequentation,
-    contenueSavon,
-    questionnaires,
-  ]);
+  // Rendu - avec gestion des erreurs
+  const hasErrors = Object.values(errors).some((e) => e !== null);
 
   return (
     <div className="flex flex-col h-[calc(100vh-2rem)] space-y-4">
-      {/* Header avec nom utilisateur */}
+      {/* Header */}
       <h1 className="text-2xl font-semibold">
         Bonjour, {user?.prenom || "Utilisateur"} {user?.nom || ""}
       </h1>
+
+      {/* Alerte d'erreur */}
+      {hasErrors && (
+        <div className="bg-red-50 border border-red-200 rounded-lg p-4 flex gap-2">
+          <AlertCircle className="h-5 w-5 text-red-600 flex-shrink-0 mt-0.5" />
+          <div>
+            <p className="font-semibold text-red-900">Erreurs de chargement</p>
+            <ul className="text-sm text-red-700 mt-1">
+              {errors.vigicrues && <li>• Vigicrues: {errors.vigicrues}</li>}
+              {errors.weather && <li>• Météo: {errors.weather}</li>}
+              {errors.general && <li>• Général: {errors.general}</li>}
+            </ul>
+          </div>
+        </div>
+      )}
 
       {/* Grille principale */}
       <div className="grid grid-cols-12 gap-4 flex-1 min-h-0">
@@ -507,13 +522,15 @@ function ToutVoir() {
                 <span className="text-5xl font-semi-bold">
                   {isLoading ? (
                     <div className="mt-4 flex items-center gap-3">
-                      <LoaderCircle className="h-8 w-8 text-gray-500" />
+                      <LoaderCircle className="h-8 w-8 text-gray-500 animate-spin" />
                       <span className={"text-sm font-medium"}>
-                        Chargement en cours...
+                        Chargement...
                       </span>
                     </div>
+                  ) : dashboardData.temperature !== null ? (
+                    dashboardData.temperature + "°C"
                   ) : (
-                    temperature + "°C"
+                    "N/A"
                   )}
                 </span>
               </div>
@@ -521,13 +538,15 @@ function ToutVoir() {
               {/* Météo */}
               {isLoading ? (
                 <div className="mt-4 flex items-center gap-3">
-                  <LoaderCircle className="h-8 w-8 text-gray-500" />
-                  <span className={"text-sm font-medium"}>
-                    Chargement en cours...
-                  </span>
+                  <LoaderCircle className="h-8 w-8 text-gray-500 animate-spin" />
+                  <span className={"text-sm font-medium"}>Chargement...</span>
                 </div>
+              ) : dashboardData.weatherCondition ? (
+                <WeatherIcon condition={dashboardData.weatherCondition} />
               ) : (
-                <WeatherIcon condition={weatherCondition} />
+                <div className="mt-4 text-sm text-muted-foreground">
+                  Données non disponibles
+                </div>
               )}
             </CardContent>
           </Card>
@@ -540,14 +559,11 @@ function ToutVoir() {
               subtitle="du jour"
               value={
                 isLoading ? (
-                  <div className="mt-4 flex items-center gap-3">
-                    <LoaderCircle className="h-8 w-8 text-gray-500" />
-                    <span className={"text-sm font-medium"}>
-                      Chargement en cours...
-                    </span>
-                  </div>
+                  <LoaderCircle className="h-6 w-6 text-gray-500 animate-spin" />
+                ) : dashboardData.frequentation !== null ? (
+                  dashboardData.frequentation
                 ) : (
-                  frequentation
+                  "N/A"
                 )
               }
               unit={isLoading ? "" : "personnes"}
@@ -558,14 +574,11 @@ function ToutVoir() {
               subtitle="du savon"
               value={
                 isLoading ? (
-                  <div className="mt-4 flex items-center gap-3">
-                    <LoaderCircle className="h-8 w-8 text-gray-500" />
-                    <span className={"text-sm font-medium"}>
-                      Chargement en cours...
-                    </span>
-                  </div>
+                  <LoaderCircle className="h-6 w-6 text-gray-500 animate-spin" />
+                ) : dashboardData.soap !== null ? (
+                  Math.round(dashboardData.soap)
                 ) : (
-                  contenueSavon
+                  "N/A"
                 )
               }
               unit={isLoading ? "" : "mL"}
@@ -575,15 +588,12 @@ function ToutVoir() {
               title="Hauteur"
               subtitle="du jour"
               value={
-                isLoading || hauteurEau === null ? (
-                  <div className="mt-4 flex items-center gap-3">
-                    <LoaderCircle className="h-8 w-8 text-gray-500" />
-                    <span className={"text-sm font-medium"}>
-                      Chargement en cours...
-                    </span>
-                  </div>
+                isLoading ? (
+                  <LoaderCircle className="h-6 w-6 text-gray-500 animate-spin" />
+                ) : waterData.currentHeight !== null ? (
+                  waterData.currentHeight.toFixed(2).replace(".", ",")
                 ) : (
-                  hauteurEau.toFixed(2).replace(".", ",")
+                  "N/A"
                 )
               }
               unit={isLoading ? "" : "m"}
@@ -594,14 +604,11 @@ function ToutVoir() {
               subtitle="semaine"
               value={
                 isLoading ? (
-                  <div className="mt-4 flex items-center gap-3">
-                    <LoaderCircle className="h-8 w-8 text-gray-500" />
-                    <span className={"text-sm font-medium"}>
-                      Chargement en cours...
-                    </span>
-                  </div>
+                  <LoaderCircle className="h-6 w-6 text-gray-500 animate-spin" />
+                ) : dashboardData.questionnaires !== null ? (
+                  dashboardData.questionnaires
                 ) : (
-                  questionnaires
+                  "N/A"
                 )
               }
               unit={isLoading ? "" : "fois"}
@@ -611,52 +618,6 @@ function ToutVoir() {
 
         {/* Colonne droite */}
         <div className="col-span-12 lg:col-span-7 flex flex-col gap-4 h-full">
-          {/* Ligne du haut - 2 petites cartes */}
-          {/* <div className="grid grid-cols-2 gap-4">
-            <StatCard
-              icon={ClipboardList}
-              title="Questionnaires remplis"
-              subtitle="semaine"
-              value={frequentation}
-              unit="personnes"
-            />
-            <StatCard
-              icon={Waves}
-              title="Hauteur"
-              subtitle="du jour"
-              value={hauteurEau.toFixed(2).replace(".", ",")}
-              unit="m"
-            />
-          </div> */}
-
-          {/* Remarques et suggestions */}
-          {/*<Card className="relative flex-1 flex flex-col min-h-0">
-            <button className="absolute top-3 right-3 p-1 rounded-md hover:bg-black/5 transition-colors">
-              <ArrowUpRight className="h-4 w-4 text-muted-foreground" />
-            </button>
-            <CardHeader className="pb-2">
-              <CardTitle className="text-base font-semibold">
-                Remarques et suggestions
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="flex-1 overflow-auto">
-              <ul className="space-y-2">
-                {remarques.map((remarque, index) => (
-                  <li key={index} className="flex items-start gap-2">
-                    <span
-                      className={`mt-1.5 h-2 w-2 rounded-full flex-shrink-0 ${
-                        remarque.positive ? "bg-green-500" : "bg-red-500"
-                      }`}
-                    />
-                    <span className="text-sm text-muted-foreground">
-                      {remarque.text}
-                    </span>
-                  </li>
-                ))}
-              </ul>
-            </CardContent>
-          </Card>*/}
-
           {/* Graphique évolution niveau d'eau */}
           <Card className="relative flex-[1.5] flex flex-col min-h-0">
             <button className="absolute top-3 right-3 p-1 rounded-md hover:bg-black/5 transition-colors">
@@ -670,17 +631,15 @@ function ToutVoir() {
             <CardContent className="flex-1 min-h-0 pb-4">
               {isLoading ? (
                 <div className="mt-4 flex items-center justify-center w-[100%] h-[100%] gap-3">
-                  <LoaderCircle className="h-16 w-16 text-gray-500" />
-                  <span className={"text-2xl font-medium"}>
-                    Chargement en cours...
-                  </span>
+                  <LoaderCircle className="h-16 w-16 text-gray-500 animate-spin" />
+                  <span className={"text-2xl font-medium"}>Chargement...</span>
                 </div>
-              ) : (
+              ) : waterData.levelData ? (
                 <ChartContainer
                   config={chartConfig}
                   className="h-full w-full aspect-auto"
                 >
-                  <AreaChart data={waterLevelData}>
+                  <AreaChart data={waterData.levelData}>
                     <defs>
                       <linearGradient
                         id="minMaxGradient"
@@ -707,23 +666,42 @@ function ToutVoir() {
                       tickLine={false}
                       tick={{ fontSize: 12, fill: "var(--muted-foreground)" }}
                     />
-                    <YAxis hide domain={[dataMin - 0.1, (dataMax) => dataMax + 0.1]} />
+                    <YAxis
+                      hide
+                      domain={[
+                        waterData.minLevel - 0.1,
+                        (dataMax) => dataMax + 0.1,
+                      ]}
+                    />
                     <ChartTooltip
                       content={<ChartTooltipContent />}
                       cursor={false}
                     />
-                    {/* Zone min/max remplie */}
+                    <Area
+                      type="monotone"
+                      dataKey="min"
+                      stroke="var(--chart-3)"
+                      strokeWidth={1}
+                      strokeDasharray="5 5"
+                      fill="none"
+                      isAnimationActive={false}
+                      dot={false}
+                      opacity={0.5}
+                    />
                     <Area
                       type="monotone"
                       dataKey="max"
-                      stroke="none"
+                      stroke="var(--chart-3)"
+                      strokeWidth={1}
+                      strokeDasharray="5 5"
                       fill="url(#minMaxGradient)"
                       isAnimationActive={false}
+                      dot={false}
+                      opacity={0.5}
                     />
-                    {/* Ligne moyenne en surbrillance */}
                     <Area
                       type="monotone"
-                      dataKey="haut"
+                      dataKey="moyenne"
                       stroke="var(--chart-3)"
                       strokeWidth={3}
                       fill="none"
@@ -732,6 +710,12 @@ function ToutVoir() {
                     />
                   </AreaChart>
                 </ChartContainer>
+              ) : (
+                <div className="flex items-center justify-center h-full">
+                  <p className="text-muted-foreground">
+                    Données non disponibles
+                  </p>
+                </div>
               )}
             </CardContent>
           </Card>

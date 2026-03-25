@@ -113,27 +113,71 @@ function Graphs({
       }
     }
 
-    // Déterminer la plus grande unité basée sur la valeur maximale
-    const biggestUnit = getBiggestUnit(max);
+    // Calculer la plage
+    let range = max - min;
+    
+    // Éviter la division par zéro
+    if (range === 0) {
+      return {
+        domain: [Math.max(0, min - 1), max + 1],
+        ticks: [Math.max(0, min - 1), max + 1],
+        unit: 1,
+      };
+    }
 
-    // Arrondir min et max aux multiples de la plus grande unité
-    let roundedMin = Math.floor(min / biggestUnit) * biggestUnit;
-    let roundedMax = Math.ceil(max / biggestUnit) * biggestUnit;
+    // Trouver une unité raisonnable
+    // Si la plage est très petite, l'augmenter pour avoir une meilleure lisibilité
+    let unit = Math.pow(10, Math.floor(Math.log10(range)));
+    
+    // Ajuster l'unité pour avoir entre 3-5 ticks
+    let tickCount = range / unit;
+    
+    if (tickCount < 1.5) {
+      // Trop peu de ticks, diviser l'unité
+      unit = unit / 5;
+    } else if (tickCount < 2.5) {
+      // Encore un peu peu, diviser par 2
+      unit = unit / 2;
+    } else if (tickCount > 5) {
+      // Trop de ticks
+      if (tickCount > 10) {
+        unit = unit * 5;
+      } else if (tickCount > 7) {
+        unit = unit * 2;
+      }
+    }
 
-    roundedMin = roundedMin > 0 ? 0 : roundedMin;
-    roundedMax =
-      roundedMax % biggestUnit === 0 ? roundedMax + biggestUnit : roundedMax;
+    // Arrondir min et max aux multiples de l'unité
+    let roundedMin = Math.floor(min / unit) * unit;
+    let roundedMax = Math.ceil(max / unit) * unit;
 
-    // Générer les ticks (valeurs sur l'axe Y)
+    // Ajouter du padding (15% de la plage)
+    const padding = Math.max((roundedMax - roundedMin) * 0.15, unit);
+    roundedMin = Math.floor((roundedMin - padding) / unit) * unit;
+    roundedMax = Math.ceil((roundedMax + padding) / unit) * unit;
+
+    // Forcer un minimum de 0 si les valeurs sont positives et proches de 0
+    if (min >= 0 && roundedMin < 0) {
+      roundedMin = 0;
+    }
+
+    // Générer les ticks avec gestion des erreurs de précision
     const ticks = [];
-    for (let i = roundedMin; i <= roundedMax; i += biggestUnit) {
-      ticks.push(i);
+    const epsilon = unit * 0.001; // Petit epsilon pour la comparaison
+    
+    for (let i = roundedMin; i <= roundedMax + epsilon; i += unit) {
+      const tickValue = parseFloat((Math.round(i / unit) * unit).toFixed(6));
+      
+      // Éviter les doublons causés par les erreurs de précision
+      if (ticks.length === 0 || Math.abs(tickValue - ticks[ticks.length - 1]) > unit * 0.5) {
+        ticks.push(tickValue);
+      }
     }
 
     return {
       domain: [roundedMin, roundedMax],
       ticks: ticks,
-      unit: biggestUnit,
+      unit: unit,
     };
   }
 

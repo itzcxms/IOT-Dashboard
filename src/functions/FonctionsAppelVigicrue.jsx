@@ -213,7 +213,7 @@ export function getDailyMinMax(data) {
  * @param {Object} data - Données brutes de Vigicrues
  * @param {string} interval - Unité d'intervalle ('hour', 'day', 'minute', 'month')
  * @param {number} amount - Quantité d'unités
- * @returns {Array} Données avec min, haut (moyenne), max
+ * @returns {Array} Données avec min, moyenne, max
  */
 export function aggregateObservationsByIntervalWithMinMax(
   data,
@@ -343,7 +343,7 @@ export function aggregateObservationsByIntervalWithMinMax(
     return {
       heure: formatDisplayLabel(values[0].timestamp, interval, amount),
       min: Number(min.toFixed(2)),
-      haut: Number(average.toFixed(2)),
+      moyenne: Number(average.toFixed(2)),
       max: Number(max.toFixed(2)),
       timestamp: values[0].timestamp,
       count: values.length,
@@ -355,6 +355,9 @@ export function aggregateObservationsByIntervalWithMinMax(
     (a, b) => new Date(a.timestamp) - new Date(b.timestamp),
   );
 }
+
+/**
+ * Agrège les données par intervalle de temps
  * @param {Object} data - Données brutes de Vigicrues
  * @param {string} interval - Unité d'intervalle ('hour', 'day', 'minute', 'month')
  * @param {number} amount - Quantité d'unités (ex: 30 pour 30 minutes, 2 pour 2 heures)

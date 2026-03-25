@@ -2,6 +2,7 @@ import React, { useEffect, useState, useCallback } from "react";
 import Graphs from "@/components/common/Graphs.jsx";
 import {
   aggregateObservationsByInterval,
+  aggregateObservationsByIntervalWithMinMax,
   filterObservations,
   filterObservationsLastDays,
   getObservationsVigicrues,
@@ -97,11 +98,10 @@ function GraphsZoneInondable({ seuilDanger, vigicrueData = null }) {
         let dateDebut = new Date(new Date().setHours(0, 0, 0, 0));
         let dateFin = new Date();
         tempDatas = filterObservations(tempCompleteDatas, dateDebut, dateFin);
-        tempDatas = aggregateObservationsByInterval(
+        tempDatas = aggregateObservationsByIntervalWithMinMax(
           tempDatas,
           "hour",
           1,
-          "average",
         );
         setCurrentSelection(["vigicrue", key, date]);
       } else if (key === "7p") {
@@ -111,11 +111,10 @@ function GraphsZoneInondable({ seuilDanger, vigicrueData = null }) {
           tempDatas,
           `donnees-avant-agregation-7p-${timestamp}.json`,
         );
-        tempDatas = aggregateObservationsByInterval(
+        tempDatas = aggregateObservationsByIntervalWithMinMax(
           tempDatas,
           "day",
           1,
-          "average",
         );
         saveDataToJSON(
           tempDatas,
@@ -124,29 +123,26 @@ function GraphsZoneInondable({ seuilDanger, vigicrueData = null }) {
         setCurrentSelection(["vigicrue", key]);
       } else if (key === "30p") {
         tempDatas = filterObservationsLastDays(tempCompleteDatas, 30);
-        tempDatas = aggregateObservationsByInterval(
+        tempDatas = aggregateObservationsByIntervalWithMinMax(
           tempDatas,
           "day",
           1,
-          "average",
         );
         setCurrentSelection(["vigicrue", key]);
       } else if (key === "60p") {
         tempDatas = filterObservationsLastDays(tempCompleteDatas, 60);
-        tempDatas = aggregateObservationsByInterval(
+        tempDatas = aggregateObservationsByIntervalWithMinMax(
           tempDatas,
           "day",
           2,
-          "average",
         );
         setCurrentSelection(["vigicrue", key]);
       } else if (key === "90p") {
         tempDatas = filterObservationsLastDays(tempCompleteDatas, 90);
-        tempDatas = aggregateObservationsByInterval(
+        tempDatas = aggregateObservationsByIntervalWithMinMax(
           tempDatas,
           "day",
           5,
-          "average",
         );
         setCurrentSelection(["vigicrue", key]);
       }

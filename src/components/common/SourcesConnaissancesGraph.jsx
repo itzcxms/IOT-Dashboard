@@ -35,16 +35,18 @@ function SourcesConnaissancesGraph({ isLoadingGeneralData, sourcesData }) {
   useEffect(() => {
     async function fetchData() {
       setIsLoading(true);
-      await traitementSourcesDatas(sourcesData);
+      if (sourcesData) {
+        await traitementSourcesDatas(sourcesData);
+      }
       setIsLoading(false);
     }
 
-    if (!isLoadingGeneralData) {
+    if (!isLoadingGeneralData && sourcesData) {
       void fetchData();
     }
-  }, []);
+  }, [isLoadingGeneralData, sourcesData]);
 
-  if (isLoading || isLoadingGeneralData) {
+  if (isLoading || isLoadingGeneralData || !sourcesConnaissance) {
     return <div>Chargement...</div>;
   }
 
