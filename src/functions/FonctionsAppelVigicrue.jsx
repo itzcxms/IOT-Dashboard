@@ -13,24 +13,9 @@ const VIGICRUES_BASE_URL = "https://www.vigicrues.gouv.fr/services";
 export async function getObservationsVigicrues(
   codeStation,
   grandeurHydro = "H",
-  debut = null,
-  fin = null,
 ) {
-  if (debut === null) {
-    debut = new Date().setHours(0, 0, 0, 0);
-    debut = new Date(debut);
-  }
-  if (fin === null) {
-    fin = new Date();
-  }
-  console.log(debut, fin);
   try {
-    // Format de date requis par Vigicrues: YYYY-MM-DDTHH:mm:ss.sssZ
-    const formatDate = (date) => {
-      return date.toISOString();
-    };
-
-    const url = `${VIGICRUES_BASE_URL}/observations.json?CdStationHydro=${codeStation}&GrdSerie=${grandeurHydro}&DtObsDebut=${formatDate(debut)}&DtObsFin=${formatDate(fin)}`;
+    const url = `${VIGICRUES_BASE_URL}/observations.json?CdStationHydro=${codeStation}&GrdSerie=${grandeurHydro}`;
 
     const response = await fetch(url, {
       method: "GET",
@@ -159,7 +144,7 @@ export function getLatestObservation(data) {
  * @returns {Array} Données agrégées par heure
  */
 export function aggregateByHour(data) {
-  return aggregateObservationsByInterval(data, "hour", "average");
+  return aggregateObservationsByInterval(data, "hour", 1, "average");
 }
 
 /**
@@ -168,7 +153,7 @@ export function aggregateByHour(data) {
  * @returns {Array} Données agrégées par jour
  */
 export function aggregateByDay(data) {
-  return aggregateObservationsByInterval(data, "day", "average");
+  return aggregateObservationsByInterval(data, "day", 1, "average");
 }
 
 /**
@@ -177,7 +162,7 @@ export function aggregateByDay(data) {
  * @returns {Array} Données agrégées par 15 minutes
  */
 export function aggregateBy15Minutes(data) {
-  return aggregateObservationsByInterval(data, "15min", "average");
+  return aggregateObservationsByInterval(data, "minute", 15, "average");
 }
 
 /**
@@ -225,20 +210,15 @@ export function getDailyMinMax(data) {
 /**
  * Agrège les données d'observation par intervalle de temps
  * @param {Object} data - Données brutes de Vigicrues
- * @param {string} interval - Intervalle d'agrégation ('hour', 'day', '15min', '30min', etc.)
- * @param {string} aggregationType - Type d'agrégation ('average', 'min', 'max', 'first', 'last')
- * @returns {Array} Données agrégées
- */
-/**
- * Agrège les données d'observation par intervalle de temps
- * @param {Object} data - Données brutes de Vigicrues
- * @param {string} interval - Intervalle d'agrégation ('hour', 'day', '15min', '30min', etc.)
+ * @param {string} interval - Unité d'intervalle ('hour', 'day', 'minute', 'month')
+ * @param {number} amount - Quantité d'unités (ex: 30 pour 30 minutes, 2 pour 2 heures)
  * @param {string} aggregationType - Type d'agrégation ('average', 'min', 'max', 'first', 'last')
  * @returns {Array} Données agrégées
  */
 export function aggregateObservationsByInterval(
   data,
   interval = "hour",
+  amount = 1,
   aggregationType = "average",
 ) {
   if (!data?.Serie?.ObssHydro) {
@@ -246,26 +226,29 @@ export function aggregateObservationsByInterval(
   }
 
   // Fonction pour obtenir la clé d'intervalle (pour le regroupement)
-  const getIntervalKey = (date, interval) => {
+  const getIntervalKey = (date, interval, amount) => {
     const d = new Date(date);
 
     switch (interval) {
-      case "hour":
-        return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")} ${String(d.getHours()).padStart(2, "0")}:00`;
+      case "hour": {
+        const hours = Math.floor(d.getHours() / amount) * amount;
+        return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")} ${String(hours).padStart(2, "0")}:00`;
+      }
 
-      case "day":
-        return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+      case "day": {
+        const dateStr = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+        return dateStr;
+      }
 
-      case "month":
-        return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`;
+      case "month": {
+        const months = Math.floor(d.getMonth() / amount) * amount;
+        return `${d.getFullYear()}-${String(months + 1).padStart(2, "0")}`;
+      }
 
-      case "15min":
-        const minutes15 = Math.floor(d.getMinutes() / 15) * 15;
-        return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")} ${String(d.getHours()).padStart(2, "0")}:${String(minutes15).padStart(2, "0")}`;
-
-      case "30min":
-        const minutes30 = Math.floor(d.getMinutes() / 30) * 30;
-        return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")} ${String(d.getHours()).padStart(2, "0")}:${String(minutes30).padStart(2, "0")}`;
+      case "minute": {
+        const minutes = Math.floor(d.getMinutes() / amount) * amount;
+        return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")} ${String(d.getHours()).padStart(2, "0")}:${String(minutes).padStart(2, "0")}`;
+      }
 
       default:
         return date; // Pas d'agrégation
@@ -273,31 +256,65 @@ export function aggregateObservationsByInterval(
   };
 
   // Fonction pour formater l'affichage selon l'intervalle
-  const formatDisplayLabel = (key, interval, timestamp) => {
+  const formatDisplayLabel = (key, interval, amount, timestamp) => {
     const d = new Date(timestamp);
 
     switch (interval) {
-      case "hour":
-        // Format: "14h00"
-        return `${String(d.getHours()).padStart(2, "0")}h${String(d.getMinutes()).padStart(2, "0")}`;
+      case "hour": {
+        // Format: "14h00" ou "14h00-16h00" si amount > 1
+        if (amount === 1) {
+          return `${String(d.getHours()).padStart(2, "0")}h${String(d.getMinutes()).padStart(2, "0")}`;
+        } else {
+          const endHour = (d.getHours() + amount) % 24;
+          return `${String(d.getHours()).padStart(2, "0")}h-${String(endHour).padStart(2, "0")}h`;
+        }
+      }
 
-      case "day":
-        // Format: "24" (numéro du jour)
-        return String(d.getDate());
+      case "day": {
+        // Format: "24/03" ou "24/03-26/03" si amount > 1 (avec gestion des mois différents)
+        if (amount === 1) {
+          return `${String(d.getDate()).padStart(2, "0")}/${String(d.getMonth() + 1).padStart(2, "0")}`;
+        } else {
+          // Calculer la date de fin correctement en ajoutant les jours
+          const endDate = new Date(d);
+          endDate.setDate(endDate.getDate() + amount - 1);
+          
+          const startDay = String(d.getDate()).padStart(2, "0");
+          const startMonth = String(d.getMonth() + 1).padStart(2, "0");
+          const endDay = String(endDate.getDate()).padStart(2, "0");
+          const endMonth = String(endDate.getMonth() + 1).padStart(2, "0");
+          
+          // Si les mois sont différents, afficher les deux
+          if (startMonth !== endMonth) {
+            return `${startDay}/${startMonth}-${endDay}/${endMonth}`;
+          } else {
+            // Sinon, afficher juste une plage de jours pour le même mois
+            return `${startDay}-${endDay}/${startMonth}`;
+          }
+        }
+      }
 
-      case "month":
-        // Format: "03" (numéro du mois)
-        return String(d.getMonth() + 1).padStart(2, "0");
+      case "month": {
+        // Format: "03" ou "03-04" si amount > 1
+        if (amount === 1) {
+          return String(d.getMonth() + 1).padStart(2, "0");
+        } else {
+          const endMonth = ((d.getMonth() + amount - 1) % 12) + 1;
+          return `${String(d.getMonth() + 1).padStart(2, "0")}-${String(endMonth).padStart(2, "0")}`;
+        }
+      }
 
-      case "15min":
-        // Format: "14h15"
-        const minutes15 = Math.floor(d.getMinutes() / 15) * 15;
-        return `${String(d.getHours()).padStart(2, "0")}h${String(minutes15).padStart(2, "0")}`;
-
-      case "30min":
-        // Format: "14h30"
-        const minutes30 = Math.floor(d.getMinutes() / 30) * 30;
-        return `${String(d.getHours()).padStart(2, "0")}h${String(minutes30).padStart(2, "0")}`;
+      case "minute": {
+        // Format: "14h15" ou "14h15-14h45" si amount > 1
+        if (amount === 1) {
+          return `${String(d.getHours()).padStart(2, "0")}h${String(d.getMinutes()).padStart(2, "0")}`;
+        } else {
+          const endMinutes = (d.getMinutes() + amount) % 60;
+          const endHour =
+            d.getHours() + Math.floor((d.getMinutes() + amount) / 60);
+          return `${String(d.getHours()).padStart(2, "0")}h${String(d.getMinutes()).padStart(2, "0")}-${String(endHour).padStart(2, "0")}h${String(endMinutes).padStart(2, "0")}`;
+        }
+      }
 
       default:
         // Fallback: afficher l'heure
@@ -310,7 +327,7 @@ export function aggregateObservationsByInterval(
 
   // Grouper par intervalle
   const grouped = data.Serie.ObssHydro.reduce((acc, obs) => {
-    const key = getIntervalKey(obs.DtObsHydro, interval);
+    const key = getIntervalKey(obs.DtObsHydro, interval, amount);
 
     if (!acc[key]) {
       acc[key] = [];
@@ -326,6 +343,9 @@ export function aggregateObservationsByInterval(
 
   // Appliquer l'agrégation
   const aggregated = Object.entries(grouped).map(([key, values]) => {
+    // Trier les valeurs par timestamp pour s'assurer que values[0] est le plus ancien
+    values.sort((a, b) => a.timestamp - b.timestamp);
+
     let aggregatedValue;
 
     switch (aggregationType) {
@@ -351,7 +371,7 @@ export function aggregateObservationsByInterval(
     }
 
     return {
-      heure: formatDisplayLabel(key, interval, values[0].timestamp), // Formatage adapté
+      heure: formatDisplayLabel(key, interval, amount, values[0].timestamp),
       haut: Number(aggregatedValue.toFixed(2)),
       timestamp: values[0].timestamp,
       count: values.length,
@@ -436,4 +456,85 @@ export async function getObservationsLastHours(
 ) {
   const data = await getObservationsVigicrues(codeStation, grandeurHydro);
   return filterObservationsLastHours(data, hours);
+}
+
+/**
+ * Filtre les observations entre deux dates
+ * @param {Object} data - Données brutes de Vigicrues
+ * @param {Date|string} dateDebut - Date de début (Date object ou string ISO)
+ * @param {Date|string} dateFin - Date de fin (Date object ou string ISO)
+ * @returns {Object} Données filtrées
+ */
+export function filterObservations(data, dateDebut, dateFin) {
+  if (!data?.Serie?.ObssHydro) {
+    return data;
+  }
+
+  // Conversion en objets Date si nécessaire
+  const startDate = dateDebut instanceof Date ? dateDebut : new Date(dateDebut);
+  const endDate = dateFin instanceof Date ? dateFin : new Date(dateFin);
+
+  // Vérification de la validité des dates
+  if (isNaN(startDate.getTime()) || isNaN(endDate.getTime())) {
+    console.error("Dates invalides fournies à filterObservations");
+    return data;
+  }
+
+  // S'assurer que la date de début est antérieure à la date de fin
+  if (startDate > endDate) {
+    console.warn(
+      "La date de début est postérieure à la date de fin, inversion automatique",
+    );
+    [startDate, endDate] = [endDate, startDate];
+  }
+
+  // Filtrage des observations
+  const filteredObservations = data.Serie.ObssHydro.filter((obs) => {
+    const obsDate = new Date(obs.DtObsHydro);
+    return obsDate >= startDate && obsDate <= endDate;
+  });
+
+  // Retourner les données avec les observations filtrées
+  return {
+    ...data,
+    Serie: {
+      ...data.Serie,
+      ObssHydro: filteredObservations,
+    },
+  };
+}
+
+/**
+ * Filtre les observations pour une date spécifique (toute la journée)
+ * @param {Object} data - Données brutes de Vigicrues
+ * @param {Date|string} date - Date à filtrer (Date object ou string ISO)
+ * @returns {Object} Données filtrées
+ */
+export function filterObservationsByDate(data, date) {
+  const targetDate = date instanceof Date ? date : new Date(date);
+
+  // Début de la journée (00:00:00)
+  const startOfDay = new Date(targetDate);
+  startOfDay.setHours(0, 0, 0, 0);
+
+  // Fin de la journée (23:59:59.999)
+  const endOfDay = new Date(targetDate);
+  endOfDay.setHours(23, 59, 59, 999);
+
+  return filterObservations(data, startOfDay, endOfDay);
+}
+
+/**
+ * Filtre les observations pour les X derniers jours
+ * @param {Object} data - Données brutes de Vigicrues
+ * @param {number} days - Nombre de jours
+ * @returns {Object} Données filtrées
+ */
+export function filterObservationsLastDays(data, days = 7) {
+  const endDate = new Date();
+  let startDate = new Date(new Date().setHours(0, 0, 0, 0));
+  startDate.setDate(startDate.getDate() - days);
+  console.log(startDate, endDate);
+
+  return filterObservations(data, startDate, endDate);
 }

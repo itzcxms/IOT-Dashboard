@@ -44,7 +44,7 @@ function GraphContainer({
           tickFormatter={(value) =>
             currentSelection[0] === "Année"
               ? NumToMois(value).slice(0, 3)
-              : value.slice(0, 3)
+              : value.slice(0, 12)
           }
         />
         {params.datas.map((param, index) => {

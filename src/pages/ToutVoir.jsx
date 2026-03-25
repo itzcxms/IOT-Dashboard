@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   ChartContainer,
@@ -251,17 +251,18 @@ function ToutVoir() {
     return weatherKeywords.join("");
   }
 
-  async function getWaterLevelDataGraph() {
+  const getWaterLevelDataGraph = useCallback(async () => {
     try {
       const data = await getObservationsToday(CODE_STATION_VIGICRUES, "H");
       console.log(data);
       const formattedData = aggregateObservationsByInterval(
         data,
         "hour",
+        1,
         "average",
       );
 
-      if (formattedData.length > 0) {
+      if (formattedData && formattedData.length > 0) {
         let min = formattedData[0].haut;
         for (let i = 1; i < formattedData.length; i++) {
           if (formattedData[i].haut < min) {
@@ -277,10 +278,11 @@ function ToutVoir() {
         "Erreur lors de la récupération des données Vigicrues:",
         error,
       );
+      return null;
     }
-  }
+  }, []);
 
-  async function getDataEauCard() {
+  const getDataEauCard = useCallback(async () => {
     try {
       const data = await getObservationsVigicrues(CODE_STATION_VIGICRUES, "H");
       console.log(data);
@@ -292,130 +294,183 @@ function ToutVoir() {
         "Erreur lors de la récupération de la hauteur d'eau Vigicrues:",
         error,
       );
+      return null;
     }
-  }
+  }, []);
 
-  async function getDataMeteo() {
-    let meteo = await fetch(
-      "https://api.open-meteo.com/v1/forecast?latitude=47.48&longitude=1.18&models=meteofrance_seamless&current=rain,showers,snowfall,precipitation,temperature_2m,apparent_temperature,wind_speed_10m,is_day,cloud_cover&timezone=Europe%2FBerlin",
-    );
-    if (meteo.status === 200) {
-      meteo = await meteo.text();
-      meteo = JSON.parse(meteo);
-      const temperatureTemp = meteo.current.temperature_2m;
-      meteo = await traitementDataMeteo(meteo.current);
-      return { meteo: meteo, tempe: temperatureTemp };
+  const getDataMeteo = useCallback(async () => {
+    try {
+      let meteo = await fetch(
+        "https://api.open-meteo.com/v1/forecast?latitude=47.48&longitude=1.18&models=meteofrance_seamless&current=rain,showers,snowfall,precipitation,temperature_2m,apparent_temperature,wind_speed_10m,is_day,cloud_cover&timezone=Europe%2FBerlin",
+      );
+      if (meteo.status === 200) {
+        meteo = await meteo.text();
+        meteo = JSON.parse(meteo);
+        const temperatureTemp = meteo.current.temperature_2m;
+        meteo = await traitementDataMeteo(meteo.current);
+        return { meteo: meteo, tempe: temperatureTemp };
+      }
+      return null;
+    } catch (error) {
+      console.error("Erreur lors de la récupération de la météo:", error);
+      return null;
     }
-  }
+  }, []);
 
-  async function getDataFrequentation() {
-    let freq = await generateCallsAPI(
-      token,
-      "POST",
-      "/api/graphs/capteurs/today",
-      { type: "toilette" },
-    );
-    return freq.total;
-  }
-
-  async function getDataSavon() {
-    let savon = await generateCallsAPI(token, "GET", "/api/savon/");
-    console.log(savon);
-    if (savon.length > 0) {
-      savon =
-        savon[0].seuils.actuel -
-        savon[0].consommationParPassage *
-          savon[0].dernierRemplissage.compteurPassages;
-      return savon;
+  const getDataFrequentation = useCallback(async () => {
+    try {
+      let freq = await generateCallsAPI(
+        token,
+        "POST",
+        "/api/graphs/capteurs/today",
+        { type: "toilette" },
+      );
+      return freq?.total || null;
+    } catch (error) {
+      console.error("Erreur lors de la récupération de la fréquentation:", error);
+      return null;
     }
-    return null;
-  }
+  }, [token]);
 
-  async function getDataTotalQuestionnaireLast7Days() {
-    let total = await generateCallsAPI(
-      token,
-      "GET",
-      "/api/questionnaires/stats/last7days",
-    );
-    return total.total;
-  }
+  const getDataSavon = useCallback(async () => {
+    try {
+      let savon = await generateCallsAPI(token, "GET", "/api/savon/");
+      console.log(savon);
+      if (savon && savon.length > 0) {
+        savon =
+          savon[0].seuils.actuel -
+          savon[0].consommationParPassage *
+            savon[0].dernierRemplissage.compteurPassages;
+        return savon;
+      }
+      return null;
+    } catch (error) {
+      console.error("Erreur lors de la récupération du savon:", error);
+      return null;
+    }
+  }, [token]);
+
+  const getDataTotalQuestionnaireLast7Days = useCallback(async () => {
+    try {
+      let total = await generateCallsAPI(
+        token,
+        "GET",
+        "/api/questionnaires/stats/last7days",
+      );
+      return total?.total || null;
+    } catch (error) {
+      console.error(
+        "Erreur lors de la récupération des questionnaires:",
+        error
+      );
+      return null;
+    }
+  }, [token]);
 
   useEffect(() => {
     async function fetchData() {
-      // Niveau de l'eau (Graphique)
-      let waterGraph = null;
-      let min = null;
-      if (waterLevelData === null && dataMin === null) {
-        let dataGraph = await getWaterLevelDataGraph();
-        waterGraph = dataGraph.waterGraph;
-        min = dataGraph.min;
-      }
-      // Hauteur de l'eau (Card)
-      let hautEau = null;
-      if (hauteurEau === null) {
-        hautEau = await getDataEauCard();
-      }
-      // Météo
-      let meteo = null;
-      let tempe = null;
-      if (weatherCondition === null && temperature === null) {
-        let dataMeteo = await getDataMeteo();
-        meteo = dataMeteo.meteo;
-        tempe = dataMeteo.tempe;
-      }
-      // Fréquentation
-      let freq = null;
-      if (frequentation === null) {
-        freq = await getDataFrequentation();
-      }
-      // Savon
-      let savon = null;
-      if (contenueSavon === null) {
-        savon = await getDataSavon();
-      }
-      // Questionnaires
-      let questRes = null;
-      if (questionnaires === null) {
-        questRes = await getDataTotalQuestionnaireLast7Days();
-      }
-
-      if (waterGraph !== null && min !== null) {
-        setWaterLevelData(waterGraph);
-        setDataMin(min);
-      }
-      if (hautEau !== null) {
-        setHauteurEau(hautEau);
-      }
-      if (meteo !== null && tempe !== null) {
-        setWeatherCondition(meteo);
-        setTemperature(tempe);
-      }
-      if (freq !== null) {
-        setFrequentation(freq);
-      }
-      if (savon !== null) {
-        setContenueSavon(savon);
-      }
-      if (questRes !== null) {
-        setQuestionnaires(questRes);
-      }
-      if (waterLevelData !== null && dataMin !== null && hauteurEau !== null) {
-        setIsLoadingVigicrue(false);
-      }
-      if (
-        weatherCondition !== null &&
-        temperature !== null &&
-        frequentation !== null &&
-        contenueSavon !== null &&
-        questionnaires !== null
-      ) {
-        setIsLoading(false);
+      try {
+        // Niveau de l'eau (Graphique)
+        if (waterLevelData === null && dataMin === null) {
+          let dataGraph = await getWaterLevelDataGraph();
+          if (dataGraph) {
+            setWaterLevelData(dataGraph.waterGraph);
+            setDataMin(dataGraph.min);
+          }
+        }
+        
+        // Hauteur de l'eau (Card)
+        if (hauteurEau === null) {
+          let hautEau = await getDataEauCard();
+          if (hautEau !== null) {
+            setHauteurEau(hautEau);
+          }
+        }
+        
+        // Météo
+        if (weatherCondition === null && temperature === null) {
+          let dataMeteo = await getDataMeteo();
+          if (dataMeteo) {
+            setWeatherCondition(dataMeteo.meteo);
+            setTemperature(dataMeteo.tempe);
+          }
+        }
+        
+        // Fréquentation
+        if (frequentation === null) {
+          let freq = await getDataFrequentation();
+          if (freq !== null) {
+            setFrequentation(freq);
+          }
+        }
+        
+        // Savon
+        if (contenueSavon === null) {
+          let savon = await getDataSavon();
+          if (savon !== null) {
+            setContenueSavon(savon);
+          }
+        }
+        
+        // Questionnaires
+        if (questionnaires === null) {
+          let questRes = await getDataTotalQuestionnaireLast7Days();
+          if (questRes !== null) {
+            setQuestionnaires(questRes);
+          }
+        }
+      } catch (error) {
+        console.error("Erreur lors du chargement des données:", error);
       }
     }
+
+    // Appeler fetchData uniquement si isLoading ou isLoadingVigicrue est true
     if (isLoading || isLoadingVigicrue) {
       void fetchData();
     }
-  });
+  }, [
+    isLoading,
+    isLoadingVigicrue,
+    waterLevelData,
+    dataMin,
+    hauteurEau,
+    weatherCondition,
+    temperature,
+    frequentation,
+    contenueSavon,
+    questionnaires,
+    getWaterLevelDataGraph,
+    getDataEauCard,
+    getDataMeteo,
+    getDataFrequentation,
+    getDataSavon,
+    getDataTotalQuestionnaireLast7Days,
+  ]);
+
+  // Effet pour vérifier si tous les données sont chargées
+  useEffect(() => {
+    if (waterLevelData !== null && dataMin !== null && hauteurEau !== null) {
+      setIsLoadingVigicrue(false);
+    }
+    if (
+      weatherCondition !== null &&
+      temperature !== null &&
+      frequentation !== null &&
+      contenueSavon !== null &&
+      questionnaires !== null
+    ) {
+      setIsLoading(false);
+    }
+  }, [
+    waterLevelData,
+    dataMin,
+    hauteurEau,
+    weatherCondition,
+    temperature,
+    frequentation,
+    contenueSavon,
+    questionnaires,
+  ]);
 
   return (
     <div className="flex flex-col h-[calc(100vh-2rem)] space-y-4">
@@ -645,7 +700,7 @@ function ToutVoir() {
                       tickLine={false}
                       tick={{ fontSize: 12, fill: "var(--muted-foreground)" }}
                     />
-                    <YAxis hide domain={[dataMin - 0.1, "dataMax + 0.1"]} />
+                    <YAxis hide domain={[dataMin - 0.1, (dataMax) => dataMax + 0.1]} />
                     <ChartTooltip
                       content={<ChartTooltipContent />}
                       cursor={false}

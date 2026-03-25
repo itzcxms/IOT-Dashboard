@@ -12,6 +12,7 @@ import DropDownTempGraph from "@/components/common/DropDownTempGraph.jsx";
 import DropDown2Selector from "@/components/common/DropDown2Selector.jsx";
 import GraphContainer from "@/components/common/GraphContainer.jsx";
 import ReloadGraph from "@/components/common/ReloadGraph.jsx";
+import DropdownZoneInondable from "@/components/common/DropdownZoneInondable.jsx";
 
 /**
  * @fileoverview Composant de gestion et d'affichage de graphiques dynamiques
@@ -155,10 +156,12 @@ function Graphs({
     for (let i = 1; i < keys.length; i++) {
       let contentConfig = {};
       const label = keys[i];
-      contentConfig["label"] = label.charAt(0).toUpperCase() + label.slice(1);
-      contentConfig["color"] = `var(--color-multi-chart-${i})`;
-      config[label] = contentConfig;
-      param.datas.push(label);
+      if (label !== "timestamp" && label !== "count") {
+        contentConfig["label"] = label.charAt(0).toUpperCase() + label.slice(1);
+        contentConfig["color"] = `var(--color-multi-chart-${i})`;
+        config[label] = contentConfig;
+        param.datas.push(label);
+      }
     }
 
     return { config, param };
@@ -238,26 +241,69 @@ function Graphs({
     return <div>No data</div>;
   }
 
+  console.log(currentSelection ?? "");
   return (
     <Card className="Card">
       <CardHeader>
         <CardTitle className={"flex flex-row-reverse gap-2"}>
-          <DropDownTempGraph
-            nomSelection={
-              typeof currentSelection === "object"
-                ? currentSelection[0]
-                : currentSelection
-            }
-            data={["Aujourd'hui", "Mois", "Année"]}
-            getDataGraph={getDataGraph}
-          />
-          <div>
-            {typeof currentSelection === "object" ? (
-              <ReloadGraph
-                nom={currentSelection[0]}
-                data={currentSelection.slice(1)}
+          {typeof currentSelection === "object" ? (
+            currentSelection[0] !== "vigicrue" ? (
+              <DropDownTempGraph
+                nomSelection={
+                  typeof currentSelection === "object"
+                    ? currentSelection[0]
+                    : currentSelection
+                }
+                data={["Aujourd'hui", "Mois", "Année"]}
                 getDataGraph={getDataGraph}
               />
+            ) : (
+              <DropdownZoneInondable
+                getDataGraph={getDataGraph}
+                data={{
+                  "1p": "Par jour",
+                  "7p": "7 jours",
+                  "30p": "30 jours",
+                  "60p": "60 jours",
+                  "90p": "90 jours",
+                }}
+                nomSelection={currentSelection[1]}
+              />
+            )
+          ) : (
+            <DropDownTempGraph
+              nomSelection={
+                typeof currentSelection === "object"
+                  ? currentSelection[0]
+                  : currentSelection
+              }
+              data={["Aujourd'hui", "Mois", "Année"]}
+              getDataGraph={getDataGraph}
+            />
+          )}
+          <div>
+            {typeof currentSelection === "object" ? (
+              currentSelection[0] === "vigicrue" ? (
+                <ReloadGraph
+                  nom={currentSelection[1]}
+                  data={{
+                    "1p": "Par jour",
+                    "7p": "7 jours",
+                    "30p": "30 jours",
+                    "60p": "60 jours",
+                    "90p": "90 jours",
+                  }}
+                  getDataGraph={getDataGraph}
+                  vigicrue={true}
+                  date={currentSelection[2] ?? null}
+                />
+              ) : (
+                <ReloadGraph
+                  nom={currentSelection[0]}
+                  data={currentSelection.slice(1)}
+                  getDataGraph={getDataGraph}
+                />
+              )
             ) : (
               <ReloadGraph
                 nom={currentSelection}
