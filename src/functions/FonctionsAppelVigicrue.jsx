@@ -208,7 +208,153 @@ export function getDailyMinMax(data) {
 }
 
 /**
- * Agrège les données d'observation par intervalle de temps
+ * Agrège les données par intervalle avec min, moyenne et max
+ * Utile pour afficher une bande min/max avec la courbe moyenne
+ * @param {Object} data - Données brutes de Vigicrues
+ * @param {string} interval - Unité d'intervalle ('hour', 'day', 'minute', 'month')
+ * @param {number} amount - Quantité d'unités
+ * @returns {Array} Données avec min, haut (moyenne), max
+ */
+export function aggregateObservationsByIntervalWithMinMax(
+  data,
+  interval = "hour",
+  amount = 1,
+) {
+  if (!data?.Serie?.ObssHydro) {
+    return [];
+  }
+
+  // Fonction pour obtenir la clé d'intervalle
+  const getIntervalKey = (date, interval, amount) => {
+    const d = new Date(date);
+
+    switch (interval) {
+      case "hour": {
+        const hours = Math.floor(d.getHours() / amount) * amount;
+        return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")} ${String(hours).padStart(2, "0")}:00`;
+      }
+
+      case "day": {
+        const dateStr = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+        return dateStr;
+      }
+
+      case "month": {
+        const months = Math.floor(d.getMonth() / amount) * amount;
+        return `${d.getFullYear()}-${String(months + 1).padStart(2, "0")}`;
+      }
+
+      case "minute": {
+        const minutes = Math.floor(d.getMinutes() / amount) * amount;
+        return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")} ${String(d.getHours()).padStart(2, "0")}:${String(minutes).padStart(2, "0")}`;
+      }
+
+      default:
+        return date;
+    }
+  };
+
+  // Fonction pour formater l'affichage selon l'intervalle
+  const formatDisplayLabel = (timestamp, interval, amount) => {
+    const d = new Date(timestamp);
+
+    switch (interval) {
+      case "hour": {
+        if (amount === 1) {
+          return `${String(d.getHours()).padStart(2, "0")}h${String(d.getMinutes()).padStart(2, "0")}`;
+        } else {
+          const endHour = (d.getHours() + amount) % 24;
+          return `${String(d.getHours()).padStart(2, "0")}h-${String(endHour).padStart(2, "0")}h`;
+        }
+      }
+
+      case "day": {
+        if (amount === 1) {
+          return `${String(d.getDate()).padStart(2, "0")}/${String(d.getMonth() + 1).padStart(2, "0")}`;
+        } else {
+          const endDate = new Date(d);
+          endDate.setDate(endDate.getDate() + amount - 1);
+          const startDay = String(d.getDate()).padStart(2, "0");
+          const startMonth = String(d.getMonth() + 1).padStart(2, "0");
+          const endDay = String(endDate.getDate()).padStart(2, "0");
+          const endMonth = String(endDate.getMonth() + 1).padStart(2, "0");
+          
+          if (startMonth !== endMonth) {
+            return `${startDay}/${startMonth}-${endDay}/${endMonth}`;
+          } else {
+            return `${startDay}-${endDay}/${startMonth}`;
+          }
+        }
+      }
+
+      case "month": {
+        if (amount === 1) {
+          return String(d.getMonth() + 1).padStart(2, "0");
+        } else {
+          const endMonth = ((d.getMonth() + amount - 1) % 12) + 1;
+          return `${String(d.getMonth() + 1).padStart(2, "0")}-${String(endMonth).padStart(2, "0")}`;
+        }
+      }
+
+      case "minute": {
+        if (amount === 1) {
+          return `${String(d.getHours()).padStart(2, "0")}h${String(d.getMinutes()).padStart(2, "0")}`;
+        } else {
+          const endMinutes = (d.getMinutes() + amount) % 60;
+          const endHour = d.getHours() + Math.floor((d.getMinutes() + amount) / 60);
+          return `${String(d.getHours()).padStart(2, "0")}h${String(d.getMinutes()).padStart(2, "0")}-${String(endHour).padStart(2, "0")}h${String(endMinutes).padStart(2, "0")}`;
+        }
+      }
+
+      default:
+        return d.toLocaleTimeString("fr-FR", {
+          hour: "2-digit",
+          minute: "2-digit",
+        });
+    }
+  };
+
+  // Grouper par intervalle
+  const grouped = data.Serie.ObssHydro.reduce((acc, obs) => {
+    const key = getIntervalKey(obs.DtObsHydro, interval, amount);
+
+    if (!acc[key]) {
+      acc[key] = [];
+    }
+
+    acc[key].push({
+      value: parseFloat(obs.ResObsHydro),
+      timestamp: obs.DtObsHydro,
+    });
+
+    return acc;
+  }, {});
+
+  // Calculer min, moyenne et max pour chaque intervalle
+  const aggregated = Object.entries(grouped).map(([key, values]) => {
+    // Trier par timestamp
+    values.sort((a, b) => a.timestamp - b.timestamp);
+
+    // Calculer min, moyenne, max
+    const min = Math.min(...values.map((v) => v.value));
+    const max = Math.max(...values.map((v) => v.value));
+    const average = values.reduce((sum, v) => sum + v.value, 0) / values.length;
+
+    return {
+      heure: formatDisplayLabel(values[0].timestamp, interval, amount),
+      min: Number(min.toFixed(2)),
+      haut: Number(average.toFixed(2)),
+      max: Number(max.toFixed(2)),
+      timestamp: values[0].timestamp,
+      count: values.length,
+    };
+  });
+
+  // Trier par timestamp
+  return aggregated.sort(
+    (a, b) => new Date(a.timestamp) - new Date(b.timestamp),
+  );
+}
  * @param {Object} data - Données brutes de Vigicrues
  * @param {string} interval - Unité d'intervalle ('hour', 'day', 'minute', 'month')
  * @param {number} amount - Quantité d'unités (ex: 30 pour 30 minutes, 2 pour 2 heures)

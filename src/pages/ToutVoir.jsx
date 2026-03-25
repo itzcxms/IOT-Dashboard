@@ -32,7 +32,7 @@ import { useAuth } from "@/context/useAuth";
 import generateCallsAPI from "@/functions/GestionnaireCallsAPI.jsx";
 import {
   aggregateObservationsByInterval,
-  formatObservationsForChart,
+  aggregateObservationsByIntervalWithMinMax,
   getLatestObservation,
   getObservationsToday,
   getObservationsVigicrues,
@@ -40,8 +40,16 @@ import {
 
 // Configuration du graphique
 const chartConfig = {
+  min: {
+    label: "Min",
+    color: "var(--chart-3)",
+  },
   haut: {
-    label: "Niveau d'eau",
+    label: "Moyenne",
+    color: "var(--chart-3)",
+  },
+  max: {
+    label: "Max",
     color: "var(--chart-3)",
   },
 };
@@ -255,18 +263,17 @@ function ToutVoir() {
     try {
       const data = await getObservationsToday(CODE_STATION_VIGICRUES, "H");
       console.log(data);
-      const formattedData = aggregateObservationsByInterval(
+      const formattedData = aggregateObservationsByIntervalWithMinMax(
         data,
         "hour",
         1,
-        "average",
       );
 
       if (formattedData && formattedData.length > 0) {
-        let min = formattedData[0].haut;
+        let min = formattedData[0].min;
         for (let i = 1; i < formattedData.length; i++) {
-          if (formattedData[i].haut < min) {
-            min = formattedData[i].haut;
+          if (formattedData[i].min < min) {
+            min = formattedData[i].min;
           }
         }
         console.log(formattedData);
@@ -676,7 +683,7 @@ function ToutVoir() {
                   <AreaChart data={waterLevelData}>
                     <defs>
                       <linearGradient
-                        id="waterGradient"
+                        id="minMaxGradient"
                         x1="0"
                         y1="0"
                         x2="0"
@@ -685,7 +692,7 @@ function ToutVoir() {
                         <stop
                           offset="5%"
                           stopColor="var(--chart-3)"
-                          stopOpacity={0.3}
+                          stopOpacity={0.15}
                         />
                         <stop
                           offset="95%"
@@ -705,12 +712,23 @@ function ToutVoir() {
                       content={<ChartTooltipContent />}
                       cursor={false}
                     />
+                    {/* Zone min/max remplie */}
+                    <Area
+                      type="monotone"
+                      dataKey="max"
+                      stroke="none"
+                      fill="url(#minMaxGradient)"
+                      isAnimationActive={false}
+                    />
+                    {/* Ligne moyenne en surbrillance */}
                     <Area
                       type="monotone"
                       dataKey="haut"
                       stroke="var(--chart-3)"
-                      strokeWidth={2}
-                      fill="url(#waterGradient)"
+                      strokeWidth={3}
+                      fill="none"
+                      isAnimationActive={false}
+                      dot={false}
                     />
                   </AreaChart>
                 </ChartContainer>
