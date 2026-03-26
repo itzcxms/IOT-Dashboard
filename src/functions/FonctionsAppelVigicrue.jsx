@@ -278,7 +278,7 @@ export function aggregateObservationsByIntervalWithMinMax(
           const startMonth = String(d.getMonth() + 1).padStart(2, "0");
           const endDay = String(endDate.getDate()).padStart(2, "0");
           const endMonth = String(endDate.getMonth() + 1).padStart(2, "0");
-          
+
           if (startMonth !== endMonth) {
             return `${startDay}/${startMonth}-${endDay}/${endMonth}`;
           } else {
@@ -301,7 +301,8 @@ export function aggregateObservationsByIntervalWithMinMax(
           return `${String(d.getHours()).padStart(2, "0")}h${String(d.getMinutes()).padStart(2, "0")}`;
         } else {
           const endMinutes = (d.getMinutes() + amount) % 60;
-          const endHour = d.getHours() + Math.floor((d.getMinutes() + amount) / 60);
+          const endHour =
+            d.getHours() + Math.floor((d.getMinutes() + amount) / 60);
           return `${String(d.getHours()).padStart(2, "0")}h${String(d.getMinutes()).padStart(2, "0")}-${String(endHour).padStart(2, "0")}h${String(endMinutes).padStart(2, "0")}`;
         }
       }
@@ -342,9 +343,9 @@ export function aggregateObservationsByIntervalWithMinMax(
 
     return {
       heure: formatDisplayLabel(values[0].timestamp, interval, amount),
-      min: Number(min.toFixed(2)),
-      moyenne: Number(average.toFixed(2)),
       max: Number(max.toFixed(2)),
+      moyenne: Number(average.toFixed(2)),
+      min: Number(min.toFixed(2)),
       timestamp: values[0].timestamp,
       count: values.length,
     };
@@ -427,12 +428,12 @@ export function aggregateObservationsByInterval(
           // Calculer la date de fin correctement en ajoutant les jours
           const endDate = new Date(d);
           endDate.setDate(endDate.getDate() + amount - 1);
-          
+
           const startDay = String(d.getDate()).padStart(2, "0");
           const startMonth = String(d.getMonth() + 1).padStart(2, "0");
           const endDay = String(endDate.getDate()).padStart(2, "0");
           const endMonth = String(endDate.getMonth() + 1).padStart(2, "0");
-          
+
           // Si les mois sont différents, afficher les deux
           if (startMonth !== endMonth) {
             return `${startDay}/${startMonth}-${endDay}/${endMonth}`;

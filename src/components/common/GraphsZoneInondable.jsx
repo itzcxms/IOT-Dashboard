@@ -20,7 +20,11 @@ function GraphsZoneInondable({ seuilDanger, vigicrueData = null }) {
    * Valide si les données Vigicrues sont complètes et valides
    */
   const isDataValid = (data) => {
-    return data?.Serie?.ObssHydro && Array.isArray(data.Serie.ObssHydro) && data.Serie.ObssHydro.length > 0;
+    return (
+      data?.Serie?.ObssHydro &&
+      Array.isArray(data.Serie.ObssHydro) &&
+      data.Serie.ObssHydro.length > 0
+    );
   };
 
   /**
@@ -55,113 +59,116 @@ function GraphsZoneInondable({ seuilDanger, vigicrueData = null }) {
    * @param {number|null} [date=null] - Date spécifique (optionnel)
    * @returns {Promise<void>}
    */
-  const getDataGraph = useCallback(async (key, date = null) => {
-    try {
-      console.log(key);
-      setIsLoading(true);
-      setHasError(false);
+  const getDataGraph = useCallback(
+    async (key, date = null) => {
+      try {
+        console.log(key);
+        setIsLoading(true);
+        setHasError(false);
 
-      let recieveDate = false;
-      let tempDatas = null;
-      let dateGiven = true;
-      let tempCompleteDatas = completeData;
+        let recieveDate = false;
+        let tempDatas = null;
+        let dateGiven = true;
+        let tempCompleteDatas = completeData;
 
-      if (date === null) {
-        date = new Date();
-        dateGiven = false;
-      }
-
-      // Vérifier si mise à jour des données est nécessaire
-      let updateData = false;
-      if (
-        dateGiven &&
-        key === "1p" &&
-        recievedTimeData &&
-        recievedTimeData.getTime() < date.getTime() - 1000 * 60 * 60
-      ) {
-        updateData = true;
-      }
-
-      // Récupérer les données si nécessaire
-      if (!isDataValid(tempCompleteDatas) || updateData) {
-        tempCompleteDatas = await getObservationsVigicrues("K447001001", "H");
-        recieveDate = true;
-        
-        // Valider que les données récupérées sont correctes
-        if (!isDataValid(tempCompleteDatas)) {
-          throw new Error("Les données Vigicrues récupérées sont invalides");
+        if (date === null) {
+          date = new Date();
+          dateGiven = false;
         }
-      }
 
-      // Traiter les données selon la période demandée
-      if (key === "1p") {
-        let dateDebut = new Date(new Date().setHours(0, 0, 0, 0));
-        let dateFin = new Date();
-        tempDatas = filterObservations(tempCompleteDatas, dateDebut, dateFin);
-        tempDatas = aggregateObservationsByIntervalWithMinMax(
-          tempDatas,
-          "hour",
-          1,
-        );
-        setCurrentSelection(["vigicrue", key, date]);
-      } else if (key === "7p") {
-        tempDatas = filterObservationsLastDays(tempCompleteDatas, 7);
-        const timestamp = new Date().toISOString().replace(/[:.]/g, "-");
-        saveDataToJSON(
-          tempDatas,
-          `donnees-avant-agregation-7p-${timestamp}.json`,
-        );
-        tempDatas = aggregateObservationsByIntervalWithMinMax(
-          tempDatas,
-          "day",
-          1,
-        );
-        saveDataToJSON(
-          tempDatas,
-          `donnees-apres-agregation-7p-${timestamp}.json`,
-        );
-        setCurrentSelection(["vigicrue", key]);
-      } else if (key === "30p") {
-        tempDatas = filterObservationsLastDays(tempCompleteDatas, 30);
-        tempDatas = aggregateObservationsByIntervalWithMinMax(
-          tempDatas,
-          "day",
-          1,
-        );
-        setCurrentSelection(["vigicrue", key]);
-      } else if (key === "60p") {
-        tempDatas = filterObservationsLastDays(tempCompleteDatas, 60);
-        tempDatas = aggregateObservationsByIntervalWithMinMax(
-          tempDatas,
-          "day",
-          2,
-        );
-        setCurrentSelection(["vigicrue", key]);
-      } else if (key === "90p") {
-        tempDatas = filterObservationsLastDays(tempCompleteDatas, 90);
-        tempDatas = aggregateObservationsByIntervalWithMinMax(
-          tempDatas,
-          "day",
-          5,
-        );
-        setCurrentSelection(["vigicrue", key]);
-      }
+        // Vérifier si mise à jour des données est nécessaire
+        let updateData = false;
+        if (
+          !dateGiven &&
+          key === "1p" &&
+          recievedTimeData &&
+          recievedTimeData.getTime() < date.getTime() - 1000 * 60 * 60
+        ) {
+          updateData = true;
+        }
 
-      // Mettre à jour l'état avec les nouvelles données
-      setCompleteData(tempCompleteDatas);
-      if (recieveDate) {
-        setRecievedTimeData(new Date());
+        // Récupérer les données si nécessaire
+        if (!isDataValid(tempCompleteDatas) || updateData) {
+          tempCompleteDatas = await getObservationsVigicrues("K447001001", "H");
+          recieveDate = true;
+
+          // Valider que les données récupérées sont correctes
+          if (!isDataValid(tempCompleteDatas)) {
+            throw new Error("Les données Vigicrues récupérées sont invalides");
+          }
+        }
+
+        // Traiter les données selon la période demandée
+        if (key === "1p") {
+          let dateDebut = new Date(new Date().setHours(0, 0, 0, 0));
+          let dateFin = new Date();
+          tempDatas = filterObservations(tempCompleteDatas, dateDebut, dateFin);
+          tempDatas = aggregateObservationsByIntervalWithMinMax(
+            tempDatas,
+            "hour",
+            1,
+          );
+          setCurrentSelection(["vigicrue", key, date]);
+        } else if (key === "7p") {
+          tempDatas = filterObservationsLastDays(tempCompleteDatas, 7);
+          const timestamp = new Date().toISOString().replace(/[:.]/g, "-");
+          saveDataToJSON(
+            tempDatas,
+            `donnees-avant-agregation-7p-${timestamp}.json`,
+          );
+          tempDatas = aggregateObservationsByIntervalWithMinMax(
+            tempDatas,
+            "day",
+            1,
+          );
+          saveDataToJSON(
+            tempDatas,
+            `donnees-apres-agregation-7p-${timestamp}.json`,
+          );
+          setCurrentSelection(["vigicrue", key]);
+        } else if (key === "30p") {
+          tempDatas = filterObservationsLastDays(tempCompleteDatas, 30);
+          tempDatas = aggregateObservationsByIntervalWithMinMax(
+            tempDatas,
+            "day",
+            1,
+          );
+          setCurrentSelection(["vigicrue", key]);
+        } else if (key === "60p") {
+          tempDatas = filterObservationsLastDays(tempCompleteDatas, 60);
+          tempDatas = aggregateObservationsByIntervalWithMinMax(
+            tempDatas,
+            "day",
+            2,
+          );
+          setCurrentSelection(["vigicrue", key]);
+        } else if (key === "90p") {
+          tempDatas = filterObservationsLastDays(tempCompleteDatas, 90);
+          tempDatas = aggregateObservationsByIntervalWithMinMax(
+            tempDatas,
+            "day",
+            5,
+          );
+          setCurrentSelection(["vigicrue", key]);
+        }
+
+        // Mettre à jour l'état avec les nouvelles données
+        setCompleteData(tempCompleteDatas);
+        if (recieveDate) {
+          setRecievedTimeData(new Date());
+        }
+        console.log(tempDatas);
+        setChartData(tempDatas);
+      } catch (error) {
+        console.error("Erreur dans getDataGraph:", error);
+        setHasError(true);
+        setChartData(null);
+      } finally {
+        setIsLoading(false);
       }
-      console.log(tempDatas);
-      setChartData(tempDatas);
-    } catch (error) {
-      console.error("Erreur dans getDataGraph:", error);
-      setHasError(true);
-      setChartData(null);
-    } finally {
-      setIsLoading(false);
-    }
-  }, [completeData, recievedTimeData]);
+    },
+    [completeData, recievedTimeData],
+  );
 
   // Effet pour initialiser les données depuis les props
   useEffect(() => {
@@ -173,8 +180,12 @@ function GraphsZoneInondable({ seuilDanger, vigicrueData = null }) {
 
   // Effet pour charger le premier graphique une fois que completeData est disponible
   useEffect(() => {
-    if (isDataValid(completeData) && ChartData === null && currentSelection === null) {
-      getDataGraph("1p");
+    if (
+      isDataValid(completeData) &&
+      ChartData === null &&
+      currentSelection === null
+    ) {
+      getDataGraph("60p");
     }
   }, [completeData, ChartData, currentSelection, getDataGraph]);
 

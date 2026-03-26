@@ -231,6 +231,76 @@ function Graphs({
   }
 
   /**
+   * Unifie les domaines pour les paramètres liés
+   * Détecte les patterns comme min/moyenne/max et les met sur la même échelle
+   *
+   * @inner
+   * @function unifyRelatedDomains
+   * @param {Object} configs - Configurations initiales des axes Y
+   * @param {string[]} paramList - Liste des paramètres
+   * @returns {Object} Configurations avec domaines unifiés pour les paramètres liés
+   */
+  function unifyRelatedDomains(configs, paramList) {
+    const result = { ...configs };
+
+    // Détecter les patterns min/moyenne/max
+    const hasMin = paramList.includes("min");
+    const hasMoyenne = paramList.includes("moyenne");
+    const hasMax = paramList.includes("max");
+
+    if (hasMin && hasMoyenne && hasMax) {
+      // Unifier les domaines pour ces trois paramètres
+      let globalMin = Infinity;
+      let globalMax = -Infinity;
+
+      ["min", "moyenne", "max"].forEach((param) => {
+        globalMin = Math.min(globalMin, configs[param].domain[0]);
+        globalMax = Math.max(globalMax, configs[param].domain[1]);
+      });
+
+      // Régénérer les ticks pour l'échelle unifiée
+      const unifiedRange = globalMax - globalMin;
+      let unit =
+        unifiedRange === 0 ? 1 : Math.pow(10, Math.floor(Math.log10(unifiedRange)));
+      let tickCount = unifiedRange / unit;
+
+      if (tickCount < 1.5) {
+        unit = unit / 5;
+      } else if (tickCount < 2.5) {
+        unit = unit / 2;
+      } else if (tickCount > 7) {
+        unit = unit * 2;
+      }
+
+      const unifiedTicks = [];
+      const epsilon = unit * 0.001;
+
+      for (let i = globalMin; i <= globalMax + epsilon; i += unit) {
+        const tickValue = parseFloat((Math.round(i / unit) * unit).toFixed(6));
+        if (
+          unifiedTicks.length === 0 ||
+          Math.abs(tickValue - unifiedTicks[unifiedTicks.length - 1]) > unit * 0.5
+        ) {
+          unifiedTicks.push(tickValue);
+        }
+      }
+
+      // Appliquer le domaine et les ticks unifiés
+      const unifiedConfig = {
+        domain: [globalMin, globalMax],
+        ticks: unifiedTicks,
+        unit: unit,
+      };
+
+      result["min"] = unifiedConfig;
+      result["moyenne"] = unifiedConfig;
+      result["max"] = unifiedConfig;
+    }
+
+    return result;
+  }
+
+  /**
    * Génère la configuration de tous les axes verticaux pour le graphique
    *
    *
@@ -246,7 +316,8 @@ function Graphs({
       configs[paramList[i]] = generateYAxisConfig(paramList[i]);
     }
 
-    return configs;
+    // Unifier les domaines pour les paramètres liés
+    return unifyRelatedDomains(configs, paramList);
   }
 
   useEffect(() => {
