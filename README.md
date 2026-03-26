@@ -1,32 +1,27 @@
-# Dashboard IoT — Frontend
+# IOT Dashboard — Aire de repos de Chaumont-sur-Loire
 
-Application web (React / Vite) servant de tableau de bord et de vitrine pour la plateforme IoT de l'aire de repos de **Chaumont-sur-Loire**.  
-Elle affiche les données des capteurs, gère les utilisateurs et les permissions, et propose un questionnaire de satisfaction.
+Plateforme IoT de monitoring et de découverte pour l'aire de repos de Chaumont-sur-Loire.  
+Développée dans le cadre du projet chef-d'œuvre DWWM — La Fabrique Numérique 41.
 
 ---
 
-## Table des matières
+## Stack technique
 
-- [Prérequis](#prérequis)
-- [Installation](#installation)
-- [Variables d'environnement](#variables-denvironnement)
-- [Lancement](#lancement)
-- [Build de production](#build-de-production)
-- [Linting](#linting)
-- [Structure du projet](#structure-du-projet)
-- [Pages de l'application](#pages-de-lapplication)
-- [Stack technique](#stack-technique)
+- **Front** : React, Vite, TailwindCSS, shadcn/ui
+- **Back** : Node.js, Express
+- **Base de données** : MongoDB / Mongoose
+- **Protocole capteurs** : MQTT
+- **Auth** : JWT + bcrypt
+- **Conteneurisation** : Docker / Docker Compose
 
 ---
 
 ## Prérequis
 
-| Outil   | Version recommandée |
-| ------- | ------------------- |
-| Node.js | ≥ 18                |
-| npm     | ≥ 9                 |
-
-> **Note** : L'API backend (`IOT-api`) doit être lancée pour que l'application fonctionne.
+- [Node.js](https://nodejs.org/) v18+
+- [npm](https://www.npmjs.com/)
+- [Docker](https://www.docker.com/) et Docker Compose (pour le déploiement conteneurisé)
+- [Git](https://git-scm.com/)
 
 ---
 
@@ -48,8 +43,11 @@ cp .env.example .env
 npm run dev
 ```
 
+---
+
 ## Déploiement avec Docker
-```
+
+```bash
 # 1. Cloner le dépôt
 git clone https://github.com/itzcxms/IOT-Dashboard
 cd dashboard-iot
@@ -68,51 +66,34 @@ docker compose up --build -d
 docker compose down
 ```
 
+Une fois lancé :
+
+| Service    | URL                          |
+|------------|------------------------------|
+| Frontend   | http://localhost:5173        |
+| Backend    | http://localhost:3000        |
+| MongoDB    | mongodb://localhost:27017    |
+
 ---
 
 ## Variables d'environnement
 
-Créer un fichier `.env` à la racine à partir de `.env.example` :
+Copier `.env.example` en `.env` et renseigner les valeurs suivantes :
 
-| Variable           | Description                                | Exemple                                   |
-| ------------------ | ------------------------------------------ | ----------------------------------------- |
-| `VITE_API_URL`     | URL de l'API backend (production)          | `https://g3-back.agitys.centreia.fr:1443` |
-| `VITE_API_URL_LOC` | URL de l'API backend (développement local) | `http://localhost:3005`                   |
+```env
+# Base de données
+MONGO_URI=mongodb://localhost:27017/iot-dashboard
 
----
+# Authentification
+JWT_SECRET=votre_clé_secrète
+TOKEN_EXPIRY=15m
 
-## Lancement
-
-```bash
-# Mode développement (HMR activé)
-npm run dev
+# API (utilisé par le front)
+VITE_API_URL=http://localhost:3000
 ```
 
-L'application sera accessible sur `http://localhost:5173` (port par défaut Vite).
-
----
-
-## Build de production
-
-```bash
-# Générer le build optimisé
-npm run build
-
-# Prévisualiser le build
-npm run preview
-```
-
-Les fichiers sont générés dans le dossier `dist/`.
-
----
-
-## Linting
-
-Le projet utilise **ESLint** avec les plugins React :
-
-```bash
-npm run lint
-```
+> ⚠️ Le fichier `.env` ne doit jamais être versionné. Il est listé dans le `.gitignore`.  
+> Le fichier `.env.example` sert de référence et est versionné sans valeurs sensibles.
 
 ---
 
@@ -120,67 +101,35 @@ npm run lint
 
 ```
 dashboard-iot/
-├── public/                 # Assets statiques
-├── src/
-│   ├── assets/             # Images et ressources
-│   ├── components/
-│   │   ├── common/         # Composants métier (Graphs, Permissions, Sidebar…)
-│   │   ├── decouverte/     # Composants de la page Découverte
-│   │   ├── security/       # Composants de contrôle d'accès (ProtectedRoute, CanAccess)
-│   │   ├── ui/             # Composants UI réutilisables (shadcn/ui)
-│   │   └── users/          # Composants de gestion utilisateurs
-│   ├── context/            # Contexts React (Auth, Permissions, Thème)
-│   ├── functions/          # Utilitaires (appels API)
-│   ├── hooks/              # Hooks personnalisés
-│   ├── layouts/            # Layouts (Public, Dashboard)
-│   ├── lib/                # Utilitaires (cn)
-│   ├── pages/              # Pages de l'application
-│   ├── styles/             # Feuilles de style CSS
-│   ├── utils/              # Utilitaires divers
-│   └── main.jsx            # Point d'entrée + routage
-├── .env.example            # Template des variables d'environnement
-├── eslint.config.js        # Configuration ESLint
-├── vite.config.js          # Configuration Vite
-├── components.json         # Configuration shadcn/ui
-└── package.json
+├── frontend/          # Application React (Vite)
+├── backend/           # API REST Node.js / Express
+├── docker-compose.yml # Orchestration des services
+├── .env.example       # Modèle de configuration
+└── README.md
 ```
 
 ---
 
-## Pages de l'application
+## Services Docker
 
-### Pages publiques
+Le fichier `docker-compose.yml` orchestre 3 services :
 
-| Route                  | Page                | Description                              |
-| ---------------------- | ------------------- | ---------------------------------------- |
-| `/`                    | Découverte          | Carte interactive de l'aire de repos     |
-| `/connexion`           | Login               | Page de connexion                        |
-| `/mot-de-passe-oublie` | Mot de passe oublié | Réinitialisation du mot de passe         |
-| `/chaumont`            | Landing Page        | Page vitrine de Chaumont-sur-Loire       |
-| `/satisfaction`        | Questionnaire       | Formulaire de satisfaction visiteurs     |
-| `/compte-inactif`      | Compte inactif      | Page affichée si le compte est désactivé |
-
-### Pages privées (authentification requise)
-
-| Route                       | Page                 | Description                                 |
-| --------------------------- | -------------------- | ------------------------------------------- |
-| `/dashboard`                | Tableau de bord      | Vue d'ensemble (météo, capteurs, remarques) |
-| `/gestion-de-l-aire`        | Gestion de l'aire    | Graphiques détaillés des capteurs           |
-| `/savon`                    | Savon                | Surveillance des distributeurs de savon     |
-| `/zone-inondable`           | Zone inondable       | Monitoring de la zone inondable             |
-| `/compte/details`           | Détails du compte    | Profil utilisateur                          |
-| `/admin/liste-utilisateurs` | Gestion utilisateurs | CRUD utilisateurs (admin)                   |
-| `/admin/permissions`        | Gestion permissions  | Configuration des permissions (admin)       |
-| `/analyse-satisfaction`     | Analyse satisfaction | Graphiques des résultats du questionnaire   |
+| Service    | Image           | Port exposé |
+|------------|-----------------|-------------|
+| frontend   | node:18 + Vite  | 5173        |
+| backend    | node:18         | 3000        |
+| mongodb    | mongo:7         | 27017       |
 
 ---
 
-## Stack technique
+## Équipe
 
-- **Build** : Vite 7
-- **UI** : React 18 + React Router 7
-- **Styling** : TailwindCSS 4 + shadcn/ui (Radix UI)
-- **Graphiques** : Recharts
-- **Formulaires** : React Hook Form + Zod
-- **Auth** : JWT (jwt-decode)
-- **Icônes** : Lucide React
+| Membre  | Rôle     |
+|---------|----------|
+| Cameron | Front-end |
+| Sacha   | Back-end  |
+| Steven  | API       |
+
+---
+
+*Projet réalisé dans le cadre de la formation DWWM Niveau 5 — La Fabrique Numérique 41 / CCI Campus Centre — Mars 2026*
