@@ -30,11 +30,11 @@ Elle affiche les données des capteurs, gère les utilisateurs et les permission
 
 ---
 
-## Installation
+## Installation manuelle (sans Docker)
 
 ```bash
 # 1. Cloner le dépôt
-git clone <url-du-repo>
+git clone https://github.com/itzcxms/IOT-Dashboard
 cd dashboard-iot
 
 # 2. Installer les dépendances
@@ -43,6 +43,29 @@ npm install
 # 3. Copier le fichier d'environnement
 cp .env.example .env
 # Puis renseigner les valeurs (voir section suivante)
+
+# 4. Lancer le projet
+npm run dev
+```
+
+## Déploiement avec Docker
+```
+# 1. Cloner le dépôt
+git clone https://github.com/itzcxms/IOT-Dashboard
+cd dashboard-iot
+
+# 2. Copier le fichier d'environnement
+cp .env.example .env
+# Puis renseigner les valeurs (voir section suivante)
+
+# 3. Construire et lancer les conteneurs
+docker compose up --build
+
+# Pour lancer en arrière-plan
+docker compose up --build -d
+
+# Pour arrêter les conteneurs
+docker compose down
 ```
 
 ---
