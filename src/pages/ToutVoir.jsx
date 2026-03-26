@@ -279,7 +279,6 @@ function ToutVoir() {
 
   const getWaterLevelDataGraph = useCallback(async () => {
     try {
-      console.log(new Date().getHours());
       let data;
       if (new Date().getHours() < 12) {
         data = await getObservationsLastHours(CODE_STATION_VIGICRUES, 12, "H");

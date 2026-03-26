@@ -115,7 +115,7 @@ function Graphs({
 
     // Calculer la plage
     let range = max - min;
-    
+
     // Éviter la division par zéro
     if (range === 0) {
       return {
@@ -128,10 +128,10 @@ function Graphs({
     // Trouver une unité raisonnable
     // Si la plage est très petite, l'augmenter pour avoir une meilleure lisibilité
     let unit = Math.pow(10, Math.floor(Math.log10(range)));
-    
+
     // Ajuster l'unité pour avoir entre 3-5 ticks
     let tickCount = range / unit;
-    
+
     if (tickCount < 1.5) {
       // Trop peu de ticks, diviser l'unité
       unit = unit / 5;
@@ -164,12 +164,15 @@ function Graphs({
     // Générer les ticks avec gestion des erreurs de précision
     const ticks = [];
     const epsilon = unit * 0.001; // Petit epsilon pour la comparaison
-    
+
     for (let i = roundedMin; i <= roundedMax + epsilon; i += unit) {
       const tickValue = parseFloat((Math.round(i / unit) * unit).toFixed(6));
-      
+
       // Éviter les doublons causés par les erreurs de précision
-      if (ticks.length === 0 || Math.abs(tickValue - ticks[ticks.length - 1]) > unit * 0.5) {
+      if (
+        ticks.length === 0 ||
+        Math.abs(tickValue - ticks[ticks.length - 1]) > unit * 0.5
+      ) {
         ticks.push(tickValue);
       }
     }
@@ -261,7 +264,9 @@ function Graphs({
       // Régénérer les ticks pour l'échelle unifiée
       const unifiedRange = globalMax - globalMin;
       let unit =
-        unifiedRange === 0 ? 1 : Math.pow(10, Math.floor(Math.log10(unifiedRange)));
+        unifiedRange === 0
+          ? 1
+          : Math.pow(10, Math.floor(Math.log10(unifiedRange)));
       let tickCount = unifiedRange / unit;
 
       if (tickCount < 1.5) {
@@ -279,7 +284,8 @@ function Graphs({
         const tickValue = parseFloat((Math.round(i / unit) * unit).toFixed(6));
         if (
           unifiedTicks.length === 0 ||
-          Math.abs(tickValue - unifiedTicks[unifiedTicks.length - 1]) > unit * 0.5
+          Math.abs(tickValue - unifiedTicks[unifiedTicks.length - 1]) >
+            unit * 0.5
         ) {
           unifiedTicks.push(tickValue);
         }
@@ -356,7 +362,6 @@ function Graphs({
     return <div>No data</div>;
   }
 
-  console.log(currentSelection ?? "");
   return (
     <Card className="Card">
       <CardHeader>

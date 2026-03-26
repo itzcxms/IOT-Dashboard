@@ -62,7 +62,6 @@ function GraphsZoneInondable({ seuilDanger, vigicrueData = null }) {
   const getDataGraph = useCallback(
     async (key, date = null) => {
       try {
-        console.log(key);
         setIsLoading(true);
         setHasError(false);
 
@@ -157,7 +156,6 @@ function GraphsZoneInondable({ seuilDanger, vigicrueData = null }) {
         if (recieveDate) {
           setRecievedTimeData(new Date());
         }
-        console.log(tempDatas);
         setChartData(tempDatas);
       } catch (error) {
         console.error("Erreur dans getDataGraph:", error);

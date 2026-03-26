@@ -684,7 +684,6 @@ export function filterObservationsLastDays(data, days = 7) {
   const endDate = new Date();
   let startDate = new Date(new Date().setHours(0, 0, 0, 0));
   startDate.setDate(startDate.getDate() - days);
-  console.log(startDate, endDate);
 
   return filterObservations(data, startDate, endDate);
 }
