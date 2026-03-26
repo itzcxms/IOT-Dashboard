@@ -32,6 +32,7 @@ import {
 import {
   aggregateObservationsByIntervalWithMinMax,
   getLatestObservation,
+  getObservationsLastHours,
   getObservationsToday,
   getObservationsVigicrues,
 } from "@/functions/FonctionsAppelVigicrue.jsx";
@@ -278,7 +279,13 @@ function ToutVoir() {
 
   const getWaterLevelDataGraph = useCallback(async () => {
     try {
-      const data = await getObservationsToday(CODE_STATION_VIGICRUES, "H");
+      console.log(new Date().getHours());
+      let data;
+      if (new Date().getHours() < 12) {
+        data = await getObservationsLastHours(CODE_STATION_VIGICRUES, 12, "H");
+      } else {
+        data = await getObservationsToday(CODE_STATION_VIGICRUES, "H");
+      }
       const formattedData = aggregateObservationsByIntervalWithMinMax(
         data,
         "hour",
