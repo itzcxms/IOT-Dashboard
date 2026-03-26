@@ -489,11 +489,9 @@ function ToutVoir() {
   return (
     <div className="flex flex-col h-[calc(100vh-2rem)] space-y-4">
       {/* Header */}
-      {/*<h1 className="text-2xl font-semibold">
+      <h1 className="text-2xl font-semibold">
         Bonjour, {user?.prenom || "Utilisateur"} {user?.nom || ""}
-      </h1>*/}
-      {/*Modif pour bébé Cameron*/}
-      <h1 className="text-2xl font-semibold">Bonjour, Sacha Touille</h1>
+      </h1>
 
       {/* Alerte d'erreur */}
       {hasErrors && (
