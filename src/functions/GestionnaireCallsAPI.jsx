@@ -42,7 +42,7 @@ export default async function generateCallsAPI(
   route,
   data = null,
 ) {
-  const url = import.meta.env.VITE_API_URL_LOC + route;
+  const url = import.meta.env.VITE_API_URL + route;
 
   let res = null;
   switch (type) {
