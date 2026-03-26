@@ -73,6 +73,7 @@ function EvaluationsGraphs({ isLoadingGeneral, periode, date }) {
 
   useEffect(() => {
     async function fetchData() {
+      setIsLoading(true);
       let data = await getEvaluationsData();
       let dataCards = await traitementEvaluationsDatas(data["distributions"]);
 
@@ -81,10 +82,8 @@ function EvaluationsGraphs({ isLoadingGeneral, periode, date }) {
       setIsLoading(false);
     }
 
-    if (isLoading) {
-      void fetchData();
-    }
-  }, []);
+    void fetchData();
+  }, [periode, date, token]);
 
   if (isLoading || isLoadingGeneral) {
     return <div>Chargement...</div>;
