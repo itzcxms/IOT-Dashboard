@@ -1,11 +1,40 @@
 /**
- * Génère et exécute les calls à l'API
+ * Génère et exécute les requêtes HTTP vers l'API
  *
- * @param token string|null
- * @param type string GET|POST|PUT|DELETE
- * @param route string
- * @param data object|null
- * @returns {Promise<any|null>}
+ * Fonction principale qui centralise tous les appels API du dashboard.
+ * Elle gère automatiquement :
+ * - L'authentification via token Bearer
+ * - Les différentes méthodes HTTP (GET, POST, PUT, DELETE)
+ * - La lecture unique du body (prevention des erreurs)
+ * - Les erreurs HTTP avec redirections appropriées (401, 403, ACCOUNT_INACTIVE)
+ *
+ * @async
+ * @param {string|null} token - Token JWT pour l'authentification Bearer. Si null, pas d'Authorization header
+ * @param {string} type - Méthode HTTP : "GET", "POST", "PUT" ou "DELETE"
+ * @param {string} route - Route relative de l'API (ex: "/users", "/api/v1/data")
+ * @param {Object|null} [data=null] - Données à envoyer dans le body (pour POST, PUT, DELETE)
+ * @returns {Promise<any|null>} Réponse parsée en JSON, ou texte brut si pas de JSON valide, ou null si vide
+ * @throws {Error} Erreur enrichie avec propriétés {status, payload} en cas d'erreur HTTP
+ *
+ * @example
+ * // GET sans authentification
+ * const data = await generateCallsAPI(null, "GET", "/public/data");
+ *
+ * @example
+ * // POST avec authentification
+ * const result = await generateCallsAPI(token, "POST", "/api/users", {
+ *   name: "John",
+ *   email: "john@example.com"
+ * });
+ *
+ * @example
+ * // Gestion des erreurs
+ * try {
+ *   await generateCallsAPI(token, "GET", "/protected");
+ * } catch (error) {
+ *   console.log(error.status); // 401, 403, etc.
+ *   console.log(error.payload); // réponse du serveur
+ * }
  */
 export default async function generateCallsAPI(
   token,
@@ -50,6 +79,111 @@ export default async function generateCallsAPI(
     return payload;
   }
 
+  await handleErrors(res, payload);
+}
+
+/**
+ * Exécute une requête GET
+ *
+ * @private
+ * @async
+ * @param {string} token - Token JWT pour l'authentification
+ * @param {string} type - Type de requête HTTP ("GET")
+ * @param {string} url - URL complète de la requête
+ * @returns {Promise<Response>} Réponse brute de fetch
+ */
+async function routeGet(token, type, url) {
+  return fetch(url, {
+    method: type,
+    headers: {
+      "Content-Type": "application/json",
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
+    },
+  });
+}
+
+/**
+ * Exécute une requête POST
+ *
+ * @private
+ * @async
+ * @param {string} token - Token JWT pour l'authentification
+ * @param {string} type - Type de requête HTTP ("POST")
+ * @param {string} url - URL complète de la requête
+ * @param {Object|null} data - Données à envoyer dans le body
+ * @returns {Promise<Response>} Réponse brute de fetch
+ */
+async function routePost(token, type, url, data) {
+  return fetch(url, {
+    method: type,
+    headers: {
+      "Content-Type": "application/json",
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
+    },
+    body: data !== null ? JSON.stringify(data) : null,
+  });
+}
+
+/**
+ * Exécute une requête PUT
+ *
+ * @private
+ * @async
+ * @param {string} token - Token JWT pour l'authentification
+ * @param {string} type - Type de requête HTTP ("PUT")
+ * @param {string} url - URL complète de la requête
+ * @param {Object|null} data - Données à envoyer dans le body
+ * @returns {Promise<Response>} Réponse brute de fetch
+ */
+async function routePut(token, type, url, data) {
+  return fetch(url, {
+    method: type,
+    headers: {
+      "Content-Type": "application/json",
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
+    },
+    body: data !== null ? JSON.stringify(data) : null,
+  });
+}
+
+/**
+ * Exécute une requête DELETE
+ *
+ * @private
+ * @async
+ * @param {string} token - Token JWT pour l'authentification
+ * @param {string} type - Type de requête HTTP ("DELETE")
+ * @param {string} url - URL complète de la requête
+ * @param {Object|null} data - Données à envoyer dans le body
+ * @returns {Promise<Response>} Réponse brute de fetch
+ */
+async function routeDelete(token, type, url, data) {
+  return fetch(url, {
+    method: type,
+    headers: {
+      "Content-Type": "application/json",
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
+    },
+    body: data !== null ? JSON.stringify(data) : null,
+  });
+}
+
+/**
+ * Gère les erreurs HTTP et effectue les redirections appropriées
+ *
+ * Cette fonction centralise la gestion des erreurs HTTP avec les redirections suivantes :
+ * - ACCOUNT_INACTIVE : Redirige vers /compte-inactif
+ * - 401 Unauthorized : Redirige vers /connexion (token invalide ou utilisateur introuvable)
+ * - 403 Forbidden : Lance une erreur FORBIDDEN (permissions insuffisantes)
+ * - Autres statuts : Lance une erreur générique
+ *
+ * @private
+ * @async
+ * @param {Response} res - Réponse brute de fetch
+ * @param {Object|string|null} payload - Payload parsé de la réponse (JSON ou texte)
+ * @throws {Error} Erreur enrichie avec {status, payload}
+ */
+async function handleErrors(res, payload) {
   // --- Gestion centralisée des erreurs / redirections ---
   const status = res.status;
 
@@ -95,59 +229,4 @@ export default async function generateCallsAPI(
     ),
     { status, payload },
   );
-}
-
-/**
- * Route GET
- */
-async function routeGet(token, type, url) {
-  return fetch(url, {
-    method: type,
-    headers: {
-      "Content-Type": "application/json",
-      ...(token ? { Authorization: `Bearer ${token}` } : {}),
-    },
-  });
-}
-
-/**
- * Route POST
- */
-async function routePost(token, type, url, data) {
-  return fetch(url, {
-    method: type,
-    headers: {
-      "Content-Type": "application/json",
-      ...(token ? { Authorization: `Bearer ${token}` } : {}),
-    },
-    body: data !== null ? JSON.stringify(data) : null,
-  });
-}
-
-/**
- * Route PUT
- */
-async function routePut(token, type, url, data) {
-  return fetch(url, {
-    method: type,
-    headers: {
-      "Content-Type": "application/json",
-      ...(token ? { Authorization: `Bearer ${token}` } : {}),
-    },
-    body: data !== null ? JSON.stringify(data) : null,
-  });
-}
-
-/**
- * Route DELETE
- */
-async function routeDelete(token, type, url, data) {
-  return fetch(url, {
-    method: type,
-    headers: {
-      "Content-Type": "application/json",
-      ...(token ? { Authorization: `Bearer ${token}` } : {}),
-    },
-    body: data !== null ? JSON.stringify(data) : null,
-  });
 }
