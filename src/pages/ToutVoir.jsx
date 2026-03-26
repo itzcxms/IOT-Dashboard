@@ -489,9 +489,11 @@ function ToutVoir() {
   return (
     <div className="flex flex-col h-[calc(100vh-2rem)] space-y-4">
       {/* Header */}
-      <h1 className="text-2xl font-semibold">
+      {/*<h1 className="text-2xl font-semibold">
         Bonjour, {user?.prenom || "Utilisateur"} {user?.nom || ""}
-      </h1>
+      </h1>*/}
+      {/*Modif pour bébé Cameron*/}
+      <h1 className="text-2xl font-semibold">Bonjour, Sacha Touille</h1>
 
       {/* Alerte d'erreur */}
       {hasErrors && (
@@ -686,17 +688,6 @@ function ToutVoir() {
                     />
                     <Area
                       type="monotone"
-                      dataKey="min"
-                      stroke="var(--chart-3)"
-                      strokeWidth={1}
-                      strokeDasharray="5 5"
-                      fill="none"
-                      isAnimationActive={false}
-                      dot={false}
-                      opacity={0.5}
-                    />
-                    <Area
-                      type="monotone"
                       dataKey="max"
                       stroke="var(--chart-3)"
                       strokeWidth={1}
@@ -714,6 +705,17 @@ function ToutVoir() {
                       fill="none"
                       isAnimationActive={false}
                       dot={false}
+                    />
+                    <Area
+                      type="monotone"
+                      dataKey="min"
+                      stroke="var(--chart-3)"
+                      strokeWidth={1}
+                      strokeDasharray="5 5"
+                      fill="none"
+                      isAnimationActive={false}
+                      dot={false}
+                      opacity={0.5}
                     />
                   </AreaChart>
                 </ChartContainer>
