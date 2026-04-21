@@ -627,7 +627,9 @@ function ToutVoir() {
           {/* Graphique évolution niveau d'eau */}
           <Card className="relative flex-[1.5] flex flex-col min-h-0">
             <button className="absolute top-3 right-3 p-1 rounded-md hover:bg-black/5 transition-colors">
-              <ArrowUpRight className="h-4 w-4 text-muted-foreground" />
+              <a href="https://iot-dashboard-lac.vercel.app/zone-inondable">
+                <ArrowUpRight className="h-4 w-4 text-muted-foreground" />
+              </a>
             </button>
             <CardHeader className="pb-2">
               <CardTitle className="text-base font-semibold">
