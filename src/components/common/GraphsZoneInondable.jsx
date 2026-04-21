@@ -30,8 +30,8 @@ function GraphsZoneInondable({ seuilDanger, vigicrueData = null }) {
   /**
    * Fonction utilitaire pour sauvegarder des données en JSON
    */
-  const saveDataToJSON = (data, filename) => {
-    /*try {
+  /*const saveDataToJSON = (data, filename) => {
+    try {
       const jsonData = JSON.stringify(data, null, 2);
       const blob = new Blob([jsonData], { type: "application/json" });
       const url = URL.createObjectURL(blob);
@@ -45,8 +45,8 @@ function GraphsZoneInondable({ seuilDanger, vigicrueData = null }) {
       console.log(`📁 Données sauvegardées dans ${filename}`);
     } catch (error) {
       console.error(`❌ Erreur lors de la sauvegarde de ${filename}:`, error);
-    }*/
-  };
+    }
+  };*/
 
   /**
    * Récupère les informations pour les graphiques
